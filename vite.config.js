@@ -6,6 +6,9 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  // 添加基础路径配置，适配GitHub Pages
+  // 在本地开发时使用'/'，在生产环境根据环境变量或默认使用仓库名称
+  base: process.env.NODE_ENV === 'production' ? '/Kizuna-Mikuji/' : '/',
   plugins: [
     vue(),
     vueDevTools(),
