@@ -5,12 +5,18 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+# 为工作流添加权限
+permissions:
+  contents: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false # 不使用常规GITHUB_TOKEN的凭据
 
       - name: 设置Node.js环境
         uses: actions/setup-node@v4
@@ -32,4 +38,5 @@ jobs:
         with:
           folder: dist
           branch: gh-pages
-          clean: true 
+          clean: true
+          token: ${{ secrets.GITHUB_TOKEN }} # 显式使用GitHub提供的token 
