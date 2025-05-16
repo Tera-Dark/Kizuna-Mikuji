@@ -1,0 +1,95 @@
+@import './base.css';
+
+/* 使用系统默认字体，提高性能 */
+body {
+  font-family: 'Noto Serif CJK SC', 'Noto Serif SC', 'Source Han Serif SC', 'Source Han Serif CN', 
+              'Source Han Serif', 'Songti SC', 'SimSun', serif, system-ui, -apple-system, 
+              'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', sans-serif;
+  font-size: 16px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--color-text);
+  background-image: url("/images/阴阳师插画1-optimized.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* 可选，使背景固定 */
+  background-color: var(--color-background); /* 保留背景颜色作为备用 */
+  transition: color 0.5s, background-color 0.5s;
+}
+
+/* 全局优化CSS */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* 图像默认处理 */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* 响应式优化 */
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+/* 最小化浏览器重绘和重排 */
+.hardware-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform;
+}
+
+/* 减少动画性能消耗 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 
+ * 重写 #app 的默认样式，使其适合我们的全屏背景和中央内容布局
+ */
+#app {
+  width: 100%;
+  min-height: 100vh; /* 确保至少占满整个视口高度 */
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 移除默认的链接样式 */
+a {
+  text-decoration: none;
+  transition: 0.4s;
+}
+
+/* 添加谷歌字体 Noto Serif SC 的链接，这是我们在原项目中使用的中文字体 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
+
+/* 移除或修改默认的媒体查询，因为我们使用自己的响应式布局 */
+@media (min-width: 1024px) {
+  body {
+    display: block; /* 覆盖默认的 flex 布局 */
+  }
+
+  #app {
+    display: flex; /* 使用 flex 而不是 grid */
+    justify-content: center;
+    padding: 0;
+  }
+}
