@@ -302,15 +302,14 @@ function getZodiacEmoji(signName) {
 
 .fortune-card {
   background-color: rgba(255, 250, 245, 0.9);
-  background-image: url('/images/paper-texture-light.jpg'), 
-                    repeating-linear-gradient(
+  background-image: repeating-linear-gradient(
                       90deg,
                       rgba(139, 69, 19, 0.04) 0px,
                       rgba(139, 69, 19, 0.04) 1px,
                       transparent 1px,
                       transparent 4px
                     );
-  background-size: cover, auto;
+  background-size: auto;
   background-position: center;
   border-radius: 2px;
   padding: 40px 25px;

@@ -231,7 +231,7 @@ const paperTexture = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
   align-items: center;
   padding: 16px;
   position: relative;
-  background-image: url('/images/和纸纹理.jpg'), v-bind(wavePattern);
+  background-image: v-bind(wavePattern);
   background-size: cover;
   background-position: center;
   border-radius: 9px;
@@ -344,7 +344,7 @@ const paperTexture = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('/images/和纸纹理浅色.jpg'), v-bind(paperTexture);
+  background-image: v-bind(paperTexture);
   background-size: cover;
   opacity: 0.5;
   z-index: 0;

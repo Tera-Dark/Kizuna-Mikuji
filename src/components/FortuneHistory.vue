@@ -284,7 +284,14 @@ onMounted(() => {
   transition: all 0.3s ease;
   transform-origin: center;
   border: 1px solid rgba(212, 175, 55, 0.3);
-  background-image: url('/images/paper-texture-light.jpg');
+  background-color: rgba(255, 250, 245, 0.9);
+  background-image: repeating-linear-gradient(
+                     45deg,
+                     rgba(139, 69, 19, 0.02) 0px,
+                     rgba(139, 69, 19, 0.02) 1px,
+                     transparent 1px,
+                     transparent 10px
+                   );
   background-size: cover;
   background-position: center;
 }
@@ -455,25 +462,29 @@ onMounted(() => {
 .top-left {
   top: 10px;
   left: 10px;
-  background-image: url('/images/中国结装饰2.png');
+  background-color: rgba(212, 175, 55, 0.2);
+  border-radius: 50%;
 }
 
 .top-right {
   top: 10px;
   right: 10px;
-  background-image: url('/images/中国结装饰1.png');
+  background-color: rgba(212, 175, 55, 0.2);
+  border-radius: 50%;
 }
 
 .bottom-left {
   bottom: 10px;
   left: 10px;
-  background-image: url('/images/中国结装饰3.png');
+  background-color: rgba(212, 175, 55, 0.2);
+  border-radius: 50%;
 }
 
 .bottom-right {
   bottom: 10px;
   right: 10px;
-  background-image: url('/images/中国结装饰4.png');
+  background-color: rgba(212, 175, 55, 0.2);
+  border-radius: 50%;
 }
 
 /* 响应式设计 */

@@ -104,7 +104,7 @@
 body {
   min-height: 100vh;
   color: var(--color-text);
-  background: var(--color-background) url('/image/阴阳师插画1-optimized.jpg') no-repeat center center fixed;
+  background: var(--color-background);
   background-size: cover;
   transition:
     color 0.5s,
