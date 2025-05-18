@@ -35,7 +35,7 @@
       </div>
     </div>
     
-    <div v-if="isAnalysisComplete" class="name-result-container reveal-parent">
+    <div v-if="isAnalysisComplete" class="name-result-container reveal-parent" :class="{ visible: isAnalysisComplete }">
       <div class="result-header reveal-item">
         <h3 class="result-title">「{{ fortuneStore.userName }}」的姓名缘分</h3>
         
@@ -44,6 +44,20 @@
             {{ fortuneStore.selectedFortune.type }}
           </span>
         </div>
+      </div>
+      
+      <!-- 新增：显示顶层描述信息 -->
+      <div class="name-fortune-general-description result-section reveal-item" v-if="fortuneStore.selectedFortune && fortuneStore.selectedFortune.description">
+        <h4><span class="h-decorator">&#x1F4D6;</span> 综合概述 <span class="h-decorator">&#x1F4D6;</span></h4>
+        <p>{{ fortuneStore.selectedFortune.description }}</p>
+        <!-- 您也可以在这里添加对 selectedFortune.personality, luckNumber, luckColor 等的显示 -->
+        <!-- 例如:
+        <div class="personalized-summary">
+          <p v-if="fortuneStore.selectedFortune.personality"><strong>主要个性:</strong> {{ fortuneStore.selectedFortune.personality }}</p>
+          <p v-if="fortuneStore.selectedFortune.luckNumber"><strong>缘分指数:</strong> {{ fortuneStore.selectedFortune.luckNumber }}/100</p>
+          <p v-if="fortuneStore.selectedFortune.luckColor"><strong>幸运颜色:</strong> {{ fortuneStore.selectedFortune.luckColor }}</p>
+        </div>
+        -->
       </div>
       
       <!-- 添加字符解读部分 -->

@@ -1234,51 +1234,92 @@ export const useFortuneStore = defineStore('fortune', () => {
   
   // 添加姓名占卜处理函数
   function analyzeNameFortune(name) {
-    if (!name || typeof name !== 'string' || name.trim() === '') {
-      return null;
-    }
-    
-    userName.value = name.trim();
-    
-    // 基于姓名字符生成一个确定的随机数
-    let nameValue = 0;
-    for (let i = 0; i < userName.value.length; i++) {
-      nameValue += userName.value.charCodeAt(i);
-    }
-    
-    // 使用这个数值选择一个签文
-    const nameFortuneList = getNameFortuneData();
-    const fortuneIndex = nameValue % nameFortuneList.length;
-    const fortune = { ...nameFortuneList[fortuneIndex] };
-    
-    // 添加姓名个性化内容
-    fortune.personalized = generatePersonalizedContent(userName.value);
-    
-    // 记录抽签并触发显示
-    totalDraws.value++;
-    selectedFortune.value = fortune;
-    
-    // 保存到历史记录
-    saveToHistory({
-      type: fortune.type,
-      date: new Date().toISOString(),
-      category: 'name',
-      name: userName.value,
-      personalized: fortune.personalized
+    // playSound('reveal');
+    // 使用更健壮的音效调用，并处理潜在错误
+    playSound('sounds/reveal.mp3', 0.4, (err) => {
+      if (err) {
+        console.warn('姓名解析音效播放失败:', err);
+      }
+    }).catch(error => {
+      console.error('姓名解析音效创建失败:', error);
     });
+
+    userName.value = name;
+    currentCategory.value = 'name'; // 确保分类正确
+
+    const nameData = getNameFortuneData();
+    const personalizedData = generatePersonalizedContent(name); // 提前生成，确保个性化数据结构完整
+
+    if (!nameData || nameData.length === 0) {
+      console.error("姓名解析数据加载失败或为空！");
+      selectedFortune.value = {
+        type: "解析失败",
+        poem: "未能获取解析数据，<br>请稍后再试或联系管理员。",
+        interpretation: "抱歉，我们暂时无法为您解析姓名。可能是数据配置问题或网络波动，请检查您的网络连接或稍后重试。",
+        suggestion: "尝试刷新页面，或选择其他占卜类型。",
+        level: 1,
+        category: 'name',
+        nameDisplay: name, // 用户输入的姓名
+        date: new Date().toLocaleString(),
+        personalized: personalizedData, // 完整的个性化数据对象
+        description: personalizedData.description, // 顶层描述
+        // 将核心个性化字段也提升到顶层
+        personality: personalizedData.personality,
+        luckNumber: personalizedData.luckNumber,
+        luckColor: personalizedData.luckColor
+      };
+      isFortuneVisible.value = true; // <--- 即使失败也要显示
+      return;
+    }
+
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = (hash << 5) - hash + name.charCodeAt(i);
+      hash |= 0; // Convert to 32bit integer
+    }
+
+    const randomIndex = Math.abs(hash) % nameData.length;
+    const baseFortuneEntry = nameData[randomIndex];
+
+    selectedFortune.value = {
+      type: baseFortuneEntry && baseFortuneEntry.type ? baseFortuneEntry.type : "类型未知",
+      poem: baseFortuneEntry && baseFortuneEntry.poem ? baseFortuneEntry.poem : "诗文加载失败",
+      interpretation: baseFortuneEntry && baseFortuneEntry.interpretation ? baseFortuneEntry.interpretation : "解读加载失败",
+      suggestion: baseFortuneEntry && baseFortuneEntry.suggestion ? baseFortuneEntry.suggestion : "建议加载失败",
+      ...(baseFortuneEntry || {}),
+      level: userLevel.value,
+      category: 'name',
+      nameDisplay: name, // 用户输入的姓名
+      date: new Date().toLocaleString(),
+      personalized: personalizedData, // 完整的个性化数据对象
+      description: personalizedData.description, // 顶层描述
+      // 将核心个性化字段也提升到顶层
+      personality: personalizedData.personality,
+      luckNumber: personalizedData.luckNumber,
+      luckColor: personalizedData.luckColor
+    };
     
-    // 保存状态
-    saveToStorage();
-    
-    // 立即显示结果
-    isFortuneVisible.value = true;
-    
-    return fortune;
+    isFortuneVisible.value = true; // <--- 成功解析后，显示结果
+    // console.log("Generated selectedFortune for Name:", JSON.parse(JSON.stringify(selectedFortune.value)));
+    // saveToHistory(); // 在 NameFortune.vue 中手动调用
   }
   
   // 生成个性化内容
   function generatePersonalizedContent(name) {
-    if (!name) return '';
+    // 定义默认的个性化数据结构，确保完整性
+    const defaultPersonalized = {
+      personality: "未知",
+      luckNumber: 0,
+      luckColor: "#cccccc",
+      description: "个性化解析生成失败，请输入有效名称。",
+      fiveElements: { metal: 0, wood: 0, water: 0, fire: 0, earth: 0 },
+      luckyThings: [],
+      unluckyThings: [],
+    };
+
+    if (!name || name.trim() === '') { // 检查空字符串或仅空格的name
+        return defaultPersonalized;
+    }
     
     // 基于姓名第一个字符生成个性特点
     const firstCharCode = name.charCodeAt(0);
@@ -1306,10 +1347,12 @@ export const useFortuneStore = defineStore('fortune', () => {
     const colorIndex = nameValue % colors.length;
     
     return {
+      ...defaultPersonalized, // 使用默认值打底，确保结构完整
       personality: personalityTraits[personalityIndex],
       luckNumber: luckNumber,
       luckColor: colors[colorIndex],
       description: `根据传统姓名学分析，「${name}」这个名字蕴含着「${personalityTraits[personalityIndex]}」的特质，这会在你的人际关系和爱情中发挥重要作用。你的缘分指数为${luckNumber}分（满分100），尤其适合与喜欢${colors[colorIndex]}的人建立深厚关系。`
+      // 如果有五行、吉凶等具体逻辑，在此处覆盖 defaultPersonalized 的对应字段
     };
   }
   
