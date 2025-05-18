@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, watch, onUnmounted } from 'vue';
+import { ref, onMounted, computed, watch, onUnmounted, defineAsyncComponent, Teleport } from 'vue';
 import SakuraBackground from './components/SakuraBackground.vue';
 import RedThreadBackground from './components/RedThreadBackground.vue';
 import Header from './components/Header.vue';
@@ -8,17 +8,26 @@ import FortuneResult from './components/FortuneResult.vue';
 import Footer from './components/Footer.vue';
 import FortuneHistory from './components/FortuneHistory.vue';
 import CategorySelector from './components/CategorySelector.vue';
-import CoupleFortuneDrawing from './components/CoupleFortuneDrawing.vue';
-import NameFortune from './components/NameFortune.vue';
-import ZodiacCompatibility from './components/ZodiacCompatibility.vue';
-import DestinyBall from './components/DestinyBall.vue';
+// import CoupleFortuneDrawing from './components/CoupleFortuneDrawing.vue';
+// import NameFortune from './components/NameFortune.vue';
+// import ZodiacCompatibility from './components/ZodiacCompatibility.vue';
+// import DestinyBall from './components/DestinyBall.vue';
 import UserProfile from './components/UserProfile.vue';
 import CookieTutorial from './components/CookieTutorial.vue';
 import SoundMissingHint from './components/SoundMissingHint.vue';
 import { useFortuneStore } from './stores/FortuneStore';
+import { useUserStore } from './stores/UserStore';
+import { useAudio } from './composables/useAudio';
+
+// 动态导入条件渲染的组件
+const NameFortune = defineAsyncComponent(() => import('./components/NameFortune.vue'));
+const CoupleFortuneDrawing = defineAsyncComponent(() => import('./components/CoupleFortuneDrawing.vue'));
+const ZodiacCompatibility = defineAsyncComponent(() => import('./components/ZodiacCompatibility.vue'));
+const DestinyBall = defineAsyncComponent(() => import('./components/DestinyBall.vue'));
 
 // 使用状态管理
 const fortuneStore = useFortuneStore();
+const userStore = useUserStore();
 
 // 组件引用
 const profileRef = ref(null);
@@ -40,6 +49,9 @@ const selectedCategory = ref('爱情缘分');
 // 错误和提示状态控制
 const showSoundError = ref(false);
 const showTutorial = ref(false);
+
+// 使用音频组合式函数
+const { preload } = useAudio();
 
 // 强制重置教程状态，用于测试
 const forceTutorial = () => {
@@ -80,25 +92,36 @@ const handleDrawAgain = () => {
 onMounted(() => {
   console.log('App组件挂载');
   
-  // 主动清除教程标记，确保每次重新加载应用都会显示教程
-  localStorage.removeItem('hasSeenTutorial');
+  // 开发调试信息：显示localStorage中的所有缓存数据
+  console.log('当前localStorage内容:');
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    console.log(`- ${key}: ${localStorage.getItem(key)}`);
+  }
   
   // 检查是否需要显示新手教程
   const hasSeenTutorial = localStorage.getItem('hasSeenTutorial') === 'true';
   console.log('用户是否已看过教程:', hasSeenTutorial);
   
-  // 不检查hasSeenTutorial，直接显示教程
-  console.log('准备显示教程');
-  // 延迟时间增加，确保页面完全加载
-  setTimeout(() => {
-    console.log('显示教程弹窗');
-    showTutorial.value = true;
-  }, 1500);
+  // 仅在用户未看过教程时显示
+  if (!hasSeenTutorial) {
+    console.log('用户第一次访问，准备显示教程');
+    // 延迟时间增加，确保页面完全加载
+    setTimeout(() => {
+      console.log('显示教程弹窗');
+      showTutorial.value = true;
+    }, 1500);
+  } else {
+    console.log('用户已看过教程，不再显示');
+  }
+  
+  // 记录用户访问
+  userStore.recordVisit();
   
   // 加载必要的资源
   preloadSounds();
   
-  // 添加全局按键事件监听，Shift+T 组合键显示教程
+  // 添加全局按键事件监听，Shift+T 组合键显示教程，Shift+R 重置教程状态
   window.addEventListener('keydown', handleKeydown);
 });
 
@@ -123,12 +146,19 @@ const handleKeydown = (e) => {
 };
 
 // 预加载音效
-const preloadSounds = () => {
+const preloadSounds = async () => {
   try {
-    const audio = new Audio('/sounds/wind-chime.mp3');
-    audio.load();
+    // 使用audioUtils中的preloadSounds
+    await preload([
+      'sounds/wind-chime.mp3',
+      'sounds/bells.mp3', 
+      'sounds/reveal.mp3'
+    ]);
+    console.log('音效预加载完成');
   } catch (error) {
-    console.log('音效预加载失败', error);
+    console.error('音效预加载失败', error);
+    // 显示音效错误提示
+    showSoundError.value = true;
   }
 };
 
@@ -155,6 +185,8 @@ const closeSoundHint = () => {
 const closeTutorial = () => {
   console.log('关闭教程');
   showTutorial.value = false;
+  // 保存已看过教程的标记，防止下次自动显示
+  localStorage.setItem('hasSeenTutorial', 'true');
 };
 
 // 签文类型变更处理
@@ -217,9 +249,15 @@ const handleToggleProfile = () => {
 
 // 清除localStorage中的教程标记，用于测试教程
 const resetTutorialStatus = () => {
-  console.log('重置教程状态');
-  localStorage.removeItem('hasSeenTutorial');
-  showTutorial.value = true;
+  console.log('准备重置教程状态');
+  // 添加确认对话框，防止意外重置
+  if (confirm('确定要重置教程状态吗？这将在下次刷新页面时再次显示新手教程。')) {
+    console.log('已确认重置教程状态');
+    localStorage.removeItem('hasSeenTutorial');
+    showTutorial.value = true;
+  } else {
+    console.log('取消重置教程状态');
+  }
 };
 </script>
 
@@ -275,28 +313,30 @@ const resetTutorialStatus = () => {
       <Footer />
     </div>
     
-    <!-- 功能按钮区域 -->
-    <div class="function-buttons">
-      <!-- 求签按钮 -->
-      <div class="function-button fortune-draw" @click="handleFloatingDrawFortune" title="求签">
-        <span class="button-icon">🥢</span>
+    <!-- 功能按钮区域使用 Teleport 移动到 body 下 -->
+    <Teleport to="body">
+      <div class="function-buttons">
+        <!-- 求签按钮 -->
+        <div class="function-button fortune-draw" @click="handleFloatingDrawFortune" title="求签">
+          <span class="button-icon">🔮</span>
+        </div>
+        
+        <!-- 历史记录按钮 -->
+        <div class="function-button history-quick" @click="handleToggleHistory" title="历史记录">
+          <span class="button-icon">📜</span>
+        </div>
+        
+        <!-- 个人信息按钮 -->
+        <div class="function-button profile-quick" @click="handleToggleProfile" title="个人信息">
+          <span class="button-icon">🎀</span>
+        </div>
+        
+        <!-- 教程按钮 -->
+        <div class="function-button tutorial-quick" @click="showTutorialManually" title="查看教程">
+          <span class="button-icon">📖</span>
+        </div>
       </div>
-      
-      <!-- 历史记录按钮 -->
-      <div class="function-button history-quick" @click="handleToggleHistory" title="历史记录">
-        <span class="button-icon">📜</span>
-      </div>
-      
-      <!-- 个人信息按钮 -->
-      <div class="function-button profile-quick" @click="handleToggleProfile" title="个人信息">
-        <span class="button-icon">👤</span>
-      </div>
-      
-      <!-- 教程按钮 -->
-      <div class="function-button tutorial-quick" @click="showTutorialManually" title="查看教程">
-        <span class="button-icon">❓</span>
-      </div>
-    </div>
+    </Teleport>
     
     <!-- 音效问题提示 -->
     <SoundMissingHint :is-visible="showSoundError" @close="closeSoundHint" />
@@ -307,187 +347,125 @@ const resetTutorialStatus = () => {
 </template>
 
 <style scoped>
-/* 全局基础样式 */
+/* 主应用容器 */
 #app-outer-container {
-  min-height: 100vh;
   width: 100%;
-  position: relative;
-  transition: background-color 0.5s;
-  background-image: url('/images/阴阳师插画1-optimized.jpg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  overflow-x: hidden;
-}
-
-#app-outer-container::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(ellipse at center, rgba(255, 248, 231, 0.4), rgba(242, 232, 203, 0.7));
-  z-index: 0;
-}
-
-#app-container {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 90vh;
-  padding: 30px;
+  justify-content: flex-start; /* 内容从顶部开始排列 */
+  align-items: center; /* 水平居中 #app-container */
+  padding: 20px; /* 应用整体的边缘内边距 */
   box-sizing: border-box;
-  text-align: center;
+  position: relative; 
+  /* transform: none; */ /* 之前的fixed定位辅助，现在不需要 */
+  /* overflow-x: hidden; */ /* 确保没有不必要的横向滚动 */
+}
+
+/* 确保 #app-outer-container 的伪元素不设置背景，以免覆盖全局背景 */
+#app-outer-container::before {
+  display: none; 
+}
+
+/* 主要内容卡片 */
+#app-container { 
+  width: 100%; 
+  min-width: 450px; /* 避免内容过于拥挤 */
+  max-width: 700px; /* 内容最大宽度，保持可读性 */
+  margin-top: 10px; /* 与上方元素的间距 */
+  margin-bottom: 10px; /* 与下方元素的间距 */
+  padding: 30px; /* 卡片内部的内边距 */
+  background-color: rgba(255, 245, 245, 0.92); /* 更温暖的祈愿粉色调半透明背景 */
+  border-radius: 30px; /* 更圆润的边角 */
+  box-shadow: 0 10px 35px rgba(217, 84, 77, 0.2), 0 2px 8px rgba(217, 84, 77, 0.1); /* 缘结红主题色阴影 */
+  border: 1.5px solid rgba(229, 109, 97, 0.45); /* 缘结红主题色边框 */
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 使内部块级子元素如Header, Footer, main-content也居中 */
+  gap: 25px; /* Header, main-content, Footer 之间的间距 */
   position: relative;
   z-index: 1;
-  background: rgba(255, 248, 231, 0.85);
-  border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(106, 58, 46, 0.3), 0 4px 10px rgba(0, 0, 0, 0.1);
-  max-width: 800px;
-  margin: 40px auto;
-  border: 1px solid rgba(212, 175, 55, 0.4);
-  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  backdrop-filter: blur(5px);
-  font-family: 'STFangsong', 'FangSong', 'KaiTi', serif;
-  background-image: 
-    repeating-linear-gradient(
-      to right,
-      rgba(139, 69, 19, 0.05) 0px,
-      rgba(139, 69, 19, 0.05) 1px,
-      transparent 1px,
-      transparent 4px
-    ),
-    rgba(255, 248, 231, 0.85);
+  /* backdrop-filter: blur(5px); */ /* 可选：根据背景复杂程度决定是否开启更强的毛玻璃效果 */
 }
 
-#app-container::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 8px;
-  background: linear-gradient(to right, rgba(192, 57, 43, 0.8), rgba(231, 76, 60, 0.9), rgba(192, 57, 43, 0.8));
-  border-radius: 8px 8px 0 0;
+/* 确保 Header, main-content, Footer 在 #app-container 内占据全部宽度 */
+#app-container > .Header, 
+#app-container > .main-content,
+#app-container > .Footer {
+  width: 100%;
+  box-sizing: border-box; /* 确保padding和border不影响宽度计算 */
 }
 
-#app-container::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 8px;
-  background: linear-gradient(to right, rgba(192, 57, 43, 0.8), rgba(231, 76, 60, 0.9), rgba(192, 57, 43, 0.8));
-  border-radius: 0 0 8px 8px;
-}
-
-#app-container:hover {
-  box-shadow: 0 15px 35px rgba(106, 58, 46, 0.35), 0 5px 15px rgba(0, 0, 0, 0.1);
-  transform: translateY(-5px);
-}
 
 .main-content {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 20px;
-  position: relative;
+  gap: 25px; 
+  padding: 0; /* 移除此处的padding，由父级#app-container控制 */
 }
 
-/* 功能按钮区域样式 */
+/* 功能按钮容器 (保持fixed定位) */
 .function-buttons {
   position: fixed;
-  bottom: 25px;
-  right: 25px;
+  right: 25px; 
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  z-index: 100;
+  gap: 15px;
+  z-index: 999; 
+  background-color: rgba(255, 235, 235, 0.85); /* 浅祈愿粉色调半透明背景 */
+  padding: 15px;
+  border-radius: 20px; /* 更圆润的边角 */
+  box-shadow: 0 6px 18px rgba(217, 84, 77, 0.2); /* 缘结红主题色柔和阴影 */
+  border: 1px solid rgba(229, 109, 97, 0.3); /* 细微的缘结红主题色边框 */
 }
 
-.function-button {
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  background-color: rgba(255, 248, 231, 0.9);
+.function-buttons .function-button {
+  width: 60px; 
+  height: 60px;
+  border-radius: 50%; 
+  background-color: #D9544D; /* 缘结红 */
+  color: white;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(212, 163, 85, 0.2);
   transition: all 0.3s ease;
-  border: 1px solid rgba(212, 163, 85, 0.5);
-  position: relative;
-  overflow: hidden;
+  border: 2px solid #FFF0F0; /* 极淡的粉色边框，更柔和 */
+  box-shadow: 0 3px 10px rgba(178, 34, 34, 0.25); /* 调整后的阴影 */
 }
 
-.function-button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.8), transparent 70%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+.function-buttons .function-button:hover {
+  background-color: #C74840; /* 深一点的缘结红 */
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 4px 15px rgba(178, 34, 34, 0.35); /* 悬浮时更明显的阴影 */
 }
 
-.function-button:hover {
-  transform: scale(1.12);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25), 0 0 0 4px rgba(212, 163, 85, 0.3);
+.function-buttons .function-button .button-icon { /* 原代码的选择器 */
+  font-size: 1.8em; 
+  line-height: 1; 
+  margin: 0;
 }
 
-.function-button:hover::before {
-  opacity: 0.5;
-}
-
-.function-button:active {
-  transform: scale(0.95);
-}
-
-.button-icon {
-  font-size: 1.7em;
-  color: #8B4513;
-  position: relative;
-  z-index: 2;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
-}
-
-.fortune-draw .button-icon {
-  color: #C0392B;
-}
-
-.history-quick .button-icon {
-  color: #8B4513;
-}
-
-.profile-quick .button-icon {
-  color: #27445C;
-}
-
-.tutorial-quick .button-icon {
-  color: #3498db;
-  font-size: 1.5em;
-}
-
+/* 日期显示样式 */
 .date-display {
   position: fixed;
-  top: 20px;
-  left: 20px;
+  top: 25px; /* 稍微向下调整 */
+  left: 25px; /* 稍微向右调整 */
   padding: 10px 20px;
-  background-color: rgba(255, 248, 231, 0.9);
+  background-color: rgba(253, 230, 230, 0.95); /* 柔和的祈愿粉色调背景 */
   border-radius: 30px;
   font-size: 1.05em;
-  color: #5D4037;
-  z-index: 10;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(212, 163, 85, 0.3);
-  border: 1px solid rgba(212, 163, 85, 0.5);
-  font-family: 'STFangsong', 'FangSong', 'KaiTi', serif;
+  color: #C74840; /* 深缘结红色 */
+  z-index: 1000; /* 确保在内容之上 */
+  box-shadow: 0 4px 15px rgba(217, 84, 77, 0.18), 0 0 0 1px rgba(229, 109, 97, 0.3); /* 调整后的红色系阴影和边框感 */
+  border: 1px solid rgba(229, 109, 97, 0.4); /* 调整后的边框 */
+  font-family: var(--font-family-serif); /* 使用全局衬线字体 */
+  text-shadow: 0 1px 2px rgba(255,255,255,0.4); /* 微弱的白色文字阴影提升对比度 */
 }
 
 /* 基础动画效果 */
@@ -509,125 +487,90 @@ const resetTutorialStatus = () => {
 
 /* 媒体查询调整 */
 @media (max-width: 768px) {
+  #app-outer-container {
+    padding: 15px;
+  }
   #app-container {
-    margin: 15px 10px;
-    min-height: 0;
-    max-width: calc(100% - 20px);
+    min-width: calc(100% - 10px); /* 几乎占满外部容器，留少量边距 */
+    max-width: calc(100% - 10px);
     padding: 20px 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
   
   .function-buttons {
-    bottom: 15px;
     right: 15px;
     gap: 10px;
+    padding: 10px;
   }
   
-  .function-button {
-    width: 40px;
-    height: 40px;
+  .function-buttons .function-button {
+    width: 48px;
+    height: 48px;
+  }
+   .function-buttons .function-button .button-icon {
+    font-size: 1.5em;
   }
   
   .date-display {
-    padding: 6px 12px;
-    font-size: 0.85em;
+    top: 15px;
+    left: 15px;
+    padding: 8px 15px;
+    font-size: 0.9em;
   }
 
   .main-content {
-    padding: 0 10px;
+    gap: 20px;
   }
 }
 
 @media (max-width: 480px) {
+   #app-outer-container {
+    padding: 10px;
+  }
   #app-container {
     padding: 15px 10px;
-    margin: 10px 5px;
-    border-width: 1px;
+    border-radius: 20px;
+    gap: 15px;
   }
   
   .function-buttons {
-    bottom: 10px;
     right: 10px;
     gap: 8px;
+    padding: 8px;
   }
   
-  .function-button {
-    width: 35px;
-    height: 35px;
+  .function-buttons .function-button {
+    width: 42px;
+    height: 42px;
+  }
+  .function-buttons .function-button .button-icon {
+    font-size: 1.3em;
   }
   
   .date-display {
-    padding: 4px 10px;
-    font-size: 0.75em;
+    padding: 6px 12px;
+    font-size: 0.8em;
+    top: 10px;
+    left: 10px;
   }
-  
-  .main-content {
-    padding: 0 10px;
+   .main-content {
+    gap: 15px;
   }
 }
 
-/* 大屏幕优化 */
-@media (min-width: 1200px) {
+/* 大屏幕优化 - 可以保留，但要确保不与主要宽度定义冲突 */
+/* @media (min-width: 1200px) {
   #app-container {
-    max-width: 850px;
+    max-width: 850px; 
     padding: 35px;
   }
+} */
 
-  .main-content {
-    padding: 0 30px;
-  }
-}
+/* REMOVE ALL STYLES FROM HERE DOWN TO THE END OF THE <style scoped> TAG */
+/* body { ... } */ 
+/* #app-container { ... } */ 
+/* @media (max-width: 768px) { #app-container { ... } } */
+/* .main-content { ... } */
 
-.corner-knot-decoration {
-  /* position: absolute;
-  top: -20px; 
-  left: -30px; 
-  z-index: 100;
-  pointer-events: none; */
-}
-
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-    'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-    'Noto Color Emoji';
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #fdf2f2;
-  color: #333;
-  transition: background-color 0.5s, color 0.5s;
-  overflow-x: hidden;
-}
-
-#app-container {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 80px;
-  padding-bottom: 60px;
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-  box-sizing: border-box;
-}
-
-@media (max-width: 768px) {
-  #app-container {
-    padding-top: 70px;
-  }
-  
-  .date-display {
-    top: 18px;
-    left: 15px;
-    font-size: 0.8rem;
-  }
-}
-
-.main-content {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
-}
 </style>

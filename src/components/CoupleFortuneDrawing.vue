@@ -118,98 +118,81 @@ const drawCoupleResult = () => {
 </script>
 
 <template>
-  <div class="couple-fortune-container">
-    <div class="couple-intro" v-if="!showPartnerInput">
-      <h3>双人姻缘合卦</h3>
-      <p>天赐良缘，姻缘天定。与心上人一起测算你们的缘分指数吧！</p>
-      <button class="start-couple-btn" @click="togglePartnerInput">开始双人抽签</button>
+  <div class="couple-fortune-container themed-container">
+    <div class="couple-intro decorative-section" v-if="!showPartnerInput">
+      <h3 class="main-title"><span class="deco-icon left">💞</span> 双人姻缘合卦 <span class="deco-icon right">💞</span></h3>
+      <p class="intro-text">执子之手，与子偕老。在此诚邀两位小主，<br>一同卜算心心相印的缘分指数，<br>探寻那份专属於你们的浪漫篇章。</p>
+      <button class="start-couple-btn themed-button primary-button" @click="togglePartnerInput">
+        <span class="btn-icon">💌</span> 启此良缘合卦
+      </button>
     </div>
     
-    <div class="partner-input" v-if="showPartnerInput && !coupleResult.title">
-      <h3>请输入双方信息</h3>
-      <div class="input-group">
-        <label>您的姓名：</label>
-        <input v-model="userName" placeholder="请输入您的姓名" />
-      </div>
+    <div class="partner-input themed-section-box" v-if="showPartnerInput && !coupleResult.title">
+      <h3 class="section-title"><span class="deco-icon left">❦</span> 请入双方结缘信息 <span class="deco-icon right">❦</span></h3>
       
-      <div class="input-group">
-        <label>您的生日：</label>
-        <div class="date-select-container">
-          <select 
-            v-model="userBirthYear" 
-            class="date-select year-select"
-            @change="updateBirthdate"
-          >
-            <option value="" disabled selected>年</option>
-            <option v-for="year in yearOptions" :key="`user-year-${year}`" :value="year">{{ year }}年</option>
-          </select>
-          <select 
-            v-model="userBirthMonth" 
-            class="date-select month-select"
-            @change="updateBirthdate"
-          >
-            <option value="" disabled selected>月</option>
-            <option v-for="month in monthOptions" :key="`user-month-${month}`" :value="month">{{ month }}月</option>
-          </select>
-          <select 
-            v-model="userBirthDay" 
-            class="date-select day-select"
-            @change="updateBirthdate"
-          >
-            <option value="" disabled selected>日</option>
-            <option 
-              v-for="day in getDayOptions(userBirthYear, userBirthMonth)" 
-              :key="`user-day-${day}`" 
-              :value="day"
-            >{{ day }}日</option>
-          </select>
+      <div class="couple-form-grid">
+        <!-- User Info -->
+        <div class="form-section user-section">
+          <h4 class="form-section-title">缘主·其一</h4>
+          <div class="input-group themed-input-group">
+            <label for="userName">芳名：</label>
+            <input id="userName" v-model="userName" placeholder="轻启玉指，输入芳名" class="themed-input" />
+          </div>
+          
+          <div class="input-group themed-input-group">
+            <label>生辰：</label>
+            <div class="date-select-container themed-date-select">
+              <select v-model="userBirthYear" class="date-select year-select themed-select" @change="updateBirthdate">
+                <option value="" disabled selected>年</option>
+                <option v-for="year in yearOptions" :key="`user-year-${year}`" :value="year">{{ year }}</option>
+              </select>
+              <select v-model="userBirthMonth" class="date-select month-select themed-select" @change="updateBirthdate">
+                <option value="" disabled selected>月</option>
+                <option v-for="month in monthOptions" :key="`user-month-${month}`" :value="month">{{ month }}</option>
+              </select>
+              <select v-model="userBirthDay" class="date-select day-select themed-select" @change="updateBirthdate">
+                <option value="" disabled selected>日</option>
+                <option v-for="day in getDayOptions(userBirthYear, userBirthMonth)" :key="`user-day-${day}`" :value="day">{{ day }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="input-separator-vertical"></div>
+
+        <!-- Partner Info -->
+        <div class="form-section partner-section">
+          <h4 class="form-section-title">缘主·其二</h4>
+          <div class="input-group themed-input-group">
+            <label for="partnerName">TA之名：</label>
+            <input id="partnerName" v-model="partnerName" placeholder="轻启玉指，输入TA名" class="themed-input" />
+          </div>
+          
+          <div class="input-group themed-input-group">
+            <label>TA生辰：</label>
+            <div class="date-select-container themed-date-select">
+              <select v-model="partnerBirthYear" class="date-select year-select themed-select" @change="updateBirthdate">
+                 <option value="" disabled selected>年</option>
+                <option v-for="year in yearOptions" :key="`partner-year-${year}`" :value="year">{{ year }}</option>
+              </select>
+              <select v-model="partnerBirthMonth" class="date-select month-select themed-select" @change="updateBirthdate">
+                <option value="" disabled selected>月</option>
+                <option v-for="month in monthOptions" :key="`partner-month-${month}`" :value="month">{{ month }}</option>
+              </select>
+              <select v-model="partnerBirthDay" class="date-select day-select themed-select" @change="updateBirthdate">
+                <option value="" disabled selected>日</option>
+                <option v-for="day in getDayOptions(partnerBirthYear, partnerBirthMonth)" :key="`partner-day-${day}`" :value="day">{{ day }}</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
       
-      <div class="input-separator"></div>
-      
-      <div class="input-group">
-        <label>对方姓名：</label>
-        <input v-model="partnerName" placeholder="请输入对方姓名" />
-      </div>
-      
-      <div class="input-group">
-        <label>对方生日：</label>
-        <div class="date-select-container">
-          <select 
-            v-model="partnerBirthYear" 
-            class="date-select year-select"
-            @change="updateBirthdate"
-          >
-            <option value="" disabled selected>年</option>
-            <option v-for="year in yearOptions" :key="`partner-year-${year}`" :value="year">{{ year }}年</option>
-          </select>
-          <select 
-            v-model="partnerBirthMonth" 
-            class="date-select month-select"
-            @change="updateBirthdate"
-          >
-            <option value="" disabled selected>月</option>
-            <option v-for="month in monthOptions" :key="`partner-month-${month}`" :value="month">{{ month }}月</option>
-          </select>
-          <select 
-            v-model="partnerBirthDay" 
-            class="date-select day-select"
-            @change="updateBirthdate"
-          >
-            <option value="" disabled selected>日</option>
-            <option 
-              v-for="day in getDayOptions(partnerBirthYear, partnerBirthMonth)" 
-              :key="`partner-day-${day}`" 
-              :value="day"
-            >{{ day }}日</option>
-          </select>
-        </div>
-      </div>
-      
-      <div class="couple-buttons">
-        <button class="cancel-btn" @click="togglePartnerInput">取消</button>
-        <button class="draw-btn" @click="drawCoupleResult">测算缘分</button>
+      <div class="couple-buttons button-row">
+        <button class="cancel-btn themed-button secondary-button" @click="togglePartnerInput">返回</button>
+        <button class="draw-btn themed-button primary-button" @click="drawCoupleResult">
+          <span class="btn-icon">💖</span> 合此良缘天定
+        </button>
       </div>
     </div>
     
@@ -228,229 +211,231 @@ const drawCoupleResult = () => {
         <p class="result-advice">【缘分建议】{{ coupleResult.advice }}</p>
       </div>
       
-      <button class="try-again-btn" @click="togglePartnerInput">重新测算</button>
+      <button class="try-again-btn themed-button secondary-button" @click="togglePartnerInput">重新测算</button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.couple-fortune-container {
-  background-color: rgba(255, 245, 238, 0.92);
-  border-radius: 15px;
+.couple-fortune-container.themed-container {
+  background-color: var(--theme-color-background-light, rgba(255, 245, 248, 0.95)); 
+  border-radius: 25px;
+  padding: 30px 35px;
+  margin: 25px auto;
+  box-shadow: 0 8px 25px var(--theme-color-shadow-light, rgba(217, 84, 77, 0.15)), 
+              0 0 0 2px var(--theme-color-border-subtle, rgba(229, 109, 97, 0.2));
+  max-width: 700px; 
+  text-align: center;
+  font-family: var(--font-family-sans-serif);
+  border: 1px solid transparent; /* Ensure box-shadow border shows correctly */
+}
+
+.decorative-section {
   padding: 20px;
-  margin: 20px 0;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  max-width: 550px;
-  border: 1px solid #d4af37;
+  border-radius: 18px;
+  background-color: rgba(255, 250, 250, 0.8); /* Light washi paper feel */
+  margin-bottom: 30px;
 }
 
-.couple-intro h3, .partner-input h3, .couple-result h3 {
-  color: #d4546a;
-  font-weight: normal;
+.couple-intro .main-title,
+.partner-input .section-title {
+  color: var(--theme-color-dark, #B8433E);
+  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive);
+  font-size: 2.2em;
   margin-bottom: 15px;
-}
-
-.start-couple-btn, .draw-btn {
-  background: linear-gradient(135deg, #ff5e94, #ff3366);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 16px;
-  margin-top: 15px;
-  transition: all 0.3s;
-}
-
-.start-couple-btn:hover, .draw-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 94, 148, 0.4);
-}
-
-.input-group {
-  margin: 15px 0;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
-.input-group label {
-  width: 100px;
-  text-align: right;
-  margin-right: 10px;
+.partner-input .section-title {
+  font-size: 1.8em;
+  margin-bottom: 25px;
 }
 
-.input-group input {
-  flex: 1;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
+.deco-icon {
+  color: var(--theme-color-red, #E56D61);
+  font-size: 0.7em;
+  margin: 0 10px;
+  opacity: 0.9;
 }
 
-.input-separator {
-  height: 1px;
-  background-color: #eee;
-  margin: 15px 0;
+.couple-intro .intro-text {
+  color: var(--theme-color-text-subtle, #8C3835);
+  font-size: 1.05em;
+  line-height: 1.8;
+  margin-bottom: 25px;
+  font-family: var(--font-family-sans-serif);
 }
 
-.couple-buttons {
+.themed-button {
+  padding: 12px 25px;
+  font-size: 1.1em;
+  font-weight: 600;
+  border: none;
+  border-radius: 30px; /* Pill shape */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive);
+  letter-spacing: 1px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+}
+
+.themed-button .btn-icon {
+  font-size: 1.2em;
+  transition: transform 0.3s ease;
+}
+.themed-button:hover .btn-icon {
+  transform: scale(1.2) rotate(-10deg);
+}
+
+.themed-button.primary-button {
+  background: linear-gradient(145deg, var(--theme-color-red, #E56D61), var(--theme-color-dark, #B8433E));
+  color: white;
+  box-shadow: 0 4px 12px rgba(184, 67, 62, 0.25), 0 0 0 1.5px rgba(255,255,255,0.3) inset;
+}
+.themed-button.primary-button:hover {
+  background: linear-gradient(145deg, var(--theme-color-dark, #B8433E), var(--theme-color-red, #E56D61));
+  box-shadow: 0 6px 16px rgba(184, 67, 62, 0.35), 0 0 0 1.5px rgba(255,255,255,0.4) inset;
+  transform: translateY(-2px);
+}
+
+.themed-button.secondary-button {
+  background-color: #fff;
+  color: var(--theme-color-red, #E56D61);
+  border: 2px solid var(--theme-color-red, #E56D61);
+  box-shadow: 0 2px 8px rgba(217, 84, 77, 0.1);
+}
+.themed-button.secondary-button:hover {
+  background-color: var(--theme-color-extralight-pink, #FFF5F5);
+  border-color: var(--theme-color-dark, #B8433E);
+  color: var(--theme-color-dark, #B8433E);
+  transform: translateY(-1px);
+}
+
+/* Partner Input Section */
+.partner-input.themed-section-box {
+  padding: 25px 30px;
+  background-color: rgba(255, 250, 248, 0.9); /* Slightly different light washi */
+  border-radius: 18px; 
+  box-shadow: 0 6px 20px rgba(217, 84, 77, 0.1), 0 0 0 1.5px rgba(229, 109, 97, 0.2);
+  border: 1px solid transparent; 
+}
+
+.couple-form-grid {
   display: flex;
   justify-content: space-between;
+  gap: 20px; /* Gap between two form sections */
+  margin-bottom: 25px;
+}
+
+.form-section {
+  flex: 1;
+  padding: 15px;
+  border-radius: 12px;
+  background-color: rgba(255, 252, 250, 0.8);
+  border: 1px solid var(--theme-color-border-very-subtle, rgba(229, 109, 97, 0.15));
+}
+
+.form-section-title {
+  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive);
+  color: var(--theme-color-red, #D9544D);
+  font-size: 1.3em;
+  margin-bottom: 18px;
+  border-bottom: 1px dashed var(--theme-color-border-subtle, rgba(229, 109, 97, 0.3));
+  padding-bottom: 8px;
+}
+
+.input-group.themed-input-group {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Labels on left */
+  text-align: left;
+}
+
+.input-group.themed-input-group label {
+  font-size: 0.95em;
+  color: var(--theme-color-dark, #B8433E);
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-family: var(--font-family-sans-serif);
+}
+
+.themed-input,
+.themed-select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1.5px solid var(--theme-color-border-subtle, rgba(229, 109, 97, 0.3));
+  background-color: #fff;
+  font-size: 0.95em;
+  color: var(--theme-color-text, #5C2827);
+  font-family: var(--font-family-sans-serif);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
+}
+
+.themed-input:focus,
+.themed-select:focus {
+  border-color: var(--theme-color-red, #E56D61);
+  box-shadow: 0 0 0 3px rgba(229, 109, 97, 0.2);
+  outline: none;
+}
+
+.themed-input::placeholder {
+  color: var(--theme-color-placeholder, #bcaaaa);
+  font-style: italic;
+}
+
+.date-select-container.themed-date-select {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.date-select.themed-select {
+  flex-grow: 1;
+}
+
+.input-separator-vertical {
+  width: 1.5px;
+  background-color: var(--theme-color-border-subtle, rgba(229, 109, 97, 0.3));
+  align-self: stretch; /* Make it full height of the flex container */
+  margin: 10px 0; /* Optional: add some vertical margin if sections have padding */
+}
+
+.button-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
   margin-top: 20px;
 }
 
-.cancel-btn {
-  background-color: #f1f1f1;
-  color: #666;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 20px;
-  cursor: pointer;
+/* Responsive adjustments */
+@media (max-width: 650px) {
+  .couple-form-grid {
+    flex-direction: column;
+  }
+  .input-separator-vertical {
+    width: 100%;
+    height: 1.5px;
+    margin: 20px 0;
+  }
+  .couple-fortune-container.themed-container {
+    padding: 20px;
+  }
+  .couple-intro .main-title,
+  .partner-input .section-title {
+    font-size: 1.9em;
+  }
 }
 
-.compatibility-meter {
-  text-align: center;
-  margin: 20px 0;
-}
+/* Result display styles will be added here in the next step */
 
-.meter-title {
-  font-size: 16px;
-  color: #666;
-}
-
-.meter-value {
-  font-size: 36px;
-  font-weight: bold;
-  color: #ff3366;
-  margin: 10px 0;
-}
-
-.meter-bar {
-  height: 10px;
-  background-color: #eee;
-  border-radius: 5px;
-  margin: 10px 0;
-}
-
-.meter-fill {
-  height: 100%;
-  background: linear-gradient(to right, #ffcc33, #ff3366);
-  border-radius: 5px;
-  transition: width 1s ease-in-out;
-}
-
-.result-content {
-  background-color: rgba(255, 255, 255, 0.6);
-  padding: 15px;
-  border-radius: 10px;
-  margin: 15px 0;
-}
-
-.result-description {
-  line-height: 1.6;
-  margin-bottom: 15px;
-}
-
-.result-advice {
-  color: #d4546a;
-}
-
-.try-again-btn {
-  background-color: transparent;
-  color: #ff3366;
-  border: 1px solid #ff3366;
-  padding: 8px 15px;
-  border-radius: 20px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-/* 深色主题适配 */
-:deep(.dark-theme) .couple-fortune-container {
-  background-color: rgba(40, 44, 52, 0.92);
-  border-color: #bc9d2e;
-}
-
-:deep(.dark-theme) .couple-intro h3, 
-:deep(.dark-theme) .partner-input h3, 
-:deep(.dark-theme) .couple-result h3 {
-  color: #ff7c98;
-}
-
-:deep(.dark-theme) .result-content {
-  background-color: rgba(60, 64, 72, 0.6);
-}
-
-:deep(.dark-theme) .input-separator {
-  background-color: #555;
-}
-
-:deep(.dark-theme) .input-group input {
-  background-color: rgba(30, 34, 42, 0.8);
-  color: #eee;
-  border-color: #555;
-}
-
-:deep(.dark-theme) .result-advice {
-  color: #ff7c98;
-}
-
-/* 日期选择器样式 */
-.date-select-container {
-  display: flex;
-  flex: 1;
-  gap: 8px;
-}
-
-.date-select {
-  padding: 8px 5px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: white;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23888' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 8px center;
-  padding-right: 24px;
-  cursor: pointer;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-.date-select:hover {
-  border-color: #c0c0c0;
-}
-
-.date-select:focus {
-  border-color: #ff3366;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(255, 51, 102, 0.2);
-}
-
-.year-select {
-  flex: 1.2;
-}
-
-.month-select {
-  flex: 0.9;
-}
-
-.day-select {
-  flex: 0.9;
-}
-
-/* 深色主题适配 */
-:deep(.dark-theme) .date-select {
-  background-color: rgba(30, 34, 42, 0.8);
-  color: #eee;
-  border-color: #555;
-}
-
-:deep(.dark-theme) .date-select:hover {
-  border-color: #777;
-}
-
-:deep(.dark-theme) .date-select:focus {
-  border-color: #ff7c98;
-  box-shadow: 0 0 0 3px rgba(255, 124, 152, 0.2);
-}
 </style> 

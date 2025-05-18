@@ -1,92 +1,123 @@
 <template>
   <div class="profile-container" :class="{ 'profile-open': isOpen }">
-    <div class="scroll-handle top-handle"></div>
-    <div class="profile-scroll">
-      <div class="profile-seal"></div>
-      <div class="profile-content">
-        <h3 class="profile-title">缘主信息</h3>
-        
-        <div class="profile-form">
-          <div class="form-group">
-            <label for="userName">法名</label>
-            <input type="text" id="userName" v-model="userName" placeholder="请输入您的姓名">
-          </div>
-          
-          <div class="form-group">
-            <label for="birthdate">降世之日</label>
-            <div class="date-select-container">
-              <select 
-                v-model="birthYear" 
-                class="date-select year-select"
-                @change="updateBirthdate"
-              >
-                <option value="" disabled selected>年</option>
-                <option v-for="year in yearOptions" :key="`year-${year}`" :value="year">{{ year }}年</option>
-              </select>
-              <select 
-                v-model="birthMonth" 
-                class="date-select month-select"
-                @change="updateBirthdate"
-              >
-                <option value="" disabled selected>月</option>
-                <option v-for="month in monthOptions" :key="`month-${month}`" :value="month">{{ month }}月</option>
-              </select>
-              <select 
-                v-model="birthDay" 
-                class="date-select day-select"
-                @change="updateBirthdate"
-              >
-                <option value="" disabled selected>日</option>
-                <option 
-                  v-for="day in getDayOptions(birthYear, birthMonth)" 
-                  :key="`day-${day}`" 
-                  :value="day"
-                >{{ day }}日</option>
-              </select>
-            </div>
-          </div>
-          
-          <div class="form-group zodiac-group">
-            <label>星命</label>
-            <div class="zodiac-display">
-              <span class="zodiac-text">{{ zodiacSign }}</span>
-              <div class="zodiac-icon" v-if="zodiacSign !== '未知'" :data-icon="getZodiacIcon(zodiacSign)"></div>
-            </div>
-          </div>
-          
-          <div class="form-group luck-group">
-            <label>今日缘数</label>
-            <div class="lucky-display">
-              <div class="lucky-number">{{ luckyNumber }}</div>
-              <button class="refresh-button" @click="generateLuckyNumber">
-                <span>更新</span>
-              </button>
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label>本月签运</label>
-            <div class="monthly-fortune">{{ monthlyFortune }}</div>
-          </div>
-        </div>
-        
-        <div class="profile-actions">
-          <button class="save-button" @click="saveProfile">
-            <span>保存</span>
-          </button>
-          <button class="clear-button" @click="clearProfile">
-            <span>清除</span>
-          </button>
-        </div>
-        
-        <div v-if="showSaveConfirmation" class="save-confirmation">
-          <div class="confirmation-inner">缘信已记</div>
-        </div>
-      </div>
-      <div class="scroll-ends left-end"></div>
-      <div class="scroll-ends right-end"></div>
+    <div class="scroll-handle top-handle">
+      <div class="handle-deco"></div>
     </div>
-    <div class="scroll-handle bottom-handle"></div>
+    <div class="profile-scroll-wrapper">
+      <div class="profile-scroll">
+        <div class="profile-seal">
+          <span class="seal-text">缘</span>
+        </div>
+        <div class="profile-content">
+          <h3 class="profile-title">
+            <span class="title-icon left-icon">❀</span>
+            缘主信息
+            <span class="title-icon right-icon">❀</span>
+          </h3>
+          
+          <div class="profile-form">
+            <div class="form-group">
+              <label for="userName" class="form-label">
+                <span class="label-icon">📜</span>法名
+              </label>
+              <input type="text" id="userName" v-model="userName" placeholder="请输入您的姓名" class="themed-input">
+            </div>
+            
+            <div class="form-group">
+              <label for="birthdate" class="form-label">
+                <span class="label-icon">📅</span>降世之日
+              </label>
+              <div class="date-select-container themed-date-select-container">
+                <div class="select-wrapper">
+                  <select 
+                    v-model="birthYear" 
+                    class="date-select year-select themed-select"
+                    @change="updateBirthdate"
+                  >
+                    <option value="" disabled selected>年</option>
+                    <option v-for="year in yearOptions" :key="`year-${year}`" :value="year">{{ year }}</option>
+                  </select>
+                </div>
+                <div class="select-wrapper">
+                  <select 
+                    v-model="birthMonth" 
+                    class="date-select month-select themed-select"
+                    @change="updateBirthdate"
+                  >
+                    <option value="" disabled selected>月</option>
+                    <option v-for="month in monthOptions" :key="`month-${month}`" :value="month">{{ month }}</option>
+                  </select>
+                </div>
+                <div class="select-wrapper">
+                  <select 
+                    v-model="birthDay" 
+                    class="date-select day-select themed-select"
+                    @change="updateBirthdate"
+                  >
+                    <option value="" disabled selected>日</option>
+                    <option 
+                      v-for="day in getDayOptions(birthYear, birthMonth)" 
+                      :key="`day-${day}`" 
+                      :value="day"
+                    >{{ day }}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group zodiac-group info-display-group">
+              <label class="form-label">
+                <span class="label-icon">✨</span>星命
+              </label>
+              <div class="info-display-box zodiac-display">
+                <span class="zodiac-text">{{ zodiacSign }}</span>
+                <div class="zodiac-icon-display" v-if="zodiacSign !== '未知'" :data-icon="getZodiacIcon(zodiacSign)"></div>
+              </div>
+            </div>
+            
+            <div class="form-group luck-group info-display-group">
+              <label class="form-label">
+                 <span class="label-icon">💖</span>今日缘数
+              </label>
+              <div class="info-display-box lucky-display">
+                <div class="lucky-number">{{ luckyNumber }}</div>
+                <button class="themed-button refresh-button" @click="generateLuckyNumber">
+                  <span class="btn-icon">🔄</span>更新
+                </button>
+              </div>
+            </div>
+            
+            <div class="form-group info-display-group">
+              <label class="form-label">
+                <span class="label-icon">🧧</span>本月签运
+              </label>
+              <div class="info-display-box monthly-fortune">
+                {{ monthlyFortune }}
+              </div>
+            </div>
+          </div>
+          
+          <div class="profile-actions">
+            <button class="themed-button save-button" @click="saveProfile">
+              <span class="btn-icon">💾</span>保存
+            </button>
+            <button class="themed-button clear-button" @click="clearProfile">
+              <span class="btn-icon">🧹</span>清除
+            </button>
+          </div>
+          
+          <div v-if="showSaveConfirmation" class="save-confirmation themed-confirmation">
+            <div class="confirmation-icon">🌸</div>
+            <div class="confirmation-inner">缘信已录，佳期可待</div>
+          </div>
+        </div>
+        <div class="scroll-ends left-end"></div>
+        <div class="scroll-ends right-end"></div>
+      </div>
+    </div>
+    <div class="scroll-handle bottom-handle">
+      <div class="handle-deco"></div>
+    </div>
   </div>
 </template>
 
@@ -132,8 +163,8 @@ const updateDateSelectors = () => {
   if (birthdate.value) {
     const [year, month, day] = birthdate.value.split('-');
     birthYear.value = year;
-    birthMonth.value = parseInt(month, 10);
-    birthDay.value = parseInt(day, 10);
+    birthMonth.value = parseInt(month, 10).toString();
+    birthDay.value = parseInt(day, 10).toString();
   }
 };
 
@@ -193,7 +224,7 @@ const monthlyFortune = computed(() => {
   // 根据姓名和当前月份选择签运
   if (!userName.value) return '尚未知晓';
   
-  const nameHash = [...userName.value].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const nameHash = userName.value.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const currentMonth = new Date().getMonth();
   const index = (nameHash + currentMonth) % fortunes.length;
   
@@ -275,515 +306,393 @@ const getZodiacIcon = (zodiacSign: string) => {
 </script>
 
 <style scoped>
-.profile-container {
-  position: fixed;
-  top: 80px;
-  right: -330px;
-  width: 320px;
-  transition: right 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-  z-index: 100;
-  font-family: 'STFangsong', 'FangSong', 'KaiTi', serif;
+/* 缘结神主题优化 - UserProfile.vue */
+:root {
+  --primary-color: #D9544D; /* 缘结红 */
+  --secondary-color: #FFB6C1; /* 淡粉红 */
+  --accent-color: #FFD700; /* 金色 */
+  --text-color: #5C3317; /* 深棕色，似木纹 */
+  --text-light: #D38B6D; /* 浅棕色，用于辅助文字 */
+  --bg-color: #FFF5EE; /* 米白，似宣纸 */
+  --border-color: rgba(217, 84, 77, 0.3); /* 缘结红边框 */
+  --highlight-bg: #FFE4E1; /* 选中或高亮背景 */
 }
 
-.profile-open {
-  right: 0;
+.profile-container {
+  position: fixed;
+  bottom: -100%; /* 从底部滑出 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(320px, 90vw, 500px); /* 响应式宽度 */
+  max-height: 85vh;
+  background: linear-gradient(160deg, #fff0f5 0%, #ffe4e1 100%); /* 淡雅渐变背景 */
+  border-radius: 30px 30px 0 0; /* 顶部圆角 */
+  box-shadow: 0 -5px 25px rgba(217, 84, 77, 0.2);
+  transition: bottom 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* 回弹动画 */
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid var(--primary-color);
+  border-bottom: none;
+}
+
+.profile-container.profile-open {
+  bottom: 0;
+}
+
+.scroll-handle {
+  background-color: #E0A09A; /* 卷轴手柄颜色 */
+  height: 25px;
+  width: calc(100% - 40px); /* 留出边距 */
+  margin: 0 auto;
+  position: relative;
+  border-radius: 10px 10px 0 0; /* 顶部手柄圆角 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+.scroll-handle.bottom-handle {
+  border-radius: 0 0 10px 10px; /* 底部手柄圆角 */
+  height: 20px;
+}
+.handle-deco {
+  width: 60%;
+  height: 5px;
+  background-color: rgba(255,255,255,0.5);
+  border-radius: 5px;
+}
+
+.profile-scroll-wrapper {
+  overflow: hidden; /* 隐藏 scroll-ends 超出部分 */
+  flex-grow: 1;
+  position: relative;
+  padding: 0 10px; /* 给卷轴内容区左右一点padding */
 }
 
 .profile-scroll {
-  position: relative;
-  background: radial-gradient(ellipse at center, #FFF8E7, #F2E8CB);
-  background-size: 100% auto;
-  border-radius: 16px 0 0 16px;
-  box-shadow: -3px 5px 15px rgba(0, 0, 0, 0.3);
-  padding: 30px 25px;
-  max-height: 80vh;
+  height: 100%;
   overflow-y: auto;
-  overflow-x: hidden;
-  border-left: 4px double #D4A355;
-  border-top: 1px solid #D4A355;
-  border-bottom: 1px solid #D4A355;
+  padding: 20px 25px; /* 内容区域内边距 */
+  background-color: var(--bg-color); /* 卷轴主体背景 */
+  position: relative;
+  border-left: 15px solid #E0A09A; /* 卷轴左边厚度 */
+  border-right: 15px solid #E0A09A; /* 卷轴右边厚度 */
+  box-sizing: border-box;
 }
 
-/* 添加卷轴纹理 */
-.profile-scroll::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: repeating-linear-gradient(
-    to right,
-    rgba(139, 69, 19, 0.03) 0px,
-    rgba(139, 69, 19, 0.03) 1px,
-    transparent 1px,
-    transparent 4px
-  );
-  pointer-events: none;
-  z-index: 0;
-}
-
-.profile-scroll::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 20px;
-  background: linear-gradient(to top, rgba(139, 69, 19, 0.1), transparent);
-  pointer-events: none;
-}
-
+/* 模拟卷轴两端的视觉效果 */
 .scroll-ends {
   position: absolute;
-  width: 20px;
-  height: 40px;
-  background-color: #8B4513;
-  border-radius: 10px;
+  top: 0;
+  bottom: 0;
+  width: 15px; /* 卷轴轴心宽度 */
+  background-color: #D38B6D; /* 卷轴轴心颜色 */
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
 }
-
-.left-end {
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: none;
-}
-
-.right-end {
-  display: none;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-}
+.scroll-ends.left-end { left: -15px; border-right: 1px solid #b07050; }
+.scroll-ends.right-end { right: -15px; border-left: 1px solid #b07050; }
 
 .profile-seal {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 40px;
-  height: 40px;
-  background: radial-gradient(circle, #E74C3C, #C0392B);
+  top: -30px; /* 调整位置，使其一半在卷轴内，一半在外 */
+  right: 20px; /* 调整右边距 */
+  width: 55px; /* 调整大小 */
+  height: 55px;
+  background-color: var(--primary-color);
   border-radius: 50%;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   display: flex;
-  justify-content: center;
   align-items: center;
-  color: #FFF8E7;
-  font-size: 1rem;
-  transform: rotate(15deg);
+  justify-content: center;
+  /* padding: 5px; */ /* 移除内边距，让文字更好地居中 */
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25); /* 调整阴影使其更柔和 */
+  border: 3px solid white; /* 加粗白色边框 */
+  z-index: 10;
+  overflow: hidden; /* 确保文字不出界 */
+}
+
+.seal-text {
+  color: white;
+  font-family: 'KaiTi', 'SimSun', serif; /* 使用楷体或宋体 */
+  font-size: 1.8em; /* 调整文字大小 */
+  font-weight: bold;
+  line-height: 1; /* 确保文字垂直居中 */
+  text-align: center;
+}
+
+/* .seal-image {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+} */ /* 移除图片样式 */
+
+.profile-content {
+  padding: 10px; /* 增加一些内边距 */
+  position: relative;
   z-index: 1;
 }
 
-.profile-seal::before {
-  content: "缘";
-  font-family: 'STKaiti', 'KaiTi', 'KaiTi_GB2312', serif;
-  font-weight: bold;
-}
-
-.profile-seal::after {
-  content: "";
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border: 1px solid #FFF8E7;
-  border-radius: 50%;
-  opacity: 0.8;
-}
-
-.profile-content {
-  position: relative;
-  z-index: 2;
-}
-
 .profile-title {
-  color: #8B4513;
+  font-family: 'KaiTi', 'SimSun', serif; /* 更雅致的字体 */
+  color: var(--primary-color);
   text-align: center;
-  font-size: 1.5em;
-  margin-bottom: 20px;
-  font-weight: normal;
-  text-shadow: 1px 1px 2px rgba(139, 69, 19, 0.2);
+  font-size: 2em; /* 增大标题字号 */
+  margin-bottom: 25px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--accent-color); /* 金色下划线 */
   position: relative;
+  font-weight: bold;
+  letter-spacing: 2px;
 }
-
-.profile-title::before,
-.profile-title::after {
-  content: "❖";
-  position: absolute;
-  color: #D4A355;
-  font-size: 0.8em;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.profile-title::before {
-  left: 30px;
-}
-
-.profile-title::after {
-  right: 30px;
+.title-icon {
+  color: var(--secondary-color);
+  font-size: 0.7em;
+  margin: 0 10px;
+  vertical-align: middle;
 }
 
 .profile-form {
-  margin-bottom: 30px;
-  position: relative;
-}
-
-.profile-form::after {
-  content: "";
-  position: absolute;
-  bottom: -15px;
-  left: 5%;
-  right: 5%;
-  height: 1px;
-  background: linear-gradient(to right, transparent, #D4A355, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* 表单项之间的间距 */
 }
 
 .form-group {
-  margin-bottom: 18px;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* 标签和输入控件之间的间距 */
 }
 
-.form-group::after {
-  content: "";
-  display: block;
-  clear: both;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  color: #8B4513;
+.form-label {
   font-size: 1.1em;
-  position: relative;
-  padding-left: 15px;
-}
-
-.form-group label::before {
-  content: "•";
-  position: absolute;
-  left: 0;
-  color: #D4A355;
-}
-
-input[type="text"],
-input[type="date"] {
-  width: 100%;
-  padding: 10px 15px;
-  border: 1px solid #D4A355;
-  background-color: rgba(255, 248, 231, 0.7);
-  border-radius: 5px;
-  font-size: 1em;
-  color: #5D4037;
-  font-family: 'STFangsong', 'FangSong', serif;
-  transition: all 0.3s ease;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-input[type="text"]:focus,
-input[type="date"]:focus {
-  outline: none;
-  border-color: #C0392B;
-  box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.2);
-  transform: translateY(-2px);
-}
-
-.zodiac-group, .luck-group {
-  position: relative;
-}
-
-.zodiac-display, .monthly-fortune {
-  padding: 12px 15px;
-  background-color: rgba(255, 248, 231, 0.7);
-  border: 1px solid #D4A355;
-  border-radius: 5px;
-  text-align: center;
-  color: #5D4037;
-  font-size: 1.1em;
-  position: relative;
-  overflow: hidden;
-  min-height: 24px;
-}
-
-.zodiac-display::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(to right, #C0392B, #E74C3C, #C0392B);
-  opacity: 0.8;
-}
-
-.lucky-display {
+  color: var(--text-color);
+  font-weight: 600;
+  font-family: 'FangSong', 'SimSun', serif;
   display: flex;
   align-items: center;
+}
+.label-icon {
+  margin-right: 8px;
+  color: var(--primary-color);
+  font-size: 1.2em;
+}
+
+.themed-input, .themed-select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 12px; /* 更圆润的边角 */
+  background-color: white;
+  color: var(--text-color);
+  font-size: 1em;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  appearance: none; /* 移除默认样式，特别是select */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  box-sizing: border-box; /* 确保 padding 和 border 不会增加元素总宽度 */
+}
+
+.themed-input::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+.themed-input:focus, .themed-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 8px rgba(217, 84, 77, 0.3);
+  outline: none;
+}
+
+.date-select-container {
+  display: flex;
   gap: 10px;
 }
-
-.lucky-number {
-  flex-grow: 1;
-  padding: 12px 15px;
-  background-color: rgba(255, 248, 231, 0.7);
-  border: 1px solid #D4A355;
-  border-radius: 5px;
-  text-align: center;
-  color: #C0392B;
-  font-size: 1.5em;
-  font-weight: bold;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-  position: relative;
-  transition: transform 0.3s ease;
+.select-wrapper {
+  flex: 1;
+  position: relative; /* 为自定义箭头定位 */
+}
+.select-wrapper::after { /* 自定义下拉箭头 */
+  content: '▼';
+  font-size: 0.8em;
+  color: var(--primary-color);
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; /* 防止遮挡select点击 */
+}
+.themed-select {
+  padding-right: 35px; /* 为自定义箭头留出空间 */
 }
 
-.lucky-number:hover {
-  transform: scale(1.05);
+/* 信息展示区域统一样式 */
+.info-display-group {
+  margin-top: 5px;
+}
+.info-display-box {
+  background-color: #fffaf0; /* 淡雅的象牙白 */
+  border: 1px dashed var(--secondary-color); /* 粉色虚线边框 */
+  border-radius: 10px;
+  padding: 12px 15px;
+  color: var(--text-color);
+  font-size: 1em;
+  min-height: 48px; /* 与输入框高度接近 */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  line-height: 1.5;
+}
+.info-display-box.zodiac-display .zodiac-text {
+  font-weight: bold;
+  color: var(--primary-color);
+}
+.zodiac-icon-display {
+  font-size: 1.5em;
+  color: var(--primary-color);
+}
+.zodiac-icon-display::before {
+  content: attr(data-icon);
+}
+
+.lucky-display .lucky-number {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: var(--primary-color);
+  font-family: 'Georgia', serif;
+  text-shadow: 1px 1px 0px var(--highlight-bg);
+}
+
+.monthly-fortune {
+  font-style: italic;
+  color: var(--text-light);
+}
+.monthly-fortune:empty::before {
+  content: "缘分未卜...";
+  color: #bbb;
+}
+
+
+/* 按钮通用样式 */
+.themed-button {
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: none;
+  font-size: 1.1em;
+  font-weight: bold;
+  font-family: 'KaiTi', 'SimSun', serif;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: 1px;
+  min-width: 120px;
+}
+.themed-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+.themed-button:active {
+  transform: translateY(0px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.btn-icon {
+  font-size: 1.2em;
 }
 
 .refresh-button {
-  background-color: #8B4513;
-  color: #FFF8E7;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: 'STFangsong', 'FangSong', serif;
-  padding: 8px 12px;
+  background-color: var(--accent-color);
+  color: var(--text-color);
+  padding: 8px 15px;
   font-size: 0.9em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  min-width: auto;
 }
-
 .refresh-button:hover {
-  background-color: #A0522D;
-  transform: translateY(-2px);
-}
-
-.refresh-button:active {
-  transform: translateY(1px);
+  background-color: #FFC107; /* 金色加深 */
 }
 
 .profile-actions {
   display: flex;
-  justify-content: space-between;
-  margin-top: 25px;
-}
-
-.save-button,
-.clear-button {
-  padding: 10px 0;
-  width: 45%;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: 'STFangsong', 'FangSong', serif;
-  font-size: 1em;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  justify-content: space-around;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
 }
 
 .save-button {
-  background-color: #27AE60;
+  background-color: var(--primary-color);
   color: white;
+  box-shadow: 0 2px 5px rgba(217, 84, 77, 0.3);
+}
+.save-button:hover {
+  background-color: #c7433c; /* 主色加深 */
 }
 
 .clear-button {
-  background-color: #C0392B;
-  color: white;
+  background-color: #f8f8f8;
+  color: var(--text-light);
+  border: 1px solid #ddd;
 }
-
-.save-button span,
-.clear-button span,
-.refresh-button span {
-  position: relative;
-  z-index: 2;
-}
-
-.save-button::before,
-.clear-button::before,
-.refresh-button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.save-button:hover::before,
-.clear-button:hover::before,
-.refresh-button:hover::before {
-  opacity: 1;
-}
-
-.save-button:hover,
 .clear-button:hover {
-  transform: translateY(-3px);
+  background-color: #eee;
 }
 
-.save-button:active,
-.clear-button:active {
-  transform: translateY(1px);
-}
-
-.save-confirmation {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(255, 248, 231, 0.9);
+/* 保存成功提示 */
+.themed-confirmation {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 182, 193, 0.95); /* 淡粉红，更柔和 */
+  color: var(--primary-color); /* 深红色文字 */
+  padding: 15px 25px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(217, 84, 77, 0.2);
   display: flex;
-  justify-content: center;
   align-items: center;
-  animation: fadeInOut 2s ease-in-out;
-  z-index: 10;
+  gap: 10px;
+  z-index: 1001; /* 比profile-container高一级 */
+  font-family: 'KaiTi', 'SimSun', serif;
+  font-size: 1.1em;
+  border: 1px solid rgba(217, 84, 77, 0.3);
+  opacity: 0;
+  animation: fadeInOutConfirmation 2.5s ease-in-out forwards;
 }
-
+.confirmation-icon {
+  font-size: 1.5em;
+}
 .confirmation-inner {
-  background-color: #C0392B;
-  color: white;
-  padding: 15px 30px;
-  border-radius: 5px;
-  font-size: 1.2em;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  position: relative;
-  overflow: hidden;
+  font-weight: bold;
 }
 
-.confirmation-inner::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(to right, transparent, white, transparent);
+@keyframes fadeInOutConfirmation {
+  0%, 100% { opacity: 0; transform: translate(-50%, 20px); }
+  10%, 90% { opacity: 1; transform: translate(-50%, 0); }
 }
 
-@keyframes fadeInOut {
-  0% { opacity: 0; }
-  20% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { opacity: 0; }
+
+/* 滚动条样式 (Webkit) */
+.profile-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.profile-scroll::-webkit-scrollbar-track {
+  background: #fff0f5; /* 淡粉色轨道 */
+  border-radius: 10px;
+}
+.profile-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--secondary-color); /* 粉色滑块 */
+  border-radius: 10px;
+  border: 2px solid #fff0f5; /* 与轨道同色边框，产生内嵌感 */
+}
+.profile-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #ff9eb2; /* 悬停时颜色加深 */
 }
 
-/* 滚动轴样式 */
-.scroll-handle {
-  position: absolute;
-  height: 16px;
-  left: 15px;
-  right: 0;
-  background: linear-gradient(to right, #8B4513, #A0522D);
-  border-radius: 8px 0 0 8px;
-  box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.3);
-  z-index: 3;
+/* 为了更好的Unicode符号显示 */
+.label-icon, .btn-icon, .title-icon, .confirmation-icon, .zodiac-icon-display::before {
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', sans-serif;
 }
 
-.top-handle {
-  top: 75px;
-}
-
-.bottom-handle {
-  bottom: 75px;
-}
-
-/* 滚动轴纹理 */
-.scroll-handle::before {
-  content: "";
-  position: absolute;
-  top: 3px;
-  bottom: 3px;
-  left: 10px;
-  right: 10px;
-  background: repeating-linear-gradient(
-    to right,
-    rgba(255, 248, 231, 0.2) 0px,
-    rgba(255, 248, 231, 0.2) 2px,
-    transparent 2px,
-    transparent 10px
-  );
-  border-radius: 4px;
-}
-
-.zodiac-icon {
-  position: absolute;
-  top: 50%;
-  right: 15px;
-  transform: translateY(-50%);
-  font-size: 1.8em;
-  opacity: 0.7;
-  color: #C0392B;
-}
-
-.zodiac-icon::before {
-  content: attr(data-icon);
-}
-
-/* 本月签运鼠标悬停效果 */
-.monthly-fortune {
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.monthly-fortune:hover {
-  background-color: rgba(255, 248, 231, 0.9);
-  box-shadow: 0 0 10px rgba(212, 163, 85, 0.3);
-}
-
-/* 日期选择器样式 */
-.date-select-container {
-  display: flex;
-  width: 100%;
-  gap: 8px;
-}
-
-.date-select {
-  padding: 10px 15px;
-  border: 1px solid #D4A355;
-  background-color: rgba(255, 248, 231, 0.7);
-  border-radius: 5px;
-  font-size: 1em;
-  color: #5D4037;
-  font-family: 'STFangsong', 'FangSong', serif;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%238B4513' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 8px center;
-  padding-right: 24px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.date-select:focus {
-  outline: none;
-  border-color: #C0392B;
-  box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.2);
-  transform: translateY(-2px);
-}
-
-.year-select {
-  flex: 1.2;
-}
-
-.month-select {
-  flex: 0.9;
-}
-
-.day-select {
-  flex: 0.9;
-}
 </style> 

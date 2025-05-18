@@ -1,5 +1,25 @@
 @import './base.css';
 
+:root {
+  --theme-color-red: #B22222; /* 主题红 */
+  --theme-color-dark: #8C1B1B; /* 深红 */
+  --theme-color-deep-red: #A52A2A; /* 更深的红色 (棕红) */
+  --theme-color-light: #D87093; /* 浅主题色 (粉红) */
+  --theme-color-light-pink: #FFB6C1; /* 淡粉红 */
+  --theme-color-extralight-pink: #FFC0CB; /* 更淡的粉色 */
+  --theme-color-gold: #DAA520; /* 金色 */
+  --color-text: #333; /* 基础文字颜色，之前可能在 base.css 或其他地方定义 */
+  --color-text-dark: #333; /* 深色文字，与上面保持一致或按需调整 */
+  --color-background: #FFF8DC; /* 米色背景 */
+  --color-background-soft: #fffaf0; /* 柔和的米白色背景，用于面板等 */
+  --color-border: #e0e0e0; /* 通用边框颜色 */
+  --font-family-serif: 'Noto Serif CJK SC', 'Noto Serif SC', 'Source Han Serif SC', 'Source Han Serif CN', 
+                      'Source Han Serif', 'Songti SC', 'SimSun', serif, system-ui, -apple-system, 
+                      'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', sans-serif; /* 衬线字体 */
+  --font-family-sans-serif: 'Noto Sans SC', system-ui, -apple-system, 
+                            'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', sans-serif; /* 非衬线字体 */
+}
+
 /* 使用系统默认字体，提高性能 */
 body {
   font-family: 'Noto Serif CJK SC', 'Noto Serif SC', 'Source Han Serif SC', 'Source Han Serif CN', 
@@ -11,10 +31,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: var(--color-text);
   background-image: url("/images/阴阳师插画1-optimized.jpg");
-  background-size: cover;
-  background-position: center;
+  background-size: cover; /* 修改为 cover 以填充并覆盖整个背景区域 */
+  background-position: center center;
   background-repeat: no-repeat;
-  background-attachment: fixed; /* 可选，使背景固定 */
+  background-attachment: fixed;
   background-color: var(--color-background); /* 保留背景颜色作为备用 */
   transition: color 0.5s, background-color 0.5s;
 }

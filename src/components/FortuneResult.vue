@@ -2,19 +2,21 @@
   <div class="fortune-result" :class="{ visible: fortuneStore.isFortuneVisible, 'zodiac-result': isZodiacResult }">
     <!-- 添加星座结果标识 -->
     <div class="zodiac-result-badge" v-if="isZodiacResult">
-      <span>⭐ 星座配对结果 ⭐</span>
+      <span>💌 缘分合盘 💌</span>
     </div>
     
     <!-- 添加等级标签 -->
-    <div class="fortune-level" v-if="fortune.level">
-      <span class="level-badge reveal-item">{{ getLevelName(fortune.level) }}</span>
-      <span class="special-badge reveal-item" v-if="fortune.isSpecial">缘分转机</span>
+    <div class="fortune-level-container" v-if="fortune.level && !isZodiacResult">
+      <span class="level-badge reveal-item" :class="`level-${fortune.level}`">{{ getLevelName(fortune.level) }}</span>
+      <span class="special-badge reveal-item" v-if="fortune.isSpecial">
+        <span class="special-badge-icon">✨</span>缘分转机
+      </span>
     </div>
     
     <!-- 星座配对信息 -->
-    <div class="zodiac-info" v-if="isZodiacResult">
+    <div class="zodiac-info-container" v-if="isZodiacResult">
       <div class="zodiac-pair">
-        <div class="zodiac-icon">{{ getZodiacEmoji(fortune.sign1) }}</div>
+        <div class="zodiac-icon" :style="{borderColor: getZodiacColor(fortune.sign1)}">{{ getZodiacEmoji(fortune.sign1) }}</div>
         <div class="zodiac-name">{{ fortune.sign1 }}</div>
       </div>
       <div class="compatibility-meter">
@@ -22,36 +24,42 @@
           <span 
             v-for="n in 5" 
             :key="n" 
-            class="heart" 
+            class="heart"
             :class="{ filled: n <= (fortune.compatibility || 0) }"
-          >❤</span>
+          ></span>
         </div>
         <div class="compatibility-label">{{ getCompatibilityLabel(fortune.compatibility) }}</div>
       </div>
       <div class="zodiac-pair">
-        <div class="zodiac-icon">{{ getZodiacEmoji(fortune.sign2) }}</div>
+        <div class="zodiac-icon" :style="{borderColor: getZodiacColor(fortune.sign2)}">{{ getZodiacEmoji(fortune.sign2) }}</div>
         <div class="zodiac-name">{{ fortune.sign2 }}</div>
       </div>
     </div>
     
-    <div class="fortune-card">
-      <!-- 卷轴装饰元素 -->
-      <div class="scroll-top"></div>
-      <div class="scroll-bottom"></div>
-      
-      <!-- 添加光效元素 -->
-      <div class="light-effect"></div>
-      
-      <div class="fortune-type reveal-item" :style="{ backgroundColor: typeColor }">{{ fortune.type }}</div>
-      <div class="fortune-poem reveal-item" v-html="fortune.poem"></div>
-      <div class="fortune-interpretation reveal-item" v-html="fortune.interpretation"></div>
-      <div class="fortune-suggestion reveal-item">
-        <span class="suggestion-label">【签语】</span>
-        {{ fortune.suggestion }}
+    <div class="fortune-card-wrapper">
+      <div class="fortune-card">
+        <!-- 卷轴装饰元素 -->
+        <div class="scroll-top"></div>
+        <div class="scroll-bottom"></div>
+        
+        <!-- 添加光效元素 -->
+        <div class="light-effect"></div>
+        
+        <div class="fortune-content-inner">
+          <div class="fortune-type reveal-item" :style="{ backgroundColor: typeColorToUse }">{{ fortune.type }}</div>
+          <div class="fortune-poem reveal-item" v-html="fortune.poem"></div>
+          <div class="fortune-interpretation reveal-item" v-html="fortune.interpretation"></div>
+          <div class="fortune-suggestion reveal-item" v-if="fortune.suggestion">
+            <span class="suggestion-label">【缘结秘语】</span>
+            {{ fortune.suggestion }}
+          </div>
+        </div>
       </div>
     </div>
     
-    <button class="draw-again-btn reveal-item" @click="$emit('drawAgain')">再求一签</button>
+    <button class="draw-again-btn reveal-item" @click="$emit('drawAgain')">
+      <span class="btn-icon">🔁</span> 再结良缘
+    </button>
   </div>
 </template>
 
@@ -68,7 +76,7 @@ const props = defineProps({
   },
   typeColor: {
     type: String,
-    default: '#e74c3c'
+    default: '#D9544D'
   }
 });
 
@@ -128,20 +136,53 @@ function getZodiacEmoji(signName) {
     '水瓶座': '♒',
     '双鱼座': '♓'
   };
-  return emojiMap[signName] || '⭐';
+  return emojiMap[signName] || '✨';
+}
+
+// 根据签文类型或等级决定实际使用的颜色
+const typeColorToUse = computed(() => {
+  if (props.fortune.level) {
+    const levelColors = {
+      5: '#E6A23C',
+      4: '#D9544D',
+      3: '#E56D61',
+      2: '#F08A5D',
+      1: '#B8A2D1'
+    };
+    return levelColors[props.fortune.level] || props.typeColor;
+  }
+  return props.typeColor;
+});
+
+function getZodiacColor(signName) {
+  const colorMap = {
+    '白羊座': '#FF4500',
+    '金牛座': '#228B22',
+    '双子座': '#FFD700',
+    '巨蟹座': '#B0C4DE',
+    '狮子座': '#FFA500',
+    '处女座': '#9370DB',
+    '天秤座': '#F08080',
+    '天蝎座': '#800000',
+    '射手座': '#4682B4',
+    '摩羯座': '#696969',
+    '水瓶座': '#00BFFF',
+    '双鱼座': '#EE82EE'
+  };
+  return colorMap[signName] || '#D9544D';
 }
 </script>
 
 <style scoped>
 .fortune-result {
   width: 100%;
-  max-width: 550px;
-  margin: 20px auto;
+  max-width: 600px;
+  margin: 25px auto;
   opacity: 0;
-  transform: translateY(30px) scale(0.97);
-  transition: opacity 0.6s ease, transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+  transform: translateY(25px) scale(0.98);
+  transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
   position: relative;
-  perspective: 1000px;
+  text-align: center;
 }
 
 .fortune-result.visible {
@@ -149,74 +190,7 @@ function getZodiacEmoji(signName) {
   transform: translateY(0) scale(1);
 }
 
-/* 星座结果特殊样式 */
-.fortune-result.zodiac-result {
-  background-color: rgba(252, 248, 240, 0.2);
-  padding: 15px;
-  padding-top: 30px;
-  border-radius: 15px;
-  border: 3px dashed rgba(192, 57, 43, 0.5);
-  animation: glow 2s ease-in-out infinite alternate, attention-pulse 3s ease-in-out 1;
-  margin-top: 40px;
-  margin-bottom: 40px;
-}
-
-/* 添加吸引注意力的脉冲动画 */
-@keyframes attention-pulse {
-  0% { transform: scale(1); }
-  10% { transform: scale(1.03); }
-  20% { transform: scale(1); }
-  30% { transform: scale(1.02); }
-  40% { transform: scale(1); }
-  50% { transform: scale(1.01); }
-  100% { transform: scale(1); }
-}
-
-@keyframes glow {
-  from {
-    box-shadow: 0 0 8px rgba(192, 57, 43, 0.4);
-  }
-  to {
-    box-shadow: 0 0 20px rgba(192, 57, 43, 0.7), 0 0 30px rgba(255, 204, 0, 0.4);
-  }
-}
-
-/* 星座结果标识 */
-.zodiac-result-badge {
-  position: absolute;
-  top: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(45deg, #c0392b, #e74c3c);
-  color: white;
-  padding: 8px 20px;
-  border-radius: 20px;
-  font-size: 1rem;
-  font-weight: bold;
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
-  white-space: nowrap;
-  z-index: 5;
-  animation: bounce 2s ease infinite;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(-7px); }
-}
-
-/* 星座配对样式 */
-.zodiac-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding: 15px;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  animation: fadeInUp 0.8s ease-out;
-}
-
+/* Keyframes for reveal-item animation */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -228,427 +202,396 @@ function getZodiacEmoji(signName) {
   }
 }
 
+/* Base style for reveal-item before animation */
+.reveal-item {
+  opacity: 0; /* Start as transparent before animation */
+}
+
+/* Styles for reveal-item when parent is visible */
+.fortune-result.visible .reveal-item {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+/* Staggered delays for reveal-item elements */
+.fortune-result.visible .level-badge,
+.fortune-result.visible .special-badge {
+  animation-delay: 0.1s;
+}
+
+.fortune-result.visible .fortune-type {
+  animation-delay: 0.15s;
+}
+
+.fortune-result.visible .fortune-poem {
+  animation-delay: 0.2s;
+}
+
+.fortune-result.visible .fortune-interpretation {
+  animation-delay: 0.25s;
+}
+
+.fortune-result.visible .fortune-suggestion {
+  animation-delay: 0.3s;
+}
+
+.fortune-result.visible .draw-again-btn {
+  animation-delay: 0.35s;
+}
+
+/* 星座结果特殊样式 */
+.fortune-result.zodiac-result {
+  background-color: rgba(255, 245, 245, 0.85);
+  padding: 20px 15px 25px;
+  border-radius: 18px;
+  border: 2px solid rgba(229, 109, 97, 0.6);
+  box-shadow: 0 8px 25px rgba(217, 84, 77, 0.15);
+  animation: none;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+/* 星座结果标识 */
+.zodiac-result-badge {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(45deg, #E56D61, #D9544D);
+  color: white;
+  padding: 6px 18px;
+  border-radius: 15px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(184, 67, 62, 0.3);
+  white-space: nowrap;
+  z-index: 5;
+}
+
+/* 等级标签容器 */
+.fortune-level-container {
+  margin-bottom: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.level-badge {
+  display: inline-block;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+.level-badge.level-5 { background-color: #E6A23C; }
+.level-badge.level-4 { background-color: #D9544D; }
+.level-badge.level-3 { background-color: #E56D61; }
+.level-badge.level-2 { background-color: #F08A5D; }
+.level-badge.level-1 { background-color: #B8A2D1; }
+
+.special-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background-color: rgba(255, 223, 186, 0.9);
+  color: #B87333;
+  border-radius: 15px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid rgba(229, 162, 60, 0.5);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.special-badge-icon {
+  margin-right: 6px;
+  font-size: 1.1em;
+  color: #E6A23C;
+}
+
+/* 星座配对样式 */
+.zodiac-info-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 22px;
+  padding: 18px 15px;
+  background-color: rgba(255, 250, 250, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(217, 84, 77, 0.1);
+}
+
 .zodiac-pair {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 80px;
+  width: 90px;
 }
 
 .zodiac-icon {
-  font-size: 32px;
-  margin-bottom: 5px;
-  background-color: rgba(255, 248, 231, 0.8);
-  width: 60px;
-  height: 60px;
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+  background-color: rgba(255, 248, 248, 0.9);
+  width: 65px;
+  height: 65px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid #E56D61;
+  box-shadow: 0 3px 7px rgba(217, 84, 77, 0.15);
+  color: #333;
 }
 
 .zodiac-name {
-  font-size: 14px;
-  color: #8B4513;
-  font-weight: bold;
-  margin-top: 5px;
+  font-size: 0.9rem;
+  color: #B8433E;
+  font-weight: 500;
 }
 
 .compatibility-meter {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 15px;
+  text-align: center;
 }
 
 .hearts-container {
   display: flex;
   justify-content: center;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
 }
 
 .heart {
-  font-size: 24px;
+  width: 18px; height: 18px;
+  background-color: #E0E0E0;
   margin: 0 3px;
-  color: #dddddd;
-  transition: color 0.6s ease, transform 0.3s ease;
+  position: relative;
+  transform: rotate(-45deg);
+  transition: background-color 0.3s ease;
 }
+.heart::before, .heart::after {
+  content: "";
+  width: 18px; height: 18px;
+  background-color: inherit;
+  border-radius: 50%;
+  position: absolute;
+}
+.heart::before { top: -9px; left: 0; }
+.heart::after { top: 0; left: 9px; }
 
 .heart.filled {
-  color: #e74c3c;
-  animation: heartbeat 1.5s infinite;
+  background-color: #D9544D;
 }
 
 .compatibility-label {
-  font-size: 16px;
-  color: #8B4513;
-  font-weight: bold;
-  text-align: center;
-  margin-top: 8px;
-  background-color: rgba(255, 248, 231, 0.8);
-  padding: 4px 12px;
-  border-radius: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-size: 0.85rem;
+  color: #C74840;
 }
 
-@keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  10% { transform: scale(1.2); }
-  20% { transform: scale(1); }
-  30% { transform: scale(1.1); }
+/* 卡片包裹器 */
+.fortune-card-wrapper {
+  padding: 5px;
+  position: relative;
+  margin-bottom: 25px;
 }
 
 .fortune-card {
-  background-color: rgba(255, 250, 245, 0.9);
-  background-image: repeating-linear-gradient(
-                      90deg,
-                      rgba(139, 69, 19, 0.04) 0px,
-                      rgba(139, 69, 19, 0.04) 1px,
-                      transparent 1px,
-                      transparent 4px
-                    );
-  background-size: auto;
-  background-position: center;
-  border-radius: 2px;
-  padding: 40px 25px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  background-color: #FFF9F5;
+  padding: 45px 25px 35px;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(184, 67, 62, 0.12), 0 1px 3px rgba(0,0,0,0.05);
   position: relative;
-  border: 1px solid #e6d5c3;
   overflow: hidden;
-  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-  transform-style: preserve-3d;
-  transform-origin: center center;
-  height: 0;
-  max-height: 0;
-  opacity: 0;
+  border: 1px solid rgba(229, 162, 60, 0.3);
 }
 
-.fortune-result.visible .fortune-card {
-  animation: scroll-unroll 1.2s cubic-bezier(0.33, 1, 0.68, 1) forwards;
-  box-shadow: 0 15px 35px rgba(212, 175, 55, 0.3), 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-/* 卷轴顶部和底部的装饰元素 */
-.scroll-top,
-.scroll-bottom {
+.scroll-top, .scroll-bottom {
   position: absolute;
-  left: 0;
-  right: 0;
-  height: 35px;
-  background-color: #c0392b;
-  background-image: linear-gradient(to bottom, #a63529, #c0392b 40%, #e74c3c);
-  z-index: 3;
-  transform-origin: center;
-  transform: scaleY(0);
-  opacity: 0;
+  left: 0; right: 0;
+  height: 30px;
+  background-color: #E6A23C;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 2;
 }
-
 .scroll-top {
-  top: 0;
-  border-radius: 3px 3px 0 0;
-  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  top: -10px;
+  border-radius: 8px 8px 0 0;
+  border-bottom: 2px solid #B87333;
 }
-
 .scroll-bottom {
-  bottom: 0;
-  border-radius: 0 0 3px 3px;
-  box-shadow: 0 -4px 6px -2px rgba(0, 0, 0, 0.3);
+  bottom: -10px;
+  border-radius: 0 0 8px 8px;
+  border-top: 2px solid #B87333;
 }
-
-.scroll-top::before,
-.scroll-bottom::before {
-  content: "";
+.scroll-top::before, .scroll-top::after,
+.scroll-bottom::before, .scroll-bottom::after {
+  content: '';
   position: absolute;
-  left: 10%;
-  right: 10%;
-  height: 4px;
-  background: linear-gradient(to right, transparent, #ffe9c8, transparent);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px; height: 12px;
+  background-color: #B87333;
+  border-radius: 50%;
+  box-shadow: inset 0 0 2px rgba(255,255,255,0.3);
+}
+.scroll-top::before, .scroll-bottom::before { left: 10px; }
+.scroll-top::after, .scroll-bottom::after { right: 10px; }
+
+/* 光效 */
+.light-effect {
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle, rgba(255, 223, 186, 0.25) 0%, rgba(255,223,186,0) 60%);
+  transform-origin: center center;
+  animation: subtle-glow 5s infinite alternate ease-in-out;
+  pointer-events: none;
+  z-index: 0;
 }
 
-.scroll-top::before {
-  bottom: 6px;
+@keyframes subtle-glow {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  100% { transform: scale(1.1); opacity: 0.9; }
 }
 
-.scroll-bottom::before {
-  top: 6px;
-}
-
-.fortune-result.visible .scroll-top {
-  animation: scroll-edge-reveal 0.6s ease-out 0.3s forwards;
-}
-
-.fortune-result.visible .scroll-bottom {
-  animation: scroll-edge-reveal 0.6s ease-out 0.5s forwards;
+.fortune-content-inner {
+  position: relative;
+  z-index: 1;
 }
 
 .fortune-type {
-  position: absolute;
-  top: 0;
-  right: 0;
+  display: inline-block;
+  padding: 6px 15px;
+  border-radius: 5px 15px 5px 15px;
   color: white;
-  padding: 5px 15px;
-  font-size: 14px;
-  border-bottom-left-radius: 10px;
-  z-index: 4;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 18px;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .fortune-poem {
-  font-family: 'STKaiti', 'KaiTi', serif;
-  font-size: 20px;
-  line-height: 1.7;
-  text-align: center;
-  margin: 40px 0 30px;
-  color: #8B4513;
-  position: relative;
+  font-size: 1.25rem;
+  color: #6A3937;
+  margin-bottom: 20px;
+  line-height: 1.8;
+  font-family: var(--font-family-serif-decorative, 'Noto Serif SC', serif);
+  white-space: pre-line;
+  padding: 0 10px;
+}
+.fortune-poem::before {
+  content: '\300C';
+  margin-right: 0.3em;
+  opacity: 0.6;
+}
+.fortune-poem::after {
+  content: '\300D';
+  margin-left: 0.3em;
+  opacity: 0.6;
 }
 
 .fortune-interpretation {
-  margin: 20px 0;
-  line-height: 1.6;
-  text-align: justify;
+  font-size: 0.95rem;
+  color: #795548;
+  margin-bottom: 20px;
+  line-height: 1.7;
+  text-align: left;
+  padding: 10px 15px;
+  background-color: rgba(255, 250, 245, 0.5);
+  border-radius: 8px;
+  border-left: 3px solid rgba(229, 162, 60, 0.5);
 }
 
 .fortune-suggestion {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px dashed #e6d5c3;
+  font-size: 0.9rem;
+  color: #A1887F;
   line-height: 1.6;
+  text-align: left;
+  padding: 12px;
+  border: 1px dashed rgba(217, 84, 77, 0.35);
+  border-radius: 8px;
+  background-color: rgba(255, 245, 245, 0.6);
 }
 
 .suggestion-label {
   font-weight: bold;
-  color: #d4546a;
+  color: #D9544D;
+  margin-right: 5px;
 }
 
 .draw-again-btn {
-  background-color: transparent;
-  border: 1px solid #d4af37;
-  color: #d4af37;
-  padding: 8px 20px;
+  padding: 10px 22px;
+  font-size: 1.05rem;
+  color: white;
+  background: linear-gradient(to bottom, #E56D61, #D9544D);
+  border: none;
   border-radius: 20px;
-  margin-top: 15px;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-family: var(--font-family-sans-serif);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  box-shadow: 0 3px 8px rgba(184, 67, 62, 0.3);
+  border-bottom: 2px solid #B8433E;
+  display: inline-flex;
+  align-items: center;
 }
 
 .draw-again-btn:hover {
-  background-color: #d4af37;
-  color: white;
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+  background: linear-gradient(to bottom, #D9544D, #C74840);
+  box-shadow: 0 5px 12px rgba(184, 67, 62, 0.4);
+  transform: translateY(-2px);
 }
 
-.fortune-level {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  z-index: 5;
-  display: flex;
-  gap: 5px;
+.draw-again-btn:active {
+  transform: translateY(0px);
+  box-shadow: 0 2px 5px rgba(184, 67, 62, 0.3);
 }
 
-.level-badge {
-  background-color: rgba(212, 175, 55, 0.8);
-  color: white;
-  font-size: 12px;
-  padding: 3px 8px;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+.btn-icon {
+  margin-right: 8px;
+  font-size: 1.2em;
 }
 
-.special-badge {
-  background-color: rgba(255, 54, 102, 0.8);
-  color: white;
-  font-size: 12px;
-  padding: 3px 8px;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-/* 增加仪式感的新动画效果 */
-.light-effect {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, rgba(255, 255, 255, 0) 70%);
-  border-radius: 50%;
-  opacity: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.fortune-result.visible .light-effect {
-  animation: light-expand 1.5s cubic-bezier(0.22, 1, 0.36, 1) 1.5s forwards;
-}
-
-/* 逐项显示的动画 */
-.reveal-item {
-  opacity: 0;
-  transform: translateY(15px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-.fortune-result.visible .fortune-type {
-  opacity: 1;
-  transform: translateY(0);
-  transition-delay: 1.2s;
-}
-
-.fortune-result.visible .fortune-poem {
-  opacity: 1;
-  transform: translateY(0);
-  transition-delay: 1.5s;
-}
-
-.fortune-result.visible .fortune-interpretation {
-  opacity: 1;
-  transform: translateY(0);
-  transition-delay: 1.8s;
-}
-
-.fortune-result.visible .fortune-suggestion {
-  opacity: 1;
-  transform: translateY(0);
-  transition-delay: 2.1s;
-}
-
-.fortune-result.visible .draw-again-btn {
-  opacity: 1;
-  transform: translateY(0);
-  transition-delay: 2.4s;
-}
-
-.fortune-result.visible .level-badge,
-.fortune-result.visible .special-badge {
-  opacity: 1;
-  transform: translateY(0);
-  transition-delay: 1.3s;
-}
-
-@keyframes card-glow {
-  0% {
-    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.3), 0 5px 15px rgba(0, 0, 0, 0.1);
+/* 响应式调整 */
+@media (max-width: 600px) {
+  .fortune-result {
+    max-width: 95%;
+    padding: 0 10px;
   }
-  50% {
-    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.6), 0 5px 20px rgba(0, 0, 0, 0.15);
+  .fortune-card-wrapper {
+    margin-bottom: 20px;
   }
-  100% {
-    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.3), 0 5px 15px rgba(0, 0, 0, 0.1);
+  .fortune-card {
+    padding: 40px 15px 30px;
   }
+  .level-badge { font-size: 1.1rem; padding: 7px 15px; }
+  .special-badge { font-size: 0.85rem; padding: 5px 10px; }
+  .fortune-type { font-size: 0.95rem; padding: 5px 12px; margin-bottom: 15px;}
+  .fortune-poem { font-size: 1.15rem; margin-bottom: 18px; }
+  .fortune-interpretation { font-size: 0.9rem; margin-bottom: 18px; padding: 8px 12px; }
+  .fortune-suggestion { font-size: 0.85rem; padding: 10px; }
+  .draw-again-btn { font-size: 1rem; padding: 9px 20px; }
+
+  .zodiac-info-container { padding: 15px 10px; }
+  .zodiac-icon { font-size: 2.2rem; width: 55px; height: 55px; }
+  .zodiac-name { font-size: 0.85rem; }
+  .heart { width: 16px; height: 16px; }
+  .heart::before { top: -8px; }
+  .heart::after { left: 8px; }
 }
 
-@keyframes light-expand {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0);
-  }
-  50% {
-    opacity: 0.8;
-    transform: translate(-50%, -50%) scale(1.2);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(2);
-  }
-}
+@media (max-width: 400px) {
+  .scroll-top, .scroll-bottom { height: 25px; }
+  .scroll-top::before, .scroll-top::after, 
+  .scroll-bottom::before, .scroll-bottom::after { width: 10px; height: 10px; }
+  .level-badge { font-size: 1rem; padding: 6px 12px; }
+  .fortune-poem { font-size: 1.05rem; }
+  .fortune-interpretation { font-size: 0.85rem; }
+  .fortune-suggestion { font-size: 0.8rem; }
+  .draw-again-btn { font-size: 0.95rem; padding: 8px 18px; }
 
-@keyframes scroll-unroll {
-  0% {
-    max-height: 0;
-    height: 0;
-    opacity: 0;
-    transform: rotateX(90deg) translateY(-20px);
-  }
-  30% {
-    opacity: 1;
-    transform: rotateX(10deg) translateY(-5px);
-  }
-  100% {
-    max-height: 2000px;
-    height: auto;
-    opacity: 1;
-    transform: rotateX(0deg) translateY(0);
-    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.3), 0 5px 15px rgba(0, 0, 0, 0.1);
-  }
-}
-
-@keyframes scroll-edge-reveal {
-  0% {
-    transform: scaleY(0);
-    opacity: 0;
-  }
-  100% {
-    transform: scaleY(1);
-    opacity: 1;
-  }
-}
-
-/* 添加卷轴纸质感的装饰纹理 */
-.fortune-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: 
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0px,
-      transparent 24px,
-      rgba(139, 69, 19, 0.05) 24px,
-      rgba(139, 69, 19, 0.05) 25px
-    );
-  opacity: 0.7;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* 深色主题样式 */
-:deep(.dark-theme) .fortune-card {
-  background-color: rgba(40, 44, 52, 0.9);
-  border-color: #555;
-  color: #eee;
-}
-
-:deep(.dark-theme) .fortune-poem {
-  color: #ffcc99;
-}
-
-:deep(.dark-theme) .fortune-suggestion {
-  border-top-color: #555;
-}
-
-:deep(.dark-theme) .suggestion-label {
-  color: #ff7c98;
-}
-
-:deep(.dark-theme) .draw-again-btn {
-  color: #ffd700;
-  border-color: #ffd700;
-}
-
-:deep(.dark-theme) .draw-again-btn:hover {
-  background-color: #ffd700;
-  color: #333;
-}
-
-:deep(.dark-theme) .light-effect {
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.25) 0%, rgba(30, 30, 30, 0) 70%);
-}
-
-/* 高亮效果 - 用于动态添加的类 */
-:global(.highlight) {
-  animation: highlight-pulse 1s ease-in-out 3 !important;
-}
-
-@keyframes highlight-pulse {
-  0% { transform: scale(1); box-shadow: 0 0 0 rgba(192, 57, 43, 0); }
-  50% { transform: scale(1.03); box-shadow: 0 0 30px rgba(192, 57, 43, 0.8); }
-  100% { transform: scale(1); box-shadow: 0 0 0 rgba(192, 57, 43, 0); }
+  .zodiac-info-container { flex-direction: column; gap: 15px; }
+  .compatibility-meter { order: -1; margin-bottom: 10px;}
 }
 </style> 

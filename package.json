@@ -1,24 +1,44 @@
 {
-  "name": "my-fortune-teller",
+  "name": "kizuna-mikuji",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 3000 --force",
+    "dev:alt": "vite --port 5000 --force",
+    "dev:high": "vite --port 8080 --force",
+    "dev:basic": "vite --config vite.config.basic.js",
+    "dev:simple": "vite --port 8888 --host localhost --force",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint . --ext .js,.vue --fix"
   },
   "dependencies": {
     "matter-js": "^0.20.0",
     "pinia": "^3.0.2",
+    "playwright": "^1.52.0",
     "vue": "^3.5.13"
   },
   "devDependencies": {
     "@types/matter-js": "^0.19.8",
     "@vitejs/plugin-vue": "^5.2.3",
+    "eslint": "^8.56.0",
     "sharp": "^0.34.1",
     "terser": "^5.39.1",
     "vite": "^6.2.4",
     "vite-plugin-vue-devtools": "^7.7.2"
-  }
+  },
+  "description": "一个基于Vue 3的在线抽签应用，精美的UI设计和流畅的动画，为用户提供爱情缘分、事业运势等多种类型的占卜体验。",
+  "main": ".eslintrc.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tera-Dark/Kizuna-Mikuji.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tera-Dark/Kizuna-Mikuji/issues"
+  },
+  "homepage": "https://github.com/Tera-Dark/Kizuna-Mikuji#readme"
 }

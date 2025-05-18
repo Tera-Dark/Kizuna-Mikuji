@@ -14,12 +14,12 @@
         @click="selectCategory('每日一签')"
       >
         <div class="daily-fortune-inner">
-          <div class="daily-fortune-icon">🎯</div>
+          <div class="daily-fortune-icon">🧧</div>
           <div class="daily-fortune-content">
             <div class="daily-fortune-name">每日一签</div>
             <div class="daily-fortune-desc">今日运势与贵人指引</div>
           </div>
-          <div class="recommended-badge">推荐</div>
+          <div class="recommended-badge">今日推荐</div>
         </div>
       </div>
       
@@ -32,7 +32,7 @@
         @click="selectCategory(category.value)"
       >
         <div class="category-inner">
-          <div class="category-icon">{{ category.icon }}</div>
+          <div class="category-icon">{{ category.themedIcon || category.icon }}</div>
           <div class="category-content">
             <div class="category-name">{{ category.value }}</div>
             <div class="category-desc">{{ category.description }}</div>
@@ -63,62 +63,62 @@ const categories = [
   { 
     id: 'daily',
     value: '每日一签', 
-    icon: '🎯',
+    icon: '🎯', themedIcon: '🧧',
     description: '今日运势与贵人指引'
   },
   { 
     id: 'love',
     value: '爱情缘分', 
-    icon: '❤️',
+    icon: '❤️', themedIcon: '💕',
     description: '洞悉你的爱情状态与未来发展'
   },
   { 
     id: 'past_life',
     value: '前世姻缘', 
-    icon: '🔮',
+    icon: '🔮', themedIcon: '⏳',
     description: '探寻你与TA的前世情缘'
   },
   { 
     id: 'career',
     value: '事业运势', 
-    icon: '💼',
+    icon: '💼', themedIcon: '📈',
     description: '预测你的职场发展与财富机遇'
   },
   { 
     id: 'relationship',
     value: '人际关系', 
-    icon: '👥',
+    icon: '👥', themedIcon: '🤝',
     description: '分析你的社交圈与人际状况'
   },
   { 
     id: 'health',
     value: '健康平安', 
-    icon: '🍀',
+    icon: '🍀', themedIcon: '🌿',
     description: '关注你的身心健康与平安指数'
   },
   { 
     id: 'name',
     value: '姓名解析', 
-    icon: '📝',
+    icon: '📝', themedIcon: '📜',
     description: '解读你的名字中隐藏的天机'
   },
   { 
     id: 'zodiac',
     value: '星座配对', 
-    icon: '⭐',
+    icon: '⭐', themedIcon: '✨',
     description: '看看你们的星座是否相配'
   },
   { 
     id: 'couple',
     value: '姻缘配对', 
-    icon: '💕',
+    icon: '💕', themedIcon: '💞',
     description: '测试你与TA的契合度与缘分指数'
   },
-  { 
+  {
     id: 'destiny_ball',
-    value: '缘分球', 
-    icon: '🔮',
-    description: '摇一摇，获取爱情即时提示'
+    value: '结缘御守',
+    icon: '🔮', themedIcon: '🧧',
+    description: '轻点御守，探寻玄妙指引'
   }
 ];
 
@@ -145,342 +145,205 @@ const paperTexture = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
 <style scoped>
 .category-selector {
   width: 100%;
-  max-width: 800px;
-  margin: 0 auto 30px;
-  padding: 18px 15px;
-  border-radius: 12px;
-  background-color: rgba(252, 248, 240, 0.85);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(139, 69, 19, 0.1);
+  max-width: 700px;
+  margin: 0 auto 25px;
+  padding: 20px;
+  border-radius: 20px;
+  background-color: rgba(255, 245, 245, 0.9);
+  box-shadow: 0 8px 25px rgba(217, 84, 77, 0.15), 0 0 0 1.5px rgba(229, 109, 97, 0.35);
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(139, 69, 19, 0.15);
+  border: 1px solid transparent;
 }
 
 .category-selector::before {
   content: "";
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #BB2D2C, #F06A6A, #BB2D2C);
+  left: 15%; right: 15%;
+  height: 2.5px;
+  background: linear-gradient(90deg, transparent, #E56D61, #D9544D, #E56D61, transparent);
+  border-radius: 2px;
 }
 
 .category-title {
   text-align: center;
-  font-size: 1.4rem;
-  font-weight: normal;
-  margin-bottom: 20px;
-  color: #A22828;
-  font-family: 'STKaiti', 'KaiTi', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 25px;
+  color: #B8433E;
+  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive, var(--font-family-serif));
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
 }
 
 .title-decoration {
-  width: 40px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #A22828, transparent);
-  margin: 0 15px;
+  width: 50px;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, rgba(217, 84, 77, 0.6), transparent);
+  margin: 0 12px;
   position: relative;
 }
 
 .title-decoration::before, 
 .title-decoration::after {
-  content: "";
+  content: "\2766";
   position: absolute;
-  width: 8px;
-  height: 8px;
-  background-color: rgba(162, 40, 40, 0.2);
-  border-radius: 50%;
-  top: -3.5px;
+  width: auto;
+  height: auto;
+  background-color: transparent;
+  color: #D9544D;
+  font-size: 12px;
+  border-radius: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-.title-decoration.left::after {
-  right: 0;
-}
-
-.title-decoration.right::before {
-  left: 0;
-}
+.title-decoration.left::before { left: -5px; }
+.title-decoration.left::after { display: none; }
+.title-decoration.right::after { right: -5px; }
+.title-decoration.right::before { display: none; }
 
 .categories-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 18px;
+}
+
+.daily-fortune-item, 
+.category-item {
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  background-color: rgba(255, 250, 250, 0.8);
+  border: 1.5px solid rgba(229, 109, 97, 0.35);
+  box-shadow: 0 3px 8px rgba(217, 84, 77, 0.08);
+}
+
+.daily-fortune-item:hover, 
+.category-item:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 6px 15px rgba(217, 84, 77, 0.18);
+  border-color: rgba(217, 84, 77, 0.6);
+}
+
+.daily-fortune-item.active, 
+.category-item.active {
+  border-color: #D9544D;
+  background-color: rgba(255, 240, 240, 0.95);
+  box-shadow: 0 4px 12px rgba(217, 84, 77, 0.25), inset 0 0 10px rgba(229, 109, 97, 0.1);
 }
 
 /* 每日一签特殊样式 */
 .daily-fortune-item {
-  grid-column: 1 / -1; /* 跨越所有列 */
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  position: relative;
-  overflow: hidden;
-  background-color: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(139, 69, 19, 0.15);
-  margin-bottom: 5px;
+  grid-column: 1 / -1;
+  margin-bottom: 8px;
 }
 
-.daily-fortune-inner {
+.daily-fortune-inner, 
+.category-inner {
   display: flex;
   align-items: center;
-  padding: 16px;
-  position: relative;
-  background-image: v-bind(wavePattern);
-  background-size: cover;
-  background-position: center;
-  border-radius: 9px;
-}
-
-.daily-fortune-inner::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(ellipse at center, rgba(255, 240, 245, 0), rgba(253, 246, 230, 0.8) 70%);
-  z-index: 0;
-}
-
-.daily-fortune-icon {
-  font-size: 2.6rem;
-  margin-right: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 60px;
-  height: 60px;
-  position: relative;
-  z-index: 1;
-  background: rgba(255, 250, 245, 0.7);
-  border-radius: 50%;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.daily-fortune-content {
-  flex: 1;
+  padding: 15px;
   position: relative;
   z-index: 1;
 }
 
-.daily-fortune-name {
-  font-weight: bold;
-  font-size: 1.4rem;
-  margin-bottom: 5px;
-  color: #A22828;
-  font-family: 'STKaiti', 'KaiTi', serif;
+.daily-fortune-item .daily-fortune-inner::after, 
+.category-item .category-inner::after {
+  display: none;
 }
 
-.daily-fortune-desc {
-  font-size: 0.95rem;
-  color: #5D4037;
-  line-height: 1.4;
-  font-family: 'STFangsong', 'FangSong', serif;
+.daily-fortune-icon, 
+.category-icon {
+  font-size: 1.8rem;
+  margin-right: 12px;
+  color: #D9544D;
+  width: 30px;
+  text-align: center;
+}
+
+.daily-fortune-content, 
+.category-content {
+  flex-grow: 1;
+}
+
+.daily-fortune-name, 
+.category-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #B8433E;
+  margin-bottom: 3px;
+  font-family: var(--font-family-serif);
+}
+
+.daily-fortune-desc, 
+.category-desc {
+  font-size: 0.8rem;
+  color: #C74840;
+  opacity: 0.9;
+  line-height: 1.3;
 }
 
 .recommended-badge {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: #FF7043;
+  top: 0px;
+  right: 0px;
+  background-color: #E56D61;
   color: white;
-  padding: 3px 10px;
-  border-radius: 30px;
-  font-size: 0.8rem;
+  padding: 4px 10px;
+  font-size: 0.7rem;
   font-weight: bold;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  z-index: 2;
-  transform: rotate(5deg);
-}
-
-.daily-fortune-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(139, 69, 19, 0.15);
-}
-
-.daily-fortune-item:active {
-  transform: translateY(0);
-}
-
-.daily-fortune-item.active {
-  background-color: rgba(255, 250, 240, 0.9);
-  box-shadow: 0 5px 15px rgba(139, 69, 19, 0.15), 0 0 0 2px #A22828;
-}
-
-.daily-fortune-item.active .daily-fortune-inner {
-  background-color: rgba(255, 250, 240, 0.8);
-}
-
-/* 常规分类项 */
-.category-item {
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  background-color: rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(139, 69, 19, 0.1);
-  overflow: hidden;
-  position: relative;
-}
-
-.category-inner {
-  display: flex;
-  align-items: center;
-  padding: 12px;
-  position: relative;
-  z-index: 1;
-  height: 100%;
-}
-
-.category-item::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: v-bind(paperTexture);
-  background-size: cover;
-  opacity: 0.5;
-  z-index: 0;
-  transition: opacity 0.3s ease;
-}
-
-.category-item:hover::before {
-  opacity: 0.7;
-}
-
-.category-icon {
-  font-size: 1.8rem;
-  margin-right: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  background: rgba(255, 255, 255, 0.6);
-  border-radius: 50%;
-  position: relative;
-  z-index: 1;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.category-content {
-  flex: 1;
-  position: relative;
-  z-index: 1;
-}
-
-.category-name {
-  font-weight: bold;
-  margin-bottom: 4px;
-  color: #5D4037;
-  font-family: 'STKaiti', 'KaiTi', serif;
-}
-
-.category-desc {
-  font-size: 0.85rem;
-  color: #6D4C41;
-  line-height: 1.3;
-  font-family: 'STFangsong', 'FangSong', serif;
-}
-
-.category-item:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 6px 15px rgba(139, 69, 19, 0.1);
-  z-index: 2;
-}
-
-.category-item:active {
-  transform: translateY(0) scale(0.98);
-}
-
-.category-item.active {
-  background-color: rgba(255, 250, 240, 0.9);
-  border: 1px solid rgba(162, 40, 40, 0.2);
-  box-shadow: 0 3px 10px rgba(139, 69, 19, 0.1), 0 0 0 1px rgba(162, 40, 40, 0.3);
-}
-
-.category-item.active .category-name {
-  color: #A22828;
+  border-radius: 0 11px 0 8px;
+  box-shadow: -1px 1px 3px rgba(0,0,0,0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* 响应式调整 */
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .categories-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
   }
-  
   .category-selector {
-    padding: 15px 12px;
+    padding: 15px;
   }
-  
-  .daily-fortune-inner {
-    padding: 12px;
+  .category-title {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
   }
-  
-  .daily-fortune-icon {
-    font-size: 2.2rem;
-    width: 50px;
-    height: 50px;
-    margin-right: 12px;
+  .daily-fortune-icon, .category-icon {
+    font-size: 1.6rem;
+    margin-right: 10px;
   }
-  
-  .daily-fortune-name {
-    font-size: 1.2rem;
+  .daily-fortune-name, .category-name {
+    font-size: 0.95rem;
   }
-  
-  .daily-fortune-desc {
-    font-size: 0.85rem;
-  }
-  
-  .category-inner {
-    padding: 10px;
-  }
-  
-  .category-icon {
-    font-size: 1.5rem;
-    width: 35px;
-    height: 35px;
-    margin-right: 8px;
-  }
-  
-  .category-name {
-    font-size: 0.9rem;
-  }
-  
-  .category-desc {
+  .daily-fortune-desc, .category-desc {
     font-size: 0.75rem;
+  }
+  .recommended-badge {
+    padding: 3px 8px;
+    font-size: 0.65rem;
   }
 }
 
-@media (max-width: 480px) {
-  .category-title {
-    font-size: 1.2rem;
+@media (max-width: 400px) {
+  .categories-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
-  
-  .daily-fortune-inner {
-    flex-direction: column;
-    text-align: center;
-    padding: 15px 10px;
+  .daily-fortune-inner, .category-inner {
+    padding: 12px;
   }
-  
-  .daily-fortune-icon {
-    margin-right: 0;
-    margin-bottom: 10px;
-  }
-  
-  .recommended-badge {
-    top: 5px;
-    right: 5px;
-    font-size: 0.7rem;
-    padding: 2px 8px;
+  .title-decoration {
+    display: none;
   }
 }
 </style> 

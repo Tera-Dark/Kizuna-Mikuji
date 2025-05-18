@@ -1,77 +1,96 @@
 <template>
-  <div class="destiny-ball-container">
+  <div class="destiny-ball-container themed-container">
     <div class="destiny-ball-title">
-      <h3>缘分球</h3>
-      <p class="subtitle">摇一摇，得到关于爱情的即时提示</p>
+      <h3 class="main-title"><span class="deco-icon left">❀</span> 缘分球 <span class="deco-icon right">❀</span></h3>
+      <p class="subtitle themed-subtitle">摇一摇，探寻爱情的玄妙指引</p>
     </div>
     
     <!-- 添加问题输入区域 -->
-    <div class="question-input-area" v-if="!isShaking && !showAnswer">
+    <div class="question-input-area themed-input-section" v-if="!isShaking && !showAnswer">
       <input 
         type="text" 
         v-model="userQuestion" 
-        placeholder="请输入你想问的缘分问题（可选）"
+        placeholder="心有所问？轻语于此（可选）"
         @keyup.enter="shakeBall"
         maxlength="50"
+        class="themed-input"
       />
-      <div class="question-counter">{{ userQuestion.length }}/50</div>
+      <div class="question-counter themed-text-minor">{{ userQuestion.length }}/50</div>
     </div>
     
     <div 
       class="destiny-ball" 
-      :class="{ shake: isShaking, 'show-answer': showAnswer }"
+      :class="{ shake: isShaking, 'omamori-open': showAnswer }"
       @click="shakeBall"
     >
-      <div class="ball-outer">
-        <div class="ball-inner">
-          <div class="ball-fluid">
-            <div v-if="showMysticSymbols" class="mystic-symbols">
-              <span v-for="(symbol, index) in mysticSymbols" :key="index" class="symbol"
-                :style="{
-                  transform: `translate(${Math.sin(index) * 20}px, ${Math.cos(index) * 20}px)`,
-                  animationDelay: `${index * 0.1}s`
-                }"
-              >{{ symbol }}</span>
-            </div>
-            <div class="triangle-answer" v-if="showAnswer">
-              <div class="answer-text">{{ currentAnswer }}</div>
-            </div>
+      <!-- New Omamori Structure -->
+      <div class="omamori-pouch">
+        <div class="omamori-flap"></div>
+        <div class="omamori-body">
+          <div class="omamori-string-knot">
+            <!-- Simplified knot using pseudo-elements or simple divs if needed -->
+            <div class="knot-loop knot-loop-1"></div>
+            <div class="knot-loop knot-loop-2"></div>
+            <div class="knot-center"></div>
+          </div>
+          <div class="omamori-decoration">
+            <span>縁</span> <!-- Simple character decoration for now -->
+          </div>
+        </div>
+        <div class="answer-scroll-container" v-if="showAnswer">
+          <div class="answer-scroll">
+            <div class="answer-scroll-content">{{ currentAnswer }}</div>
           </div>
         </div>
       </div>
-      <div class="ball-shadow"></div>
+
+      <!-- Mystic symbols might be re-purposed for particle effects later -->
+      <div v-if="showMysticSymbols && isShaking" class="mystic-particle-effects">
+        <span v-for="(symbol, index) in mysticSymbols" :key="index" class="particle"
+          :style="{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            animationDelay: `${Math.random() * 0.5}s` 
+          }"
+        >{{ symbol }}</span>
+      </div>
+      <!-- End of New Omamori Structure -->
     </div>
     
-    <div class="instruction-text" v-if="!showAnswer">
-      <p>{{ userQuestion ? '点击缘分球获取预测' : '点击缘分球获取提示' }}</p>
+    <div class="instruction-text themed-text-gentle" v-if="!showAnswer && !isShaking">
+      <p>{{ userQuestion ? '轻点御守，静待神谕' : '轻点御守，祈缘问情' }}</p>
     </div>
     
-    <div class="result-display" v-if="showAnswer">
+    <div class="result-display themed-section-box" v-if="showAnswer">
       <div class="question-display" v-if="userQuestion">
-        <span class="question-label">问：</span>
-        <span class="question-text">{{ userQuestion }}</span>
+        <span class="question-label themed-text-label">所问：</span>
+        <span class="question-text themed-text-content">{{ userQuestion }}</span>
       </div>
       <div class="answer-display">
-        <span class="answer-label">缘：</span>
-        <span class="answer-text-display">{{ currentAnswer }}</span>
+        <span class="answer-label themed-text-label">神谕：</span>
+        <span class="answer-text-display themed-text-lead">{{ currentAnswer }}</span>
       </div>
-      <div class="shake-again-button">
-        <button @click="resetBall">再摇一次</button>
-        <button class="save-button" @click="saveToHistory">保存预测</button>
+      <div class="result-buttons button-row">
+        <button @click="resetBall" class="themed-button secondary-button">
+          <span class="btn-icon">↻</span> 再摇一次
+        </button>
+        <button class="themed-button primary-button save-button" @click="saveToHistory">
+          <span class="btn-icon">📜</span> 保存神谕
+        </button>
       </div>
     </div>
     
     <!-- 历史记录区域 -->
-    <div class="history-section" v-if="destinyHistory.length > 0 && !showAnswer && !isShaking">
-      <h4 class="history-title">
-        <span>历史预测</span>
-        <span class="clear-history" @click="clearHistory">清除</span>
+    <div class="history-section themed-section-box" v-if="destinyHistory.length > 0 && !showAnswer && !isShaking">
+      <h4 class="history-title section-title">
+        <span class="deco-icon left">📜</span> 往昔神谕 <span class="deco-icon right">📜</span>
+        <span class="clear-history themed-link" @click="clearHistory">清空记录</span>
       </h4>
       <div class="history-list">
-        <div v-for="(item, index) in destinyHistory" :key="index" class="history-item">
-          <div class="history-question" v-if="item.question">{{ item.question }}</div>
-          <div class="history-answer">{{ item.answer }}</div>
-          <div class="history-date">{{ item.date }}</div>
+        <div v-for="(item, index) in destinyHistory" :key="index" class="history-item themed-history-item">
+          <div class="history-question themed-text-minor" v-if="item.question && item.question !== '(无问题)'">问：{{ item.question }}</div>
+          <div class="history-answer themed-text-content">{{ item.answer }}</div>
+          <div class="history-date themed-text-minor">{{ item.date }}</div>
         </div>
       </div>
     </div>
@@ -89,7 +108,7 @@ const destinyHistory = ref([]);
 const showMysticSymbols = ref(false);
 
 // 神秘符号
-const mysticSymbols = ['✨', '⭐', '🌙', '🔮', '💫', '💖', '✨', '🌟', '⚡', '🌠'];
+const mysticSymbols = ['緣', '結', '愛', '囍', '福', '愿', '心', '恋', ' मिलाप', '赤い糸']; // 印地语"结合"，日语"红线"
 
 // 所有可能的答案
 const answers = [
@@ -148,53 +167,64 @@ const answers = [
 
 // 摇晃球
 const shakeBall = () => {
-  if (isShaking.value || showAnswer.value) return;
+  if (isShaking.value || showAnswer.value) {
+    if(showAnswer.value) {
+      resetBallAndQuestion();
+    }
+    return;
+  }
   
   isShaking.value = true;
   showMysticSymbols.value = true;
   
-  // 播放摇晃音效
   try {
-    const audio = new Audio('/sounds/wind-chime.mp3');
-    audio.volume = 0.3;
-    audio.play().catch(err => console.log('音效播放失败'));
+    const baseUrl = process.env.NODE_ENV === 'production' ? '/Kizuna-Mikuji/' : '/';
+    const audio = new Audio(baseUrl + 'sounds/omamori-shake.mp3');
+    audio.volume = 0.4;
+    audio.play().catch(err => console.warn('御守音效播放失败:', err));
   } catch (error) {
-    console.log('音效创建失败');
+    console.warn('御守音效创建失败:', error);
   }
   
-  // 随机选择一个答案
   const randomIndex = Math.floor(Math.random() * answers.length);
   currentAnswer.value = answers[randomIndex];
   
-  // 摇晃动画
   setTimeout(() => {
-    showMysticSymbols.value = false;
     isShaking.value = false;
     showAnswer.value = true;
-    
-    // 播放揭晓答案音效
+    showMysticSymbols.value = false; 
+
     try {
-      const revealAudio = new Audio('/sounds/wind-chime.mp3');
-      revealAudio.volume = 0.4;
-      revealAudio.play().catch(err => console.log('音效播放失败'));
+      const baseUrl = process.env.NODE_ENV === 'production' ? '/Kizuna-Mikuji/' : '/';
+      const revealAudio = new Audio(baseUrl + 'sounds/scroll-open.mp3');
+      revealAudio.volume = 0.5;
+      revealAudio.play().catch(err => console.warn('卷轴音效播放失败:', err));
     } catch (error) {
-      console.log('音效创建失败');
+      console.warn('卷轴音效创建失败:', error);
     }
-  }, 1500);
+  }, 2000);
+};
+
+const resetBallAndQuestion = () => {
+  showAnswer.value = false;
+  currentAnswer.value = '';
 };
 
 // 重置球
 const resetBall = () => {
   showAnswer.value = false;
   currentAnswer.value = '';
+  userQuestion.value = '';
 };
 
 // 保存预测到历史记录
 const saveToHistory = () => {
   if (!currentAnswer.value) return;
   
+  const questionToSave = userQuestion.value ? userQuestion.value.trim() : '';
+
   destinyHistory.value.unshift({
-    question: userQuestion.value || '(无问题)',
+    question: questionToSave || '(随心一问)',
     answer: currentAnswer.value,
     date: new Date().toLocaleString('zh-CN', {
       year: 'numeric',
@@ -238,424 +268,546 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.destiny-ball-container {
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 20px;
+/* General Theming */
+.themed-container {
+  background-color: var(--theme-color-background-light, rgba(255, 245, 248, 0.95)); 
+  border-radius: 25px;
+  padding: 30px 35px;
+  margin: 25px auto;
+  box-shadow: 0 8px 25px var(--theme-color-shadow-light, rgba(217, 84, 77, 0.15)), 
+              0 0 0 2px var(--theme-color-border-subtle, rgba(229, 109, 97, 0.2));
+  max-width: 600px; 
   text-align: center;
+  font-family: var(--font-family-sans-serif);
+}
+
+.main-title {
+  color: var(--theme-color-dark, #B8433E);
+  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive);
+  font-size: 2.4em;
+  margin-bottom: 8px;
+  text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.themed-subtitle {
+  color: var(--theme-color-text-subtle, #8C3835);
+  font-size: 1.1em;
+  margin-bottom: 25px;
+  font-family: var(--font-family-sans-serif);
+}
+
+.deco-icon {
+  color: var(--theme-color-red, #E56D61);
+  font-size: 0.7em;
+  margin: 0 12px;
+  opacity: 0.9;
+}
+
+.themed-input-section {
+  margin-bottom: 25px;
+  width: 80%;
+  max-width: 400px;
+  position: relative; /* For counter positioning */
+}
+
+.themed-input {
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: 1.5px solid var(--theme-color-border-subtle, rgba(229, 109, 97, 0.4));
+  background-color: #fff;
+  font-size: 1em;
+  color: var(--theme-color-text, #5C2827);
+  font-family: var(--font-family-sans-serif);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
+}
+.themed-input:focus {
+  border-color: var(--theme-color-red, #E56D61);
+  box-shadow: 0 0 0 3.5px rgba(229, 109, 97, 0.25);
+  outline: none;
+}
+.themed-input::placeholder {
+  color: var(--theme-color-placeholder, #bcaaaa);
+  font-style: italic;
+}
+
+.question-counter.themed-text-minor {
+  position: absolute;
+  right: 10px;
+  bottom: -18px;
+  font-size: 0.8em;
+  color: var(--theme-color-text-very-subtle, #c9a9a8);
+}
+
+.themed-text-minor {
+  font-size: 0.9em;
+  color: var(--theme-color-text-subtle, #8C3835);
+}
+
+.themed-text-gentle {
+  color: var(--theme-color-text-subtle, #8C3835);
+  font-style: italic;
+  margin-top: 15px;
+  font-size: 0.95em;
+}
+
+.themed-text-label {
+  font-weight: 600;
+  color: var(--theme-color-dark, #B8433E);
+}
+.themed-text-content {
+  color: var(--theme-color-text, #5C2827);
+}
+.themed-text-lead {
+  font-size: 1.2em;
+  font-weight: 600;
+  color: var(--theme-color-red, #E56D61);
+  font-family: var(--font-family-serif, serif);
+}
+
+.themed-link {
+  color: var(--theme-color-red, #E56D61);
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 0.9em;
+  transition: color 0.2s ease;
+}
+.themed-link:hover {
+  color: var(--theme-color-dark, #B8433E);
+  text-decoration: underline;
+}
+
+/* Destiny Ball/Omamori Styles */
+.destiny-ball-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  min-height: 450px;
 }
 
 .destiny-ball-title {
-  margin-bottom: 25px;
-}
-
-.destiny-ball-title h3 {
-  font-size: 1.8em;
-  color: #8B4513;
-  margin-bottom: 5px;
-  font-family: 'STXingkai', 'KaiTi', serif;
-}
-
-.subtitle {
-  font-size: 1em;
-  color: #A67C52;
-  font-family: 'STKaiti', 'KaiTi', serif;
-}
-
-/* 问题输入区域 */
-.question-input-area {
   margin-bottom: 20px;
-  position: relative;
-  max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.question-input-area input {
-  width: 100%;
-  padding: 12px 15px;
-  border: 2px solid #9b59b6;
-  border-radius: 25px;
-  background-color: rgba(255, 255, 255, 0.85);
-  font-size: 14px;
-  color: #4a4a4a;
-  transition: all 0.3s ease;
-  outline: none;
-  box-shadow: 0 3px 10px rgba(155, 89, 182, 0.1);
-}
-
-.question-input-area input:focus {
-  border-color: #8e44ad;
-  box-shadow: 0 5px 15px rgba(155, 89, 182, 0.2);
-  transform: translateY(-2px);
-}
-
-.question-counter {
-  position: absolute;
-  bottom: -20px;
-  right: 10px;
-  font-size: 12px;
-  color: #888;
+  text-align: center;
 }
 
 .destiny-ball {
+  width: 180px;
+  height: 260px;
   position: relative;
-  width: 230px;
-  height: 230px;
-  margin: 0 auto 20px;
   cursor: pointer;
-  transform-style: preserve-3d;
-  transition: transform 0.2s;
+  margin: 30px auto;
+  user-select: none;
 }
 
-.destiny-ball:hover {
-  transform: scale(1.05);
-}
-
-.ball-outer {
-  position: absolute;
+.omamori-pouch {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #333 0%, #000 100%);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), inset 0 5px 10px rgba(255, 255, 255, 0.2), inset 0 -5px 10px rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  transform-style: preserve-3d;
-}
-
-.ball-inner {
-  width: 170px;
-  height: 170px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #6c53a3 0%, #3a0068 70%);
-  overflow: hidden;
   position: relative;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  transform-style: preserve-3d;
+  transition: transform 0.3s ease;
+}
+.destiny-ball:active .omamori-pouch {
+  transform: scale(0.97);
 }
 
-.ball-fluid {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  background: rgba(98, 0, 234, 0.6);
+.omamori-flap {
+  width: 100%;
+  height: 70px;
+  background-color: var(--theme-color-red-pale, #FADADD);
+  border: 2px solid var(--theme-color-gold-dark, #B8860B);
+  border-bottom: none;
+  border-radius: 15px 15px 0 0;
   position: relative;
-  overflow: hidden;
-  transition: background 0.5s ease;
+  z-index: 10;
+  transform-origin: bottom center;
+  transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.1) inset; 
+}
+
+.destiny-ball.omamori-open .omamori-flap {
+  transform: rotateX(-135deg);
+}
+
+.omamori-body {
+  width: 100%;
+  height: calc(100% - 60px);
+  background-color: var(--theme-color-red, #E56D61);
+  border: 2px solid var(--theme-color-gold-dark, #B8860B);
+  border-top: none;
+  border-radius: 0 0 20px 20px;
+  position: relative;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  transform-style: preserve-3d;
-}
-
-.ball-shadow {
-  position: absolute;
-  bottom: -15px;
-  left: 10%;
-  right: 10%;
-  height: 15px;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0) 70%);
-  border-radius: 50%;
-  z-index: -1;
-  transition: all 0.3s ease;
-}
-
-.destiny-ball:hover .ball-shadow {
-  transform: scaleX(1.05) translateY(3px);
-  opacity: 0.4;
-}
-
-.triangle-answer {
-  width: 110px;
-  height: 110px;
-  background-color: #1c023d;
-  color: white;
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
   padding-top: 30px;
-  transform: translateY(10px);
-  opacity: 0;
-  animation: fade-in 0.5s ease forwards;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
 }
 
-.answer-text {
-  font-size: 14px;
-  font-weight: bold;
-  text-align: center;
-  line-height: 1.4;
-  color: white;
-  transform: translateY(-15px);
-  font-family: 'STKaiti', 'KaiTi', serif;
+.omamori-string-knot {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 30px;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.instruction-text {
+.knot-center {
+  width: 12px;
+  height: 12px;
+  background-color: var(--theme-color-gold, #FFD700);
+  border-radius: 50%;
+  border: 2px solid var(--theme-color-gold-dark, #B8860B);
+  position: relative;
+  z-index: 2;
+}
+
+.knot-loop {
+  position: absolute;
+  width: 30px;
+  height: 40px;
+  border: 3px solid var(--theme-color-gold, #FFD700);
+  border-radius: 50% / 60% 60% 40% 40%;
+  background-color: var(--theme-color-red);
+}
+.knot-loop-1 {
+  transform: translateX(-18px) rotate(-25deg);
+  z-index: 1;
+}
+.knot-loop-2 {
+  transform: translateX(18px) rotate(25deg);
+  z-index: 1;
+}
+
+.omamori-decoration {
   margin-top: 20px;
-  font-size: 16px;
-  color: #8B4513;
-  font-family: 'STKaiti', 'KaiTi', serif;
+  font-family: var(--font-family-serif-decorative);
+  font-size: 3em;
+  color: var(--theme-color-gold-pale, #FFF8DC);
+  text-shadow: 1px 1px 2px var(--theme-color-gold-dark, #B8860B);
 }
 
-/* 结果显示区域 */
-.result-display {
-  margin-top: 25px;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  animation: fade-in 0.5s ease;
-  max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
-  border: 1px solid rgba(155, 89, 182, 0.3);
+.answer-scroll-container {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%; 
+  height: 0;
+  overflow: hidden;
+  transition: height 0.8s 0.4s ease-out;
+  z-index: 5;
 }
 
-.question-display {
+.destiny-ball.omamori-open .answer-scroll-container {
+  height: 120px;
+}
+
+.answer-scroll {
+  width: 100%;
+  height: 100%;
+  background-color: var(--theme-color-parchment, #fef5e7);
+  border: 2px solid var(--theme-color-gold-dark, #B8860B);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: opacity 0.5s 0.7s ease, transform 0.5s 0.7s ease;
+}
+
+.destiny-ball.omamori-open .answer-scroll {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.answer-scroll-content {
+  font-family: var(--font-family-serif);
+  color: var(--theme-color-text-darker, #4a2c2a);
+  font-size: 0.95em; 
+  text-align: center;
+  line-height: 1.5;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+/* Mystic Particle Effects (replaces old mystic symbols) */
+.mystic-particle-effects {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.mystic-particle-effects .particle {
+  position: absolute;
+  font-size: 1.2em;
+  color: var(--theme-color-gold-transparent, rgba(255, 215, 0, 0.7));
+  opacity: 0;
+  animation: particleFlyOut 1.5s ease-out forwards;
+  font-family: var(--font-family-serif-decorative);
+  text-shadow: 0 0 3px var(--theme-color-gold, #FFD700);
+}
+
+@keyframes particleFlyOut {
+  0% {
+    opacity: 0.8;
+    transform: translate(0, 0) scale(0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--randomX, 0) * 60px - 30px), calc(var(--randomY, 0) * 60px - 30px)) scale(1.2);
+  }
+}
+
+/* Adjust shake animation if we keep a general shake for the omamori itself */
+.destiny-ball.shake .omamori-pouch {
+  animation: omamoriShakeEffect 0.6s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes omamoriShakeEffect {
+  10%, 90% { transform: translate3d(-1px, 0, 0) rotate(-2deg); }
+  20%, 80% { transform: translate3d(2px, 0, 0) rotate(2deg); }
+  30%, 50%, 70% { transform: translate3d(-2px, 0, 0) rotate(-3deg); }
+  40%, 60% { transform: translate3d(2px, 0, 0) rotate(3deg); }
+}
+
+/* Instruction Text */
+.instruction-text.themed-text-gentle p {
+}
+
+/* Result Display Theming */
+.result-display.themed-section-box {
+  margin-top: 30px;
+  padding: 20px 25px;
+  background-color: rgba(255, 250, 248, 0.9);
+  border-radius: 18px; 
+  box-shadow: 0 6px 20px rgba(217, 84, 77, 0.1), 0 0 0 1.5px rgba(229, 109, 97, 0.2);
+  width: 90%;
+  max-width: 500px;
+}
+
+.question-display, .answer-display {
   margin-bottom: 15px;
   text-align: left;
-  padding-bottom: 10px;
-  border-bottom: 1px dashed rgba(155, 89, 182, 0.3);
+  line-height: 1.6;
 }
 
-.question-label, .answer-label {
-  font-weight: bold;
-  color: #8e44ad;
-  margin-right: 5px;
+.question-display .question-text,
+.answer-display .answer-text-display {
+  margin-left: 5px;
 }
 
-.question-text, .answer-text-display {
-  color: #333;
-}
-
-.answer-display {
-  text-align: left;
-  font-size: 16px;
-  margin-bottom: 20px;
-}
-
-.shake-again-button {
+.result-buttons.button-row {
   display: flex;
-  justify-content: space-between;
-  gap: 10px;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
 }
 
-.shake-again-button button {
-  flex: 1;
-  background: linear-gradient(145deg, #9b59b6, #8e44ad);
-  color: white;
-  border: none;
-  padding: 10px 25px;
+.themed-button {
+  padding: 10px 20px;
   font-size: 1em;
+  font-weight: 600;
+  border: none;
   border-radius: 25px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(142, 68, 173, 0.4);
-  font-family: 'STKaiti', 'KaiTi', serif;
-}
-
-.shake-again-button .save-button {
-  background: linear-gradient(145deg, #3498db, #2980b9);
-  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
-}
-
-.shake-again-button button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(142, 68, 173, 0.5);
-}
-
-.shake-again-button .save-button:hover {
-  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.5);
-}
-
-/* 历史记录区域 */
-.history-section {
-  margin-top: 30px;
-  background-color: rgba(255, 255, 255, 0.7);
-  border-radius: 15px;
-  padding: 15px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
-  border: 1px solid rgba(155, 89, 182, 0.2);
-}
-
-.history-title {
-  display: flex;
-  justify-content: space-between;
+  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive);
+  letter-spacing: 0.5px;
+  display: inline-flex;
   align-items: center;
-  margin-bottom: 10px;
-  padding-bottom: 5px;
-  border-bottom: 1px solid rgba(155, 89, 182, 0.2);
-  color: #8e44ad;
-  font-size: 16px;
+  justify-content: center;
+  gap: 8px;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+}
+
+.themed-button .btn-icon {
+  font-size: 1.1em;
+  transition: transform 0.3s ease;
+}
+.themed-button:hover .btn-icon {
+  transform: scale(1.15) rotate(-8deg);
+}
+
+.themed-button.primary-button {
+  background: linear-gradient(145deg, var(--theme-color-red, #E56D61), var(--theme-color-dark, #B8433E));
+  color: white;
+  box-shadow: 0 3px 10px rgba(184, 67, 62, 0.2), 0 0 0 1px rgba(255,255,255,0.25) inset;
+}
+.themed-button.primary-button:hover {
+  background: linear-gradient(145deg, var(--theme-color-dark, #B8433E), var(--theme-color-red, #E56D61));
+  box-shadow: 0 5px 14px rgba(184, 67, 62, 0.3), 0 0 0 1px rgba(255,255,255,0.35) inset;
+  transform: translateY(-2px);
+}
+
+.themed-button.secondary-button {
+  background-color: #fff;
+  color: var(--theme-color-red, #E56D61);
+  border: 1.5px solid var(--theme-color-red, #E56D61);
+  box-shadow: 0 2px 6px rgba(217, 84, 77, 0.08);
+}
+.themed-button.secondary-button:hover {
+  background-color: var(--theme-color-extralight-pink, #FFF5F5);
+  border-color: var(--theme-color-dark, #B8433E);
+  color: var(--theme-color-dark, #B8433E);
+  transform: translateY(-1px);
+}
+
+/* History Section Theming */
+.history-section.themed-section-box {
+  margin-top: 35px;
+  padding: 20px 25px;
+  background-color: rgba(255, 250, 248, 0.85);
+  border-radius: 18px;
+  box-shadow: 0 4px 15px rgba(217, 84, 77, 0.08), 0 0 0 1px rgba(229, 109, 97, 0.15);
+  width: 90%;
+  max-width: 550px;
+}
+
+.history-title.section-title {
+  color: var(--theme-color-dark, #B8433E);
+  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive);
+  font-size: 1.8em;
+  margin-bottom: 18px;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px dashed var(--theme-color-border-subtle, rgba(229, 109, 97, 0.3));
+  padding-bottom: 10px;
+}
+.history-title .deco-icon {
+  font-size: 0.8em;
 }
 
 .clear-history {
-  font-size: 12px;
-  color: #888;
-  cursor: pointer;
-  transition: color 0.3s;
-}
-
-.clear-history:hover {
-  color: #e74c3c;
+  font-family: var(--font-family-sans-serif);
+  font-weight: 500;
 }
 
 .history-list {
   max-height: 300px;
   overflow-y: auto;
-  padding-right: 5px;
+  padding-right: 10px;
 }
 
-.history-item {
-  padding: 10px;
-  border-bottom: 1px dashed rgba(155, 89, 182, 0.2);
-  text-align: left;
+/* Custom scrollbar for history */
+.history-list::-webkit-scrollbar {
+  width: 6px;
+}
+.history-list::-webkit-scrollbar-track {
+  background: var(--theme-color-background-light, #FFF5F5);
+  border-radius: 10px;
+}
+.history-list::-webkit-scrollbar-thumb {
+  background-color: var(--theme-color-border-subtle, rgba(229, 109, 97, 0.4));
+  border-radius: 10px;
+}
+.history-list::-webkit-scrollbar-thumb:hover {
+  background-color: var(--theme-color-red, #E56D61);
+}
+
+.themed-history-item {
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 12px 15px;
+  border-radius: 10px;
   margin-bottom: 10px;
-  transition: background-color 0.3s;
+  border: 1px solid var(--theme-color-border-very-subtle, rgba(229, 109, 97, 0.1));
+  text-align: left;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-.history-item:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-}
-
-.history-item:hover {
-  background-color: rgba(155, 89, 182, 0.05);
-}
-
-.history-question {
-  font-size: 14px;
-  color: #333;
-  margin-bottom: 5px;
+.history-item .history-question {
   font-style: italic;
+  margin-bottom: 4px;
+  color: var(--theme-color-text-subtle, #8C3835);
+  font-size: 0.85em;
 }
-
-.history-answer {
-  font-size: 16px;
-  color: #8e44ad;
-  font-weight: bold;
+.history-item .history-answer {
+  font-weight: 500;
+  color: var(--theme-color-text, #5C2827);
   margin-bottom: 5px;
 }
-
-.history-date {
-  font-size: 12px;
-  color: #888;
+.history-item .history-date {
+  font-size: 0.75em;
+  color: var(--theme-color-text-very-subtle, #c9a9a8);
   text-align: right;
 }
 
-/* 摇晃动画 */
-.destiny-ball.shake {
-  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both infinite;
-}
-
-.destiny-ball.show-answer .ball-fluid {
-  background: rgba(98, 0, 234, 0.8);
-}
-
-@keyframes shake {
-  10%, 90% {
-    transform: translate3d(-2px, 0, 0) rotate(-2deg);
+/* Responsive Adjustments for Omamori */
+@media (max-width: 600px) {
+  .themed-container {
+    padding: 20px;
+    margin: 15px auto;
   }
-  
-  20%, 80% {
-    transform: translate3d(4px, 0, 0) rotate(2deg);
+  .main-title {
+    font-size: 2em;
   }
-  
-  30%, 50%, 70% {
-    transform: translate3d(-5px, 0, 0) rotate(-3deg);
+  .themed-subtitle {
+    font-size: 1em;
   }
-  
-  40%, 60% {
-    transform: translate3d(5px, 0, 0) rotate(3deg);
+  .themed-input-section {
+    width: 90%;
   }
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 神秘符号动画 */
-.mystic-symbols {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.symbol {
-  position: absolute;
-  font-size: 18px;
-  color: rgba(255, 255, 255, 0.8);
-  animation: float 3s ease-in-out infinite, fade-symbol 1.5s ease-in-out;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes fade-symbol {
-  0% {
-    opacity: 0;
-    transform: scale(0.5);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.2);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.8) translateY(-15px);
-  }
-}
-
-/* 媒体查询 */
-@media (max-width: 480px) {
   .destiny-ball {
-    width: 200px;
-    height: 200px;
+    width: 160px; 
+    height: 230px; 
   }
-  
-  .ball-inner {
-    width: 150px;
-    height: 150px;
+  .omamori-flap {
+    height: 60px;
   }
-  
-  .ball-fluid {
-    width: 130px;
-    height: 130px;
+  .omamori-body {
+    padding-top: 25px;
   }
-  
-  .triangle-answer {
-    width: 100px;
-    height: 100px;
+  .omamori-string-knot {
+    width: 70px;
+    height: 25px;
+    top: -12px;
   }
-  
-  .answer-text {
-    font-size: 12px;
-    transform: translateY(-12px);
+  .knot-loop {
+    width: 25px;
+    height: 35px;
+  }
+  .omamori-decoration {
+    font-size: 2.5em;
+    margin-top: 15px;
+  }
+  .destiny-ball.omamori-open .answer-scroll-container {
+    height: 100px; 
+  }
+  .answer-scroll-content {
+    font-size: 0.9em;
+  }
+  .result-buttons.button-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .themed-button {
+    width: 100%;
+  }
+  .history-title.section-title {
+    font-size: 1.6em;
   }
 }
+
 </style> 
