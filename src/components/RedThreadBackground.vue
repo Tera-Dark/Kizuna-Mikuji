@@ -15,9 +15,9 @@ const threads = ref([]);
 // 存储铃铛装饰元素
 const bellDecorations = ref([]);
 // 线条数量
-const threadCount = 20; // 增加线条数量
+const threadCount = 9; // 只留几根，别织成网
 // 铃铛装饰数量
-const bellCount = 7;
+const bellCount = 3;
 // 控制动画
 let animationFrameId = null;
 // 是否是暗色模式
@@ -53,14 +53,14 @@ watchEffect(() => {
 const updateThreadColors = () => {
   threads.value.forEach(thread => {
     // 暗色模式下使用更明亮的红色
-    const baseColor = isDarkMode.value ? 'rgba(255, 76, 76, ' : 'rgba(238, 40, 40, ';
-    const opacity = (Math.random() * 0.5 + 0.3).toFixed(2);
+    const baseColor = isDarkMode.value ? 'rgba(214, 96, 80, ' : 'rgba(188, 59, 42, ';
+    const opacity = (Math.random() * 0.16 + 0.1).toFixed(2);
     thread.element.style.borderColor = baseColor + opacity + ')';
     
     // 增加光晕效果
     thread.element.style.boxShadow = isDarkMode.value 
-      ? `0 0 10px rgba(255, 76, 76, ${opacity * 0.6})` 
-      : `0 0 8px rgba(238, 40, 40, ${opacity * 0.4})`;
+      ? `0 0 6px rgba(214, 96, 80, ${opacity * 0.35})` 
+      : `0 0 4px rgba(188, 59, 42, ${opacity * 0.25})`;
   });
   
   // 更新铃铛颜色
@@ -114,14 +114,14 @@ const createThreads = () => {
     thread.style.animationDuration = `${duration}s`;
     
     // 设置颜色（带随机透明度）
-    const baseColor = isDarkMode.value ? 'rgba(255, 76, 76, ' : 'rgba(238, 40, 40, ';
-    const opacity = (Math.random() * 0.5 + 0.3).toFixed(2);
+    const baseColor = isDarkMode.value ? 'rgba(214, 96, 80, ' : 'rgba(188, 59, 42, ';
+    const opacity = (Math.random() * 0.16 + 0.1).toFixed(2);
     thread.style.borderColor = baseColor + opacity + ')';
     
     // 增加光晕效果
     thread.style.boxShadow = isDarkMode.value 
-      ? `0 0 10px rgba(255, 76, 76, ${opacity * 0.6})` 
-      : `0 0 8px rgba(238, 40, 40, ${opacity * 0.4})`;
+      ? `0 0 6px rgba(214, 96, 80, ${opacity * 0.35})` 
+      : `0 0 4px rgba(188, 59, 42, ${opacity * 0.25})`;
     
     // 添加到容器
     threadContainer.value.appendChild(thread);
@@ -146,7 +146,7 @@ const createBellDecorations = () => {
       top: Math.random() * 95, // 0-95%
       rotation: Math.random() * 30 - 15, // -15-15deg
       scale: 0.6 + Math.random() * 0.6, // 0.6-1.2
-      opacity: 0.5 + Math.random() * 0.5, // 0.5-1.0
+      opacity: 0.16 + Math.random() * 0.22,
       delay: Math.random() * 5, // 0-5s
       size: 20 + Math.random() * 15, // 20-35px
       hue: Math.random() * 20 - 10, // -10-10deg
@@ -180,14 +180,14 @@ const animateThreads = () => {
       thread.element.style.transform = `rotate(${newAngle}deg)`;
       thread.angle = newAngle;
       
-      const baseColor = isDarkMode.value ? 'rgba(255, 76, 76, ' : 'rgba(238, 40, 40, ';
-      const opacity = (Math.random() * 0.5 + 0.3).toFixed(2);
+      const baseColor = isDarkMode.value ? 'rgba(214, 96, 80, ' : 'rgba(188, 59, 42, ';
+      const opacity = (Math.random() * 0.16 + 0.1).toFixed(2);
       thread.element.style.borderColor = baseColor + opacity + ')';
       
       // 更新光晕效果
       thread.element.style.boxShadow = isDarkMode.value 
-        ? `0 0 10px rgba(255, 76, 76, ${opacity * 0.6})` 
-        : `0 0 8px rgba(238, 40, 40, ${opacity * 0.4})`;
+        ? `0 0 6px rgba(214, 96, 80, ${opacity * 0.35})` 
+        : `0 0 4px rgba(188, 59, 42, ${opacity * 0.25})`;
     } else {
       // 更新位置
       thread.element.style.top = `${newTop}px`;
@@ -240,9 +240,9 @@ onUnmounted(() => {
 .thread {
   position: absolute;
   height: 1px;
-  border-top: 1px solid rgba(238, 40, 40, 0.4);
+  border-top: 1px solid rgba(188, 59, 42, 0.22);
   transform-origin: center left;
-  box-shadow: 0 0 5px rgba(238, 40, 40, 0.2);
+  box-shadow: 0 0 5px rgba(188, 59, 42, 0.12);
   pointer-events: none;
   animation: float 30s linear infinite;
   will-change: transform, opacity;
@@ -254,11 +254,11 @@ onUnmounted(() => {
   position: absolute;
   width: 6px;
   height: 6px;
-  background: rgba(238, 40, 40, 0.8);
+  background: rgba(188, 59, 42, 0.5);
   border-radius: 50%;
   top: -3px;
   left: 30%;
-  box-shadow: 0 0 8px rgba(238, 40, 40, 0.6);
+  box-shadow: 0 0 8px rgba(188, 59, 42, 0.3);
 }
 
 .thread-with-knot::after {
@@ -266,11 +266,11 @@ onUnmounted(() => {
   position: absolute;
   width: 4px;
   height: 4px;
-  background: rgba(238, 40, 40, 0.7);
+  background: rgba(188, 59, 42, 0.45);
   border-radius: 50%;
   top: -2px;
   left: 70%;
-  box-shadow: 0 0 6px rgba(238, 40, 40, 0.5);
+  box-shadow: 0 0 6px rgba(188, 59, 42, 0.28);
 }
 
 /* 铃铛装饰 */

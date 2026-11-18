@@ -46,7 +46,7 @@ const createSakuraPetals = () => {
       fallDelay: Math.random() * 10,       // 下落延迟 0-10秒
       swayDuration: Math.random() * 3 + 2, // 摇摆周期 2-5秒
       swayDelay: Math.random() * 2,        // 摇摆延迟 0-2秒
-      opacity: 0.5 + Math.random() * 0.5,  // 透明度 0.5-1.0
+      opacity: 0.18 + Math.random() * 0.3,  // 淡一点，不要抢纸面
       scale: 0.7 + Math.random() * 0.6,    // 缩放比例 0.7-1.3
       rotation: Math.random() * 360,       // 随机旋转角度
       hue: Math.random() * 20 - 10         // 色调微调 -10到10度
@@ -57,10 +57,10 @@ const createSakuraPetals = () => {
 // 根据窗口大小计算合适的花瓣数量
 const getOptimalPetalCount = () => {
   const width = window.innerWidth;
-  if (width < 480) return 15;
-  if (width < 768) return 25;
-  if (width < 1200) return 35;
-  return 45;
+  if (width < 480) return 7;
+  if (width < 768) return 11;
+  if (width < 1200) return 16;
+  return 22;
 };
 
 // 定期添加新花瓣
@@ -77,7 +77,7 @@ const addNewPetals = () => {
       fallDelay: 0, // 立即开始下落
       swayDuration: Math.random() * 3 + 2,
       swayDelay: 0,
-      opacity: 0.5 + Math.random() * 0.5,
+      opacity: 0.18 + Math.random() * 0.3,
       scale: 0.7 + Math.random() * 0.6,
       rotation: Math.random() * 360,
       hue: Math.random() * 20 - 10
@@ -163,7 +163,7 @@ onUnmounted(() => {
 
 .sakura-petal {
   position: absolute;
-  background-color: rgba(255, 192, 203, 0.8);
+  background-color: rgba(228, 166, 162, 0.55);
   border-radius: 50% 0;
   width: 15px;
   height: 15px;
@@ -171,7 +171,7 @@ onUnmounted(() => {
   animation-name: fall, sway;
   animation-timing-function: linear, ease-in-out;
   animation-iteration-count: infinite, infinite;
-  box-shadow: 0 0 5px rgba(255, 105, 180, 0.3);
+  box-shadow: 0 0 4px rgba(228, 166, 162, 0.18);
   will-change: transform, opacity;
   transition: filter 2s ease-in-out;
 }
@@ -180,7 +180,7 @@ onUnmounted(() => {
 .sakura-petal.type1 {
   width: 12px;
   height: 12px;
-  background-color: rgba(255, 182, 193, 0.75);
+  background-color: rgba(232, 178, 174, 0.5);
   border-radius: 50% 0 50% 0;
 }
 
@@ -188,13 +188,13 @@ onUnmounted(() => {
   width: 8px;
   height: 18px;
   border-radius: 0 50% 50% 50%;
-  background-color: rgba(255, 192, 203, 0.85);
+  background-color: rgba(228, 166, 162, 0.5);
 }
 
 .sakura-petal.type3 {
   width: 15px;
   height: 10px;
-  background-color: rgba(240, 128, 128, 0.7);
+  background-color: rgba(214, 132, 126, 0.45);
   border-radius: 50% 50% 0 50%;
 }
 
@@ -202,21 +202,21 @@ onUnmounted(() => {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: rgba(255, 228, 225, 0.8);
+  background-color: rgba(246, 218, 215, 0.6);
 }
 
 .sakura-petal.type5 {
   width: 14px;
   height: 14px;
-  background-color: rgba(255, 170, 180, 0.75);
+  background-color: rgba(224, 160, 156, 0.48);
   border-radius: 50% 10% 50% 10%;
-  box-shadow: 0 0 8px rgba(255, 105, 180, 0.5);
+  box-shadow: 0 0 5px rgba(228, 166, 162, 0.22);
 }
 
 .sakura-petal.type6 {
   width: 9px;
   height: 12px;
-  background-color: rgba(255, 200, 200, 0.8);
+  background-color: rgba(236, 190, 186, 0.5);
   border-radius: 50% 50% 10% 50%;
 }
 

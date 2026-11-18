@@ -1,36 +1,33 @@
 <template>
-  <div class="compatibility-result-display-wrapper themed-section-box reveal-item" v-if="result && result.sign1">
-    <h4 class="result-main-title"><span class="title-deco left">❀</span> 缘分解析结果 <span class="title-deco right">❀</span></h4>
-    <div class="result-overview themed-subsection">
-      <div class="signs-compared">
-        <span class="sign-emoji">{{ result.sign1?.emoji }}</span> 
-        <span class="sign-name">{{ result.sign1?.name }}</span>
-        <span class="vs-text themed-vs">엮</span>
-        <span class="sign-emoji">{{ result.sign2?.emoji }}</span>
-        <span class="sign-name">{{ result.sign2?.name }}</span>
+  <div class="compatibility-result-display-wrapper" v-if="result && result.sign1">
+    <h4 class="result-main-title"><span class="title-deco">—</span> 星线合盘 <span class="title-deco">—</span></h4>
+
+    <div class="signs-compared">
+      <div class="person">
+        <span class="sign-seal">{{ elementChar(result.element1) }}</span>
+        <span class="sign-name">{{ result.sign1 }}</span>
       </div>
-      <div class="overall-score">
-        <span class="score-label">缘分指数：</span>
-        <div class="score-badge">
-          <span class="score-value" :style="{ color: result.scoreColor }">{{ result.score }}</span>
-          <span class="score-unit">分</span>
-        </div>
+      <span class="themed-vs">缘</span>
+      <div class="person">
+        <span class="sign-seal">{{ elementChar(result.element2) }}</span>
+        <span class="sign-name">{{ result.sign2 }}</span>
       </div>
-      <p class="compatibility-summary">{{ result.summary }}</p>
     </div>
-    <div class="result-details">
-      <div class="detail-section themed-subsection">
-        <h5 class="detail-title good"><span class="deco-icon">💖</span> 缘定优点</h5>
-        <p>{{ result.strengths }}</p>
-      </div>
-      <div class="detail-section themed-subsection">
-        <h5 class="detail-title challenging"><span class="deco-icon">🎐</span> 缘浅挑战</h5>
-        <p>{{ result.weaknesses }}</p>
-      </div>
-      <div class="detail-section advice themed-subsection">
-        <h5 class="detail-title advice-title"><span class="deco-icon">📜</span> 相处之道</h5>
-        <p>{{ result.advice }}</p>
-      </div>
+
+    <div class="score-row">
+      <span class="score-value" :style="{ color: result.scoreColor }">{{ result.score }}</span>
+      <span class="score-unit">分</span>
+      <span class="score-type">{{ result.type }}</span>
+    </div>
+    <div class="score-bar"><i :style="{ width: (result.score || 0) + '%' }"></i></div>
+
+    <p class="compatibility-summary">{{ result.interpretation }}</p>
+
+    <div class="poem" v-html="result.poem"></div>
+
+    <div class="advice">
+      <span class="advice-label">本神明说</span>
+      <p>{{ result.suggestion }}</p>
     </div>
   </div>
 </template>
@@ -38,249 +35,189 @@
 <script setup>
 import { defineProps } from 'vue';
 
-const props = defineProps({
+defineProps({
   result: {
     type: Object,
-    default: () => null // Default to null if no result is passed
+    default: () => null
   }
 });
+
+// 五行字，替代原来的彩色星座符号
+function elementChar(element) {
+  const map = { fire: '火', earth: '土', air: '风', water: '水', 火: '火', 土: '土', 风: '风', 水: '水' };
+  return map[element] || '星';
+}
 </script>
 
 <style scoped>
-.themed-section-box {
-  margin-top: 25px;
-  padding: 25px 30px;
-  background-color: rgba(255, 250, 248, 0.92);
-  border-radius: 20px; 
-  box-shadow: 0 8px 28px rgba(217, 84, 77, 0.12), 0 0 0 2px rgba(229, 109, 97, 0.3);
+.compatibility-result-display-wrapper {
   width: 100%;
-  max-width: 780px; 
-  border: 1px solid transparent;
-  animation: resultFadeInUp 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
-}
-
-@keyframes resultFadeInUp {
-  from { opacity: 0; transform: translateY(25px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  margin-top: 22px;
+  padding: 26px 28px 24px;
+  background-color: var(--c-paper-2);
+  background-image: radial-gradient(100% 90% at 50% 0%, rgba(255, 255, 255, 0.6), transparent 70%);
+  border: 1px solid var(--c-line);
+  border-top: 3px solid var(--c-shu);
+  border-radius: 4px;
+  box-shadow: var(--shadow-paper-sm);
+  font-family: var(--font-body);
 }
 
 .result-main-title {
   text-align: center;
-  color: #B8433E;
-  font-size: 1.9em;
-  margin-bottom: 25px;
-  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive);
+  color: var(--c-ink);
+  font-size: 1.4em;
+  margin: 0 0 22px;
+  font-family: var(--font-display);
   font-weight: 600;
-  letter-spacing: 1.5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
+  letter-spacing: 0.16em;
 }
 
 .title-deco {
-  font-size: 0.8em;
-  color: #E56D61;
-  opacity: 0.85;
-}
-
-.themed-subsection {
-  background-color: #FFFDFB; 
-  padding: 20px 25px;
-  border-radius: 15px;
-  border: 1px solid rgba(229, 109, 97, 0.25);
-  box-shadow: 0 3px 10px rgba(217, 84, 77, 0.07);
-  margin-bottom: 20px;
-}
-.result-overview {
-  text-align: center;
-  padding-bottom: 20px;
+  color: var(--c-shu-soft);
+  margin: 0 10px;
+  opacity: 0.7;
 }
 
 .signs-compared {
-  font-size: 1.2em; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
   margin-bottom: 18px;
+}
+
+.person {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 15px; 
-}
-
-.sign-emoji {
-  font-size: 2.2em; 
-  opacity: 0.9;
-}
-
-.sign-name {
-  font-weight: 600;
-  color: #8C3835;
-  font-family: var(--font-family-sans-serif);
-}
-
-.themed-vs {
-  color: #D9544D;
-  font-weight: bold;
-  font-size: 1.5em;
-  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive);
-  padding: 0 5px;
-}
-
-.overall-score {
-  font-size: 1.3em; 
-  font-weight: 500;
-  color: #C74840;
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 8px;
 }
 
-.score-label {
+.sign-seal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--c-shu-soft);
+  border-radius: 50%;
+  color: var(--c-shu);
+  font-family: var(--font-display);
+  font-size: 0.78em;
 }
 
-.score-badge {
-  background: linear-gradient(135deg, #F8CACC, #E56D61);
-  color: white;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 1.1em; 
-  font-weight: bold;
+.sign-name {
+  font-family: var(--font-display);
+  font-size: 1.02em;
+  color: var(--c-ink);
+  letter-spacing: 0.06em;
+}
+
+.themed-vs {
   display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--c-shu);
+  font-family: var(--font-display);
+  font-size: 0.92em;
+  letter-spacing: 0.1em;
+}
+
+.score-row {
+  display: flex;
   align-items: baseline;
-  gap: 3px;
-  box-shadow: 0 2px 5px rgba(184, 67, 62, 0.3);
-  min-width: 70px; 
-  text-align: center;
   justify-content: center;
+  gap: 6px;
 }
 
 .score-value {
-  font-size: 1.3em;
-  line-height: 1; 
+  font-family: var(--font-display);
+  font-size: 2.3em;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
+
 .score-unit {
   font-size: 0.8em;
-  margin-left: 2px;
+  color: var(--c-ink-faint);
+}
+
+.score-type {
+  margin-left: 12px;
+  padding: 3px 12px;
+  border: 1px solid var(--c-line-strong);
+  border-radius: 2px;
+  color: var(--c-shu);
+  font-size: 0.82em;
+  letter-spacing: 0.1em;
+}
+
+.score-bar {
+  height: 8px;
+  margin: 14px auto 20px;
+  max-width: 420px;
+  background-color: rgba(188, 59, 42, 0.08);
+  border: 1px solid var(--c-line);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.score-bar i {
+  display: block;
+  height: 100%;
+  background: var(--c-shu);
+  transition: width 0.9s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .compatibility-summary {
-  font-size: 1em; 
-  color: #6D4C41;
-  line-height: 1.75;
-  max-width: 90%;
-  margin-left: auto;
-  margin-right: auto;
-  font-family: var(--font-family-serif);
+  margin: 0 0 18px;
+  color: var(--c-ink-soft);
+  font-size: 0.94em;
+  line-height: 1.9;
   text-align: justify;
 }
 
-.result-details .detail-section {
+.poem {
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  border-left: 2px solid var(--c-shu-soft);
+  background-color: rgba(255, 254, 250, 0.6);
+  color: var(--c-ink);
+  font-family: var(--font-display);
+  font-size: 1.02em;
+  line-height: 2;
+  text-align: center;
+  letter-spacing: 0.08em;
 }
 
-.detail-title {
-  font-size: 1.35em; 
-  margin-bottom: 12px;
-  border-bottom: 1.5px solid rgba(229, 109, 97, 0.2);
-  padding-bottom: 10px;
-  font-weight: 500;
-  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive);
+.advice {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--c-line-strong);
 }
 
-.detail-title .deco-icon {
-  font-size: 1.1em;
-  opacity: 0.8;
+.advice-label {
+  flex: 0 0 auto;
+  color: var(--c-shu);
+  font-size: 0.8em;
+  letter-spacing: 0.12em;
+  padding-top: 3px;
 }
 
-.detail-title.good {
-  color: #D9544D;
-}
-.detail-title.good .deco-icon {
-  color: #E56D61;
-}
-
-.detail-title.challenging {
-  color: #795548;
-}
-.detail-title.challenging .deco-icon {
-  color: #A1887F;
-}
-
-.detail-title.advice-title {
-  color: #B8433E;
-}
-.detail-title.advice-title .deco-icon {
-  color: #E58F87;
-}
-
-.result-details p {
-  font-size: 0.95em;
-  color: #5D4037;
-  line-height: 1.8;
+.advice p {
+  margin: 0;
+  color: var(--c-ink-soft);
+  font-size: 0.9em;
+  line-height: 1.85;
   text-align: justify;
-  padding: 8px 10px;
-  border-left: 3px solid;
-  background-color: rgba(255, 250, 248, 0.5);
-  border-radius: 0 5px 5px 0;
 }
 
-.detail-section.themed-subsection:nth-child(1) p {
-  border-left-color: #F8CACC;
+@media (max-width: 560px) {
+  .compatibility-result-display-wrapper { padding: 20px 16px; }
+  .signs-compared { gap: 8px; }
+  .sign-name { font-size: 0.92em; }
+  .score-value { font-size: 1.9em; }
 }
-.detail-section.themed-subsection:nth-child(2) p {
-  border-left-color: #FFCDD2;
-}
-.detail-section.advice.themed-subsection p {
-  border-left-color: #FFBFAB;
-}
-
-@media (max-width: 768px) {
-  .themed-section-box {
-    padding: 20px 15px;
-  }
-  .result-main-title {
-    font-size: 1.6em;
-    gap: 8px;
-  }
-  .themed-subsection {
-    padding: 15px;
-  }
-  .signs-compared {
-    font-size: 1.1em;
-    gap: 10px;
-  }
-   .sign-emoji {
-    font-size: 2em;
-  }
-  .themed-vs {
-    font-size: 1.3em;
-  }
-  .overall-score {
-    font-size: 1.15em;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .score-badge {
-    font-size: 1em;
-    padding: 4px 10px;
-  }
-  .score-value {
-    font-size: 1.2em;
-  }
-  .compatibility-summary {
-    font-size: 0.9em;
-  }
-  .detail-title {
-    font-size: 1.2em;
-  }
-  .result-details p {
-    font-size: 0.9em;
-    line-height: 1.7;
-    padding: 6px 8px;
-  }
-}
-
-</style> 
+</style>

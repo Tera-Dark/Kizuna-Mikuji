@@ -3,10 +3,10 @@
  * 不同等级的签文及其解锁条件
  */
 export const fortuneLevels = {
-  1: { name: '初级签文', description: '入门缘分测试', requiredDraws: 0 },
-  2: { name: '中级签文', description: '更深层次的缘分指引', requiredDraws: 10 },
-  3: { name: '高级签文', description: '揭示隐藏的缘分密码', requiredDraws: 30 },
-  4: { name: '神级签文', description: '最精准的缘分天机', requiredDraws: 50 }
+  1: { name: '初签', description: '刚学着看线', requiredDraws: 0 },
+  2: { name: '中签', description: '线头理得清了', requiredDraws: 10 },
+  3: { name: '高签', description: '少见的好线', requiredDraws: 30 },
+  4: { name: '神签', description: '这回本神明要正经说话', requiredDraws: 50 }
 };
 
 /**

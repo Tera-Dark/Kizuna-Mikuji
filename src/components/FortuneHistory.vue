@@ -1,12 +1,12 @@
 <template>
   <div class="history-container" :class="{ 'history-open': isOpen }">
     <div class="history-content">
-      <h3 class="history-title">抽签历史</h3>
+      <h3 class="history-title">{{ voice.history.title }}</h3>
       
       <div v-if="fortuneHistory.length === 0" class="empty-history">
-        <div class="empty-icon">📜</div>
-        <p>暂无历史记录</p>
-        <p class="empty-tip">每次求签后的结果都会记录在这里</p>
+        <div class="empty-icon"><AppIcon name="scroll" :size="30" :weight="1.3" /></div>
+        <p>{{ voice.history.emptyTitle }}</p>
+        <p class="empty-tip">{{ voice.history.emptyTip }}</p>
       </div>
       
       <div v-else class="history-list">
@@ -17,17 +17,17 @@
             <span class="history-type" :style="{ color: getTypeColor(item.fortune.type) }">
               {{ item.fortune.type }}
             </span>
-            <span class="expand-icon">{{ expandedIndex === index ? '▲' : '▼' }}</span>
+            <span class="expand-icon"><AppIcon name="arrowRight" :size="12" /></span>
           </div>
           
           <div class="history-item-details" v-if="expandedIndex === index">
             <p class="history-poem" v-html="item.fortune.poem"></p>
             <div class="action-buttons">
               <button class="view-button" @click="viewFortune(item.fortune)">
-                <span class="btn-icon">👁️</span>查看详情
+                <AppIcon name="eye" :size="14" />{{ voice.history.viewDetail }}
               </button>
               <button class="delete-button" @click.stop="deleteHistoryItem(index)">
-                <span class="btn-icon">🗑️</span>删除
+                <AppIcon name="trash" :size="14" />{{ voice.history.delete }}
               </button>
             </div>
           </div>
@@ -36,7 +36,7 @@
       
       <div class="history-actions" v-if="fortuneHistory.length > 0">
         <button class="clear-button" @click="clearHistory">
-          <span class="btn-icon">🧹</span>清空历史
+          <AppIcon name="broom" :size="14" />{{ voice.history.clear }}
         </button>
       </div>
     </div>
@@ -51,6 +51,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useFortuneStore } from '../stores/FortuneStore';
+import { voice } from '../constants/enmusubi';
+import AppIcon from './icons/AppIcon.vue';
 
 // 获取状态管理
 const fortuneStore = useFortuneStore();
@@ -148,7 +150,7 @@ const deleteHistoryItem = (index) => {
 
 // 清空历史记录
 const clearHistory = () => {
-  if (confirm('确定要清空所有历史记录吗？')) {
+  if (confirm('要把整本簿子清空吗？旧签上的线头，可就找不回来了。')) {
     fortuneHistory.value = [];
     expandedIndex.value = -1;
     saveHistory();
@@ -186,18 +188,19 @@ onMounted(() => {
   top: 80px;
   left: -350px;
   width: 330px;
-  background-color: rgba(255, 245, 238, 0.97);
-  border-radius: 0 15px 15px 0;
-  box-shadow: 3px 0 20px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(212, 175, 55, 0.2);
+  background-color: var(--c-paper);
+  background-image: linear-gradient(180deg, #FCF7EE, #F7EEDF);
+  border-radius: 0 4px 4px 0;
+  box-shadow: 6px 0 26px rgba(60, 35, 20, 0.16);
   transition: left 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   z-index: 100;
   max-height: 80vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-right: 1px solid rgba(212, 175, 55, 0.4);
-  border-top: 1px solid rgba(212, 175, 55, 0.4);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.4);
+  border-right: 1px solid var(--c-line);
+  border-top: 1px solid var(--c-line);
+  border-bottom: 1px solid var(--c-line);
 }
 
 .history-open {
@@ -232,12 +235,13 @@ onMounted(() => {
 }
 
 .history-title {
-  color: #c0392b;
+  color: var(--c-ink);
   text-align: center;
   margin-bottom: 20px;
   font-size: 1.4em;
-  font-family: 'STKaiti', 'KaiTi', serif;
-  letter-spacing: 1px;
+  font-family: var(--font-display);
+  letter-spacing: 0.16em;
+  font-weight: 700;
   position: relative;
   padding-bottom: 10px;
 }
@@ -249,27 +253,27 @@ onMounted(() => {
   left: 50%;
   transform: translateX(-50%);
   width: 40%;
-  height: 2px;
-  background: linear-gradient(to right, transparent, #c0392b, transparent);
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--c-shu), transparent);
 }
 
 .empty-history {
   text-align: center;
   padding: 40px 0;
-  color: #95a5a6;
+  color: var(--c-ink-faint);
 }
 
 .empty-icon {
-  font-size: 3em;
   margin-bottom: 15px;
-  opacity: 0.4;
+  opacity: 0.55;
+  color: var(--c-shu);
 }
 
 .empty-tip {
   font-size: 0.9em;
   margin-top: 10px;
   font-style: italic;
-  color: #a0a0a0;
+  color: var(--c-ink-faint);
 }
 
 .history-list {
@@ -278,13 +282,13 @@ onMounted(() => {
 
 .history-item {
   margin-bottom: 15px;
-  border-radius: 10px;
+  border-radius: 3px;
   overflow: hidden;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-paper-sm);
   transition: all 0.3s ease;
   transform-origin: center;
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  background-color: rgba(255, 250, 245, 0.9);
+  border: 1px solid var(--c-line);
+  background-color: #FFFAF1;
   background-image: repeating-linear-gradient(
                      45deg,
                      rgba(139, 69, 19, 0.02) 0px,
@@ -307,7 +311,7 @@ onMounted(() => {
 
 .history-item-header {
   padding: 12px 15px;
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: transparent;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -324,7 +328,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5), transparent);
+  background: linear-gradient(to right, transparent, rgba(188, 59, 42, 0.35), transparent);
 }
 
 .history-item-header:hover {
@@ -346,13 +350,14 @@ onMounted(() => {
 }
 
 .expand-icon {
-  font-size: 0.8em;
-  color: #7f8c8d;
-  transition: transform 0.3s ease;
+  display: inline-flex;
+  color: var(--c-ink-faint);
+  transform: rotate(90deg);
+  transition: transform 0.25s ease;
 }
 
 .expanded .expand-icon {
-  transform: rotate(180deg);
+  transform: rotate(-90deg);
 }
 
 .history-item-details {
@@ -388,10 +393,11 @@ onMounted(() => {
 .clear-button {
   padding: 8px 12px;
   border: none;
-  border-radius: 20px;
+  border-radius: 2px;
   cursor: pointer;
-  font-size: 0.9em;
-  transition: all 0.3s;
+  font-size: 0.86em;
+  font-family: var(--font-ui);
+  transition: all 0.25s;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -400,20 +406,23 @@ onMounted(() => {
 }
 
 .view-button {
-  background-color: #3498db;
-  color: white;
+  background-color: transparent;
+  border: 1px solid var(--c-line-strong);
+  color: var(--c-shu);
   flex: 3;
 }
 
 .delete-button {
-  background-color: #e74c3c;
-  color: white;
+  background-color: transparent;
+  border: 1px solid var(--c-line);
+  color: var(--c-ink-faint);
   flex: 2;
 }
 
 .clear-button {
-  background-color: rgba(149, 165, 166, 0.9);
-  color: white;
+  background-color: transparent;
+  border: 1px dashed var(--c-line-strong);
+  color: var(--c-ink-faint);
   width: 100%;
   margin-top: 15px;
   padding: 10px;
@@ -429,7 +438,8 @@ onMounted(() => {
 }
 
 .clear-button:hover {
-  background-color: rgba(149, 165, 166, 1);
+  background-color: rgba(188, 59, 42, 0.06);
+  color: var(--c-shu);
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="zodiac-selector-side themed-section-box">
-    <h4 class="selector-title"><span class="deco-icon">✧</span> {{ title }} <span class="deco-icon">✧</span></h4>
+    <h4 class="selector-title"><span class="deco-icon"><AppIcon name="thread" :size="14" /></span> {{ title }} <span class="deco-icon"><AppIcon name="thread" :size="14" /></span></h4>
     <div class="zodiac-grid" :class="{ 'right-grid-styling': isRightSelector }">
       <button
         v-for="(data, signKey) in zodiacData"
@@ -10,7 +10,9 @@
         @click.stop="handleClick(signKey)"
         :data-sign="signKey"
       >
-        <span class="zodiac-icon">{{ getZodiacEmoji(signKey) }}</span>
+        <span class="zodiac-icon" :class="`el-${normalizeElement(zodiacData[signKey]?.element)}`">
+          {{ getElementChar(zodiacData[signKey]?.element) }}
+        </span>
         <span class="zodiac-name">{{ data.name }}</span>
         <span class="zodiac-dates">{{ data.dates }}</span>
         <div class="selection-indicator"></div>
@@ -35,6 +37,7 @@
 
 <script setup>
 import { defineProps, defineEmits, computed } from 'vue';
+import AppIcon from './icons/AppIcon.vue';
 
 const props = defineProps({
   title: String,
@@ -54,13 +57,15 @@ const handleClick = (signKey) => {
 };
 
 // Helper functions (can be imported from a shared util or defined here if not too large)
-function getZodiacEmoji(sign) {
-  const emojiMap = {
-    aries: '♈', taurus: '♉', gemini: '♊', cancer: '♋',
-    leo: '♌', virgo: '♍', libra: '♎', scorpio: '♏',
-    sagittarius: '♐', capricorn: '♑', aquarius: '♒', pisces: '♓'
-  };
-  return emojiMap[sign] || '⭐';
+function normalizeElement(element) {
+  const map = { fire: 'fire', earth: 'earth', air: 'air', water: 'water', 火: 'fire', 土: 'earth', 风: 'air', 水: 'water' };
+  return map[element] || 'unknown';
+}
+
+// 用五行字替代星座符号，避免彩色 emoji 字形
+function getElementChar(element) {
+  const map = { fire: '火', earth: '土', air: '风', water: '水', 火: '火', 土: '土', 风: '风', 水: '水' };
+  return map[element] || '星';
 }
 
 function getElementName(element) {
@@ -96,30 +101,29 @@ function getZodiacPersonality(sign) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 15px;
-  background-color: rgba(255, 250, 248, 0.85); /* Light washi paper feel */
-  border-radius: 18px; 
-  box-shadow: 0 6px 20px rgba(217, 84, 77, 0.1), 0 0 0 1.5px rgba(229, 109, 97, 0.25);
-  width: 100%; 
-  max-width: 340px; 
-  border: 1px solid transparent; /* For box-shadow border */
-  font-family: var(--font-family-sans-serif);
+  padding: 18px 14px;
+  background-color: rgba(255, 252, 246, 0.7);
+  border-radius: 3px;
+  width: 100%;
+  max-width: 340px;
+  border: 1px solid var(--c-line);
+  font-family: var(--font-body);
 }
 
-.selector-title { 
-  color: #B8433E; /* Main theme red */
-  margin-bottom: 20px;
-  font-size: 1.4em;
+.selector-title {
+  color: var(--c-ink);
+  margin-bottom: 16px;
+  font-size: 1.12em;
   font-weight: 600;
-  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive);
-  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.1em;
+  font-family: var(--font-display);
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
 .deco-icon {
-  color: #E56D61; /* Theme accent */
+  color: var(--c-shu-soft);
   font-size: 0.8em;
   opacity: 0.9;
 }
@@ -127,9 +131,9 @@ function getZodiacPersonality(sign) {
 .zodiac-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px; 
+  gap: 8px;
   width: 100%;
-  margin-bottom: 15px;
+  margin-bottom: 14px;
 }
 
 .zodiac-item {
@@ -137,32 +141,28 @@ function getZodiacPersonality(sign) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px 5px; 
-  border: 1.5px solid rgba(229, 109, 97, 0.25); /* Subtle theme border */
-  border-radius: 12px; 
+  padding: 10px 4px 9px;
+  border: 1px solid var(--c-line);
+  border-radius: 3px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  background-color: #FFFDFB; /* Off-white card background */
-  box-shadow: 0 2px 6px rgba(184, 67, 62, 0.08); 
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  background-color: #FFFCF6;
   text-align: center;
-  min-height: 105px; 
-  position: relative; /* For selection indicator */
-  overflow: hidden; /* To clip indicator if needed */
+  min-height: 96px;
+  position: relative;
+  overflow: hidden;
+  font-family: inherit;
 }
 
 .zodiac-item:hover {
-  transform: translateY(-3px) scale(1.02);
-  border-color: #E56D61; /* Brighter theme border on hover */
-  box-shadow: 0 4px 12px rgba(217, 84, 77, 0.15);
-  background-color: #FFF9F7;
+  border-color: var(--c-shu-soft);
+  background-color: #FFF9F1;
 }
 
 .zodiac-item.active {
-  background-color: #F8CACC; /* Light祈愿粉 */
-  border-color: #D9544D; /* 缘结红 */
-  color: #8C3835; /* Deep red-brown text for active */
-  box-shadow: 0 0 15px rgba(217, 84, 77, 0.3), inset 0 0 5px rgba(255,255,255,0.3);
-  transform: scale(1.05);
+  background-color: var(--c-shu-wash);
+  border-color: var(--c-shu);
+  color: var(--c-shu-deep);
 }
 
 /* Selection Indicator - a small knot or seal */
@@ -173,12 +173,11 @@ function getZodiacPersonality(sign) {
   right: 5px;
   width: 12px;
   height: 12px;
-  background-color: #D9544D; /* 缘结红 */
-  border-radius: 50%;
+  background-color: var(--c-shu);
+  border-radius: 1px;
   opacity: 0;
   transform: scale(0.5);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  box-shadow: 0 0 5px #B8433E;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .zodiac-item.active .selection-indicator {
@@ -196,57 +195,70 @@ function getZodiacPersonality(sign) {
 
 
 .zodiac-icon {
-  font-size: 2em; 
-  margin-bottom: 6px;
-  color: #E58F87; /* Softer pink/red for icons */
-  transition: color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-bottom: 5px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-size: 0.78em;
+  line-height: 1;
+  color: var(--c-ink-faint);
+  transition: color 0.2s ease;
 }
 
+.zodiac-icon.el-fire { color: #BC3B2A; }
+.zodiac-icon.el-earth { color: #A97C34; }
+.zodiac-icon.el-air { color: #6E7F6A; }
+.zodiac-icon.el-water { color: #4E6B7A; }
+
 .zodiac-item.active .zodiac-icon {
- color: #8C3835; 
+  color: var(--c-shu);
 }
 
 .zodiac-name {
-  font-size: 0.9em;
+  font-size: 0.88em;
   font-weight: 600;
-  color: #B8433E; 
-  margin-bottom: 3px;
-  transition: color 0.3s ease;
+  color: var(--c-ink);
+  margin-bottom: 2px;
+  letter-spacing: 0.04em;
 }
 
 .zodiac-item.active .zodiac-name {
-  color: #8C3835; 
-  font-weight: 700;
+  color: var(--c-shu-deep);
 }
 
 .zodiac-dates {
-  font-size: 0.7em;
-  color: #C74840;
-  transition: color 0.3s ease;
+  font-size: 0.68em;
+  color: var(--c-ink-faint);
+  font-variant-numeric: tabular-nums;
 }
 
 .zodiac-item.active .zodiac-dates {
-  color: #8C3835;
+  color: var(--c-ink-soft);
 }
 
 /* Selected zodiac detail area */
 .themed-subsection { /* For the detail display */
-  margin-top: 15px;
-  padding: 15px;
-  background-color: rgba(255, 248, 245, 0.9); /* Slightly different light background */
-  border-radius: 12px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  background-color: rgba(255, 254, 250, 0.65);
+  border-radius: 2px;
   width: 100%;
-  border: 1px solid rgba(229, 109, 97, 0.2);
-  box-shadow: inset 0 1px 5px rgba(217, 84, 77, 0.08);
+  border: 1px solid var(--c-line);
 }
 
 .detail-title {
-  color: #C74840; 
-  margin-bottom: 12px;
-  font-size: 1.15em;
+  color: var(--c-ink);
+  margin-bottom: 10px;
+  font-size: 1em;
   text-align: center;
-  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive);
-  font-weight: 500;
+  letter-spacing: 0.1em;
+  font-family: var(--font-display);
+  font-weight: 600;
 }
 
 .zodiac-traits {
@@ -262,13 +274,13 @@ function getZodiacPersonality(sign) {
 
 .trait-label {
   font-weight: 600;
-  color: #D9544D;
+  color: var(--c-shu);
   margin-right: 6px;
   flex-shrink: 0;
 }
 
 .trait-value {
-  color: #8C3835;
+  color: var(--c-ink-soft);
 }
 
 /* Responsive adjustments */
@@ -289,7 +301,8 @@ function getZodiacPersonality(sign) {
     border-radius: 10px;
   }
   .zodiac-icon {
-    font-size: 1.8em;
+    width: 24px;
+    height: 24px;
   }
   .zodiac-name {
     font-size: 0.85em;

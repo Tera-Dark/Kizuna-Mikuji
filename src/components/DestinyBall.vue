@@ -1,8 +1,8 @@
 <template>
   <div class="destiny-ball-container themed-container">
     <div class="destiny-ball-title">
-      <h3 class="main-title"><span class="deco-icon left">❀</span> 缘分球 <span class="deco-icon right">❀</span></h3>
-      <p class="subtitle themed-subtitle">摇一摇，探寻爱情的玄妙指引</p>
+      <h3 class="main-title"><span class="deco-icon left"><AppIcon name="omamori" :size="17" /></span> 结缘御守 <span class="deco-icon right"><AppIcon name="omamori" :size="17" /></span></h3>
+      <p class="subtitle themed-subtitle">里头塞了本神明的一点私心。轻点它。</p>
     </div>
     
     <!-- 添加问题输入区域 -->
@@ -10,7 +10,7 @@
       <input 
         type="text" 
         v-model="userQuestion" 
-        placeholder="心有所问？轻语于此（可选）"
+        placeholder="想问什么，写在这里"
         @keyup.enter="shakeBall"
         maxlength="50"
         class="themed-input"
@@ -58,7 +58,7 @@
     </div>
     
     <div class="instruction-text themed-text-gentle" v-if="!showAnswer && !isShaking">
-      <p>{{ userQuestion ? '轻点御守，静待神谕' : '轻点御守，祈缘问情' }}</p>
+      <p>{{ userQuestion ? '轻点御守。本神明在听。' : '什么都不问也行。轻点试试。' }}</p>
     </div>
     
     <div class="result-display themed-section-box" v-if="showAnswer">
@@ -72,10 +72,10 @@
       </div>
       <div class="result-buttons button-row">
         <button @click="resetBall" class="themed-button secondary-button">
-          <span class="btn-icon">↻</span> 再摇一次
+          <span class="btn-icon">↻</span> 再问一次
         </button>
         <button class="themed-button primary-button save-button" @click="saveToHistory">
-          <span class="btn-icon">📜</span> 保存神谕
+          <AppIcon name="book" :size="14" class="btn-icon" /> 收进簿子
         </button>
       </div>
     </div>
@@ -83,8 +83,8 @@
     <!-- 历史记录区域 -->
     <div class="history-section themed-section-box" v-if="destinyHistory.length > 0 && !showAnswer && !isShaking">
       <h4 class="history-title section-title">
-        <span class="deco-icon left">📜</span> 往昔神谕 <span class="deco-icon right">📜</span>
-        <span class="clear-history themed-link" @click="clearHistory">清空记录</span>
+        <span class="deco-icon left"><AppIcon name="scroll" :size="15" /></span> 旧神谕 <span class="deco-icon right"><AppIcon name="scroll" :size="15" /></span>
+        <span class="clear-history themed-link" @click="clearHistory">把旧的烧了</span>
       </h4>
       <div class="history-list">
         <div v-for="(item, index) in destinyHistory" :key="index" class="history-item themed-history-item">
@@ -98,6 +98,7 @@
 </template>
 
 <script setup>
+import AppIcon from './icons/AppIcon.vue';
 import { ref, onMounted } from 'vue';
 
 const isShaking = ref(false);
@@ -270,23 +271,25 @@ onMounted(() => {
 <style scoped>
 /* General Theming */
 .themed-container {
-  background-color: var(--theme-color-background-light, rgba(255, 245, 248, 0.95)); 
-  border-radius: 25px;
-  padding: 30px 35px;
-  margin: 25px auto;
-  box-shadow: 0 8px 25px var(--theme-color-shadow-light, rgba(217, 84, 77, 0.15)), 
-              0 0 0 2px var(--theme-color-border-subtle, rgba(229, 109, 97, 0.2));
-  max-width: 600px; 
+  background-color: var(--c-paper-2);
+  background-image: radial-gradient(100% 90% at 50% 0%, rgba(255, 255, 255, 0.6), transparent 70%);
+  border-radius: 6px;
+  border: 1px solid var(--c-line);
+  border-top: 3px solid var(--c-shu);
+  padding: 28px 30px 26px;
+  margin: 24px auto;
+  box-shadow: var(--shadow-paper-sm);
+  max-width: 600px;
   text-align: center;
-  font-family: var(--font-family-sans-serif);
+  font-family: var(--font-body);
 }
 
 .main-title {
-  color: var(--theme-color-dark, #B8433E);
-  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive);
-  font-size: 2.4em;
+  color: var(--c-ink);
+  font-family: var(--font-display);
+  font-size: 1.9em;
+  letter-spacing: 0.12em;
   margin-bottom: 8px;
-  text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -315,24 +318,24 @@ onMounted(() => {
 
 .themed-input {
   width: 100%;
-  padding: 12px 15px;
-  border-radius: 10px;
-  border: 1.5px solid var(--theme-color-border-subtle, rgba(229, 109, 97, 0.4));
-  background-color: #fff;
-  font-size: 1em;
-  color: var(--theme-color-text, #5C2827);
-  font-family: var(--font-family-sans-serif);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  padding: 11px 14px;
+  border-radius: 2px;
+  border: 1px solid var(--c-line-strong);
+  background-color: #FFFCF6;
+  font-size: 0.95em;
+  color: var(--c-ink);
+  font-family: var(--font-body);
+  text-align: center;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   box-sizing: border-box;
 }
 .themed-input:focus {
-  border-color: var(--theme-color-red, #E56D61);
-  box-shadow: 0 0 0 3.5px rgba(229, 109, 97, 0.25);
+  border-color: var(--c-shu);
+  box-shadow: 0 0 0 3px var(--c-shu-wash);
   outline: none;
 }
 .themed-input::placeholder {
-  color: var(--theme-color-placeholder, #bcaaaa);
-  font-style: italic;
+  color: var(--c-ink-faint);
 }
 
 .question-counter.themed-text-minor {
@@ -650,12 +653,12 @@ onMounted(() => {
 }
 
 .themed-button.primary-button {
-  background: linear-gradient(145deg, var(--theme-color-red, #E56D61), var(--theme-color-dark, #B8433E));
+  background: var(--c-shu);
   color: white;
   box-shadow: 0 3px 10px rgba(184, 67, 62, 0.2), 0 0 0 1px rgba(255,255,255,0.25) inset;
 }
 .themed-button.primary-button:hover {
-  background: linear-gradient(145deg, var(--theme-color-dark, #B8433E), var(--theme-color-red, #E56D61));
+  background: var(--c-shu-deep);
   box-shadow: 0 5px 14px rgba(184, 67, 62, 0.3), 0 0 0 1px rgba(255,255,255,0.35) inset;
   transform: translateY(-2px);
 }
@@ -716,7 +719,7 @@ onMounted(() => {
   width: 6px;
 }
 .history-list::-webkit-scrollbar-track {
-  background: var(--theme-color-background-light, #FFF5F5);
+  background: var(--c-paper-3);
   border-radius: 10px;
 }
 .history-list::-webkit-scrollbar-thumb {

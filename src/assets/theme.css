@@ -1,0 +1,146 @@
+/**
+ * 缘结神社 · 视觉基底
+ *
+ * 设计取向：
+ * - 不是「日式神社主题皮肤」，而是她自己的神社：旧、穷、暖、纸味重，但红线很新。
+ * - 主色只有朱、墨、生成り、金；粉色只做极少量点缀（她本人）。
+ * - 全站不使用彩色 emoji，图形一律走 AppIcon 的线性图标。
+ */
+
+/* 标题字体：站酷庆科黄油体（OFL），只保留站内用到的字 */
+@font-face {
+  font-family: 'ZCOOL QingKe';
+  src: url('/fonts/qingke.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* 墨 */
+  --c-ink: #362725;
+  --c-ink-soft: #6E544D;
+  --c-ink-faint: #9C8179;
+
+  /* 纸 */
+  --c-paper: #FCF7EE;
+  --c-paper-2: #F6ECDC;
+  --c-paper-3: #EDDFC9;
+  --c-paper-deep: #E4D2B8;
+
+  /* 朱 */
+  --c-shu: #BC3B2A;
+  --c-shu-deep: #8F271C;
+  --c-shu-soft: #D07164;
+  --c-shu-wash: rgba(188, 59, 42, 0.08);
+
+  /* 她 */
+  --c-sakura: #E4A6A2;
+  --c-sakura-soft: #F6DAD7;
+
+  /* 金 */
+  --c-gold: #B4883D;
+  --c-gold-soft: #D9BE86;
+
+  /* 线 */
+  --c-line: rgba(143, 39, 28, 0.14);
+  --c-line-strong: rgba(143, 39, 28, 0.3);
+
+  /* 阴影：纸压出来的，不是玻璃浮起来的 */
+  --shadow-paper: 0 16px 44px rgba(92, 44, 32, 0.12), 0 2px 6px rgba(92, 44, 32, 0.06);
+  --shadow-paper-sm: 0 4px 14px rgba(92, 44, 32, 0.1);
+  --shadow-slip: 0 2px 0 rgba(255, 255, 255, 0.55) inset, 0 3px 10px rgba(92, 44, 32, 0.08);
+
+  /* 字体：标题用萌系，正文走系统衬线，零网络开销 */
+  --font-display: 'ZCOOL QingKe', 'Songti SC', 'STSong', 'SimSun', serif;
+  --font-body: 'Songti SC', 'STSong', 'Noto Serif CJK SC', 'Source Han Serif SC', 'SimSun', serif;
+  --font-ui: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* 字级 */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 19px;
+  --text-xl: 24px;
+
+  /* 形状 */
+  --radius-paper: 16px;
+  --radius-slip: 6px;
+
+  /* 兼容旧变量，逐步淘汰 */
+  --theme-color-red: #BC3B2A;
+  --theme-color-dark: #8F271C;
+  --theme-color-deep-red: #8F271C;
+  --theme-color-light: #D07164;
+  --theme-color-light-pink: #E4A6A2;
+  --theme-color-extralight-pink: #F6DAD7;
+  --theme-color-gold: #B4883D;
+  --color-text: #362725;
+  --color-background: #F2E7D6;
+  --color-background-soft: #FCF7EE;
+  --color-border: rgba(143, 39, 28, 0.18);
+  --primary-color: #BC3B2A;
+  --secondary-color: #D07164;
+  --accent-color: #B4883D;
+}
+
+/* 标题统一交给萌系字体，不再合成粗体 */
+h1,
+h2,
+h3 {
+  font-weight: 400;
+}
+
+/* 纸底：暖、粗、有纤维感 */
+body {
+  color: var(--c-ink);
+  font-family: var(--font-body);
+  background-color: #F2E7D6;
+  background-image:
+    radial-gradient(120% 70% at 50% -10%, rgba(255, 252, 245, 0.95), transparent 62%),
+    radial-gradient(90% 60% at 100% 100%, rgba(240, 214, 198, 0.7), transparent 60%),
+    repeating-linear-gradient(0deg, rgba(140, 96, 66, 0.035) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(140, 96, 66, 0.025) 0 1px, transparent 1px 4px),
+    linear-gradient(180deg, #F7EEE0, #F2E5D2);
+  background-attachment: fixed;
+}
+
+/* 一根从画面外垂下来的红线，压在所有内容之下 */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='900' viewBox='0 0 1200 900'%3E%3Cpath d='M-120 720C260 380 690 830 1320 340' stroke='%23BC3B2A' stroke-opacity='0.13' stroke-width='2' fill='none'/%3E%3Cpath d='M-120 790C320 470 740 910 1320 430' stroke='%23BC3B2A' stroke-opacity='0.07' stroke-width='1.1' fill='none'/%3E%3Cpath d='M980 -80C900 200 1120 260 1040 520' stroke='%23BC3B2A' stroke-opacity='0.09' stroke-width='1.4' fill='none'/%3E%3C/svg%3E");
+  background-size: cover;
+  background-position: center;
+}
+
+/* 通用纸面 */
+.paper {
+  background-color: var(--c-paper);
+  background-image:
+    radial-gradient(100% 80% at 50% 0%, rgba(255, 255, 255, 0.75), transparent 70%),
+    linear-gradient(180deg, rgba(255, 253, 248, 0.9), rgba(248, 239, 226, 0.9));
+  border: 1px solid var(--c-line);
+  box-shadow: var(--shadow-paper);
+}
+
+/* 朱印 */
+.seal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  color: #FFF6F0;
+  background: var(--c-shu);
+  border-radius: 4px;
+  letter-spacing: 0;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset, 0 2px 6px rgba(143, 39, 28, 0.25);
+}
+
+/* 统一取消旧 emoji 的彩色字形 */
+.emoji-off {
+  font-variant-emoji: text;
+}

@@ -1,10 +1,10 @@
 <template>
   <div class="sound-missing-hint" v-if="isVisible">
     <div class="hint-content">
-      <div class="hint-icon">🔊</div>
+      <div class="hint-icon"><AppIcon name="volume" :size="22" /></div>
       <div class="hint-message">
-        <p>找不到风铃音效文件</p>
-        <p class="hint-detail">请在 <code>public/sounds</code> 目录下添加 <code>wind-chime.mp3</code> 文件</p>
+        <p>{{ voice.sound.title }}</p>
+        <p class="hint-detail">{{ voice.sound.detail }}</p>
       </div>
       <button class="close-button" @click="closeHint">×</button>
     </div>
@@ -13,6 +13,8 @@
 
 <script setup>
 import { ref } from 'vue';
+import { voice } from '../constants/enmusubi';
+import AppIcon from './icons/AppIcon.vue';
 
 const props = defineProps({
   isVisible: {
@@ -44,10 +46,10 @@ const closeHint = () => {
 .hint-content {
   display: flex;
   align-items: center;
-  background-color: #fff3cd;
-  border: 1px solid #ffeeba;
-  border-left: 5px solid #ffc107;
-  border-radius: 4px;
+  background-color: var(--c-paper);
+  border: 1px solid var(--c-line-strong);
+  border-left: 3px solid var(--c-shu);
+  border-radius: 2px;
   padding: 12px 15px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
@@ -55,7 +57,7 @@ const closeHint = () => {
 .hint-icon {
   font-size: 1.8em;
   margin-right: 15px;
-  color: #ffc107;
+  color: var(--c-shu);
 }
 
 .hint-message {

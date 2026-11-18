@@ -1,17 +1,17 @@
 <template>
-  <div class="name-fortune-container">
+  <div class="name-fortune-container" :class="{ 'has-result': isAnalysisComplete }">
     <div class="name-fortune-intro" v-if="!isAnalysisComplete">
-      <h3 class="intro-title">&#x1F4DC; 姓名缘分解析</h3>
+      <h3 class="intro-title"><AppIcon name="scroll" :size="20" class="title-icon" /> 报上名来</h3>
       <p class="intro-text">
-        请输入您的姓名，我们将根据传统姓名学为您解析隐藏在名字中的缘分密码。
-        <span class="intro-note">（仅供娱乐，请勿当真）</span>
+        名字里也藏着线头。写下来，本神明抽一抽，看看你的缘线往哪边偏。
+        <span class="intro-note">（看个乐。别当真。）</span>
       </p>
       
       <div class="name-input-area">
         <input 
           type="text" 
           v-model="inputName" 
-          placeholder="请输入您的姓名" 
+          placeholder="你的名字" 
           class="name-input"
           :maxlength="20"
           @keyup.enter="analyzeInputName"
@@ -23,24 +23,17 @@
           class="analyze-button" 
           :disabled="!inputName.trim()"
         >
-          <span class="btn-icon">&#x1F4DC;</span> 解析姓名
+          <AppIcon name="brush" :size="15" class="btn-icon" /> 让本神明看看
         </button>
-      </div>
-      
-      <!-- 添加玄学元素装饰 -->
-      <div class="mystic-elements">
-        <div class="mystic-symbol" v-for="(symbol, index) in mysticSymbols" :key="index">
-          {{ symbol }}
-        </div>
       </div>
     </div>
     
     <div v-if="isAnalysisComplete" class="name-result-container reveal-parent" :class="{ visible: isAnalysisComplete }">
       <div class="result-header reveal-item">
-        <h3 class="result-title">「{{ fortuneStore.userName }}」的姓名缘分</h3>
+        <h3 class="result-title">「{{ fortuneStore.userName }}」的缘线</h3>
         
         <div class="name-fortune-type">
-          <span class="fortune-type-badge" :style="{ backgroundColor: fortuneStore.fortuneTypeColor }">
+          <span class="fortune-type-badge" :style="{ color: fortuneStore.fortuneTypeColor }">
             {{ fortuneStore.selectedFortune.type }}
           </span>
         </div>
@@ -48,7 +41,7 @@
       
       <!-- 新增：显示顶层描述信息 -->
       <div class="name-fortune-general-description result-section reveal-item" v-if="fortuneStore.selectedFortune && fortuneStore.selectedFortune.description">
-        <h4><span class="h-decorator">&#x1F4D6;</span> 综合概述 <span class="h-decorator">&#x1F4D6;</span></h4>
+        <h4><span class="h-decorator"><AppIcon name="book" :size="15" /></span> 综合概述 <span class="h-decorator"><AppIcon name="book" :size="15" /></span></h4>
         <p>{{ fortuneStore.selectedFortune.description }}</p>
         <!-- 您也可以在这里添加对 selectedFortune.personality, luckNumber, luckColor 等的显示 -->
         <!-- 例如:
@@ -62,7 +55,7 @@
       
       <!-- 添加字符解读部分 -->
       <div class="name-character-analysis result-section reveal-item">
-        <h4><span class="h-decorator">&#x1F38E;</span> 字符解读 <span class="h-decorator">&#x1F38E;</span></h4>
+        <h4><span class="h-decorator"><AppIcon name="brush" :size="15" /></span> 字符解读 <span class="h-decorator"><AppIcon name="brush" :size="15" /></span></h4>
         <div class="character-container">
           <div 
             v-for="(char, index) in nameCharacters" 
@@ -85,19 +78,19 @@
       </div>
       
       <div class="name-fortune-poem-container result-section reveal-item">
-        <h4><span class="h-decorator">&#x1F4DC;</span> 签诗启示 <span class="h-decorator">&#x1F4DC;</span></h4>
+        <h4><span class="h-decorator"><AppIcon name="scroll" :size="15" /></span> 签诗启示 <span class="h-decorator"><AppIcon name="scroll" :size="15" /></span></h4>
         <div class="name-fortune-poem">
           <p v-html="fortuneStore.selectedFortune.poem"></p>
         </div>
       </div>
       
       <div class="name-fortune-interpretation result-section reveal-item">
-        <h4><span class="h-decorator">&#x1F50D;</span> 姓名解析 <span class="h-decorator">&#x1F50D;</span></h4>
+        <h4><span class="h-decorator"><AppIcon name="eye" :size="15" /></span> 姓名解析 <span class="h-decorator"><AppIcon name="eye" :size="15" /></span></h4>
         <p>{{ fortuneStore.selectedFortune.interpretation }}</p>
       </div>
       
       <div class="name-personalized-result result-section reveal-item">
-        <h4><span class="h-decorator">&#x2728;</span> 个性化分析 <span class="h-decorator">&#x2728;</span></h4>
+        <h4><span class="h-decorator"><AppIcon name="sparkles" :size="14" /></span> 个性化分析 <span class="h-decorator"><AppIcon name="sparkles" :size="14" /></span></h4>
         <div class="personalized-details">
           <div class="detail-item">
             <span class="detail-label">性格特质：</span>
@@ -135,7 +128,7 @@
         
         <!-- 添加五行分析 -->
         <div class="five-elements-analysis reveal-item">
-          <h5><span class="h-decorator-small">&#x1F300;</span> 五行分析 <span class="h-decorator-small">&#x1F300;</span></h5>
+          <h5><span class="h-decorator-small"><AppIcon name="sparkles" :size="14" /></span> 五行分析 <span class="h-decorator-small"><AppIcon name="sparkles" :size="14" /></span></h5>
           <div class="elements-chart">
             <div 
               v-for="(element, index) in getFiveElements()" 
@@ -154,19 +147,19 @@
       </div>
       
       <div class="name-fortune-suggestion result-section reveal-item">
-        <h4><span class="h-decorator">&#x1F48C;</span> 缘分建议 <span class="h-decorator">&#x1F48C;</span></h4>
+        <h4><span class="h-decorator"><AppIcon name="heart" :size="15" /></span> 缘分建议 <span class="h-decorator"><AppIcon name="heart" :size="15" /></span></h4>
         <p>{{ fortuneStore.selectedFortune.suggestion }}</p>
         
         <!-- 添加宜忌事项 -->
         <div class="fortune-tips reveal-item">
           <div class="fortune-do">
-            <h5><span class="h-decorator-small">&#x2705;</span> 今日宜 <span class="h-decorator-small">&#x2705;</span></h5>
+            <h5><span class="h-decorator-small"><AppIcon name="check" :size="12" /></span> 今日宜 <span class="h-decorator-small"><AppIcon name="check" :size="12" /></span></h5>
             <ul>
               <li v-for="(item, index) in getLuckyActivities()" :key="`do-${index}`">{{ item }}</li>
             </ul>
           </div>
           <div class="fortune-dont">
-            <h5><span class="h-decorator-small">&#x274C;</span> 今日忌 <span class="h-decorator-small">&#x274C;</span></h5>
+            <h5><span class="h-decorator-small"><AppIcon name="close" :size="12" /></span> 今日忌 <span class="h-decorator-small"><AppIcon name="close" :size="12" /></span></h5>
             <ul>
               <li v-for="(item, index) in getUnluckyActivities()" :key="`dont-${index}`">{{ item }}</li>
             </ul>
@@ -175,14 +168,15 @@
       </div>
       
       <div class="name-fortune-actions reveal-item">
-        <button @click="resetAnalysis" class="reset-button styled-button"><span class="btn-icon">&#x1F504;</span> 重新分析</button>
-        <button @click="saveToHistory" class="save-button styled-button"><span class="btn-icon">&#x1F4BE;</span> 保存结果</button>
+        <button @click="resetAnalysis" class="reset-button styled-button"><AppIcon name="refresh" :size="14" class="btn-icon" /> 重新分析</button>
+        <button @click="saveToHistory" class="save-button styled-button"><AppIcon name="check" :size="14" class="btn-icon" /> 保存结果</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import AppIcon from './icons/AppIcon.vue';
 import { ref, computed } from 'vue';
 import { useFortuneStore } from '../stores/FortuneStore';
 
@@ -192,7 +186,6 @@ const isAnalysisComplete = ref(false);
 const selectedCharIndex = ref(-1);
 
 // 神秘符号
-const mysticSymbols = ['✧', '✦', '❂', '☯', '☽', '☾', '⚝', '✴', '⚚', '⚛'];
 
 // 名字字符数组
 const nameCharacters = computed(() => {
@@ -306,11 +299,11 @@ function getFiveElements() {
   const factor = 100 / total;
   
   return [
-    { name: '金', value: Math.round(metal * factor), color: '#FFD700' },
-    { name: '木', value: Math.round(wood * factor), color: '#2ECC71' },
-    { name: '水', value: Math.round(water * factor), color: '#3498DB' },
-    { name: '火', value: Math.round(fire * factor), color: '#E74C3C' },
-    { name: '土', value: Math.round(earth * factor), color: '#E67E22' }
+    { name: '金', value: Math.round(metal * factor), color: '#B4883D' },
+    { name: '木', value: Math.round(wood * factor), color: '#6E7F6A' },
+    { name: '水', value: Math.round(water * factor), color: '#4E6B7A' },
+    { name: '火', value: Math.round(fire * factor), color: '#BC3B2A' },
+    { name: '土', value: Math.round(earth * factor), color: '#A97C34' }
   ];
 }
 
@@ -327,14 +320,14 @@ function getFiveElementsAnalysis() {
   }
   
   const analysis = {
-    '金': '您的名字五行属金较重，性格坚定，做事有原则，注重荣誉，适合从事金融、法律等需要条理性的工作。感情上追求稳定与承诺。',
-    '木': '您的名字五行属木较重，性格温和，富有爱心，有同情心，适合从事教育、医疗等服务性工作。感情上富有包容心，懂得尊重与关怀。',
-    '水': '您的名字五行属水较重，性格灵活，思维敏捷，有智慧，适合从事艺术、创意等需要灵感的工作。感情上追求自由与深度交流。',
-    '火': '您的名字五行属火较重，性格热情，充满活力，乐观向上，适合从事销售、表演等需要魅力的工作。感情上热烈而真诚，富有激情。',
-    '土': '您的名字五行属土较重，性格稳重，做事踏实，重视责任，适合从事管理、建筑等需要耐心的工作。感情上注重承诺与家庭。'
+    '金': '你的名字五行属金较重，性格坚定，做事有原则，注重荣誉，适合从事金融、法律等需要条理性的工作。感情上追求稳定与承诺。',
+    '木': '你的名字五行属木较重，性格温和，富有爱心，有同情心，适合从事教育、医疗等服务性工作。感情上富有包容心，懂得尊重与关怀。',
+    '水': '你的名字五行属水较重，性格灵活，思维敏捷，有智慧，适合从事艺术、创意等需要灵感的工作。感情上追求自由与深度交流。',
+    '火': '你的名字五行属火较重，性格热情，充满活力，乐观向上，适合从事销售、表演等需要魅力的工作。感情上热烈而真诚，富有激情。',
+    '土': '你的名字五行属土较重，性格稳重，做事踏实，重视责任，适合从事管理、建筑等需要耐心的工作。感情上注重承诺与家庭。'
   };
   
-  return analysis[dominant.name] || '您的名字五行均衡，各方面发展较为全面，适应力强，在不同领域都有发展潜力。';
+  return analysis[dominant.name] || '你的名字五行均衡，各方面发展较为全面，适应力强，在不同领域都有发展潜力。';
 }
 
 // 获取宜做事项
@@ -394,13 +387,15 @@ function getUnluckyActivities() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 25px;
-  background-color: rgba(255, 245, 245, 0.85); /* Light pinkish background */
-  border-radius: 18px;
-  box-shadow: 0 8px 25px rgba(217, 84, 77, 0.12), 0 0 0 1.5px rgba(229, 109, 97, 0.3);
-  border: 1px solid transparent; /* Ensure box-shadow border is visible */
-  font-family: var(--font-family-sans-serif);
-  margin: 20px auto;
+  padding: 30px 28px;
+  background-color: var(--c-paper-2);
+  background-image: radial-gradient(100% 90% at 50% 0%, rgba(255, 255, 255, 0.6), transparent 70%);
+  border-radius: 6px;
+  border: 1px solid var(--c-line);
+  border-top: 3px solid var(--c-shu);
+  box-shadow: var(--shadow-paper-sm);
+  font-family: var(--font-body);
+  margin: 24px auto;
   max-width: 700px;
 }
 
@@ -413,18 +408,26 @@ function getUnluckyActivities() {
 }
 
 .intro-title {
-  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive, var(--font-family-serif));
-  color: #B8433E; /* Main theme red */
-  font-size: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  color: var(--c-ink);
+  font-size: 1.55em;
   text-align: center;
-  margin-bottom: 15px;
-  letter-spacing: 1.5px;
+  margin-bottom: 14px;
+  letter-spacing: 0.16em;
+}
+
+.intro-title .title-icon {
+  color: var(--c-shu);
 }
 
 .intro-text {
   font-size: 0.95em;
-  color: #C74840; /* Darker theme pink/red */
-  line-height: 1.7;
+  color: var(--c-ink-soft);
+  line-height: 1.9;
   text-align: center;
   margin-bottom: 25px;
 }
@@ -432,8 +435,8 @@ function getUnluckyActivities() {
 .intro-note {
   display: block;
   font-size: 0.8em;
-  color: #D9544D; /* Lighter theme red */
-  margin-top: 8px;
+  color: var(--c-ink-faint);
+  margin-top: 6px;
   opacity: 0.9;
 }
 
@@ -448,30 +451,33 @@ function getUnluckyActivities() {
 .name-input {
   width: 100%;
   max-width: 380px;
-  padding: 12px 18px;
-  border-radius: 25px; /* More rounded */
-  border: 1.5px solid rgba(229, 109, 97, 0.5); /* Theme color border */
-  background-color: #FFFDFB; /* Slightly off-white */
-  font-size: 1em;
-  color: #5D4037; /* Dark brown text */
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  padding: 11px 16px;
+  border-radius: 2px;
+  border: 1px solid var(--c-line-strong);
+  background-color: #FFFCF6;
+  font-size: 1.05em;
+  color: var(--c-ink);
+  font-family: var(--font-display);
+  letter-spacing: 0.12em;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   text-align: center;
 }
 
 .name-input::placeholder {
-  color: rgba(184, 67, 62, 0.5); /* Softer placeholder color */
-  font-style: italic;
+  color: var(--c-ink-faint);
+  letter-spacing: 0.08em;
 }
 
 .name-input:focus {
   outline: none;
-  border-color: #D9544D; /* Stronger theme red on focus */
-  box-shadow: 0 0 0 3px rgba(229, 109, 97, 0.25); /* Theme glow */
+  border-color: var(--c-shu);
+  box-shadow: 0 0 0 3px var(--c-shu-wash);
 }
 
 .input-counter {
-  font-size: 0.8em;
-  color: #C74840;
+  font-size: 0.78em;
+  color: var(--c-ink-faint);
+  font-variant-numeric: tabular-nums;
   width: 100%;
   max-width: 380px;
   text-align: right;
@@ -480,41 +486,38 @@ function getUnluckyActivities() {
 }
 
 .analyze-button {
-  padding: 10px 25px;
-  font-size: 1.1em;
-  color: white;
-  background: linear-gradient(to bottom, #E56D61, #D9544D); /* Theme gradient */
+  padding: 11px 28px;
+  font-size: 1em;
+  color: #FFF8F0;
+  background: var(--c-shu);
   border: none;
-  border-radius: 25px; /* Consistent rounding */
+  border-radius: 3px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: var(--font-family-sans-serif);
-  font-weight: 500;
-  letter-spacing: 1px;
-  box-shadow: 0 3px 8px rgba(184, 67, 62, 0.3);
-  border-bottom: 2px solid #B8433E; /* Darker bottom border for depth */
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.18) inset, 0 3px 8px rgba(143, 39, 28, 0.16);
   display: inline-flex;
   align-items: center;
   gap: 8px; /* Space between icon and text */
 }
 
 .analyze-button:hover:not(:disabled) {
-  background: linear-gradient(to bottom, #D9544D, #C74840);
-  box-shadow: 0 5px 12px rgba(184, 67, 62, 0.4);
-  transform: translateY(-2px);
+  background: var(--c-shu-deep);
+  transform: translateY(-1px);
 }
 
 .analyze-button:active:not(:disabled) {
-  transform: translateY(0px);
-  box-shadow: 0 2px 5px rgba(184, 67, 62, 0.3);
+  transform: translateY(0);
 }
 
 .analyze-button:disabled {
-  background: #E0E0E0; /* Greyed out for disabled state */
-  color: #A0A0A0;
+  background: var(--c-paper-3);
+  color: var(--c-ink-faint);
   cursor: not-allowed;
   box-shadow: none;
-  border-bottom: 2px solid #BDBDBD;
+  border: 1px solid var(--c-line);
 }
 
 .analyze-button .btn-icon {
@@ -522,102 +525,93 @@ function getUnluckyActivities() {
   line-height: 1; /* Prevent extra spacing due to icon */
 }
 
-.mystic-elements {
-  display: flex;
-  flex-wrap: wrap; /* Allow symbols to wrap */
-  justify-content: center;
-  gap: 10px; /* Spacing between symbols */
-  margin-top: 20px;
-  opacity: 0.6; /* Make them more subtle */
-}
-
-.mystic-symbol {
-  font-size: 0.9em; /* Slightly smaller */
-  color: #D9544D; /* Theme color */
-  padding: 3px 6px;
-  /* background-color: rgba(255, 235, 235, 0.3); // Optional subtle background */
-  /* border-radius: 50%; // Could be circles */
-  transition: transform 0.3s ease;
-}
-
-.mystic-symbol:hover {
-  transform: scale(1.2) rotate(10deg);
-  color: #B8433E;
-}
-
 /* Result Section */
+.name-fortune-container.has-result {
+  max-width: 760px;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+
 .name-result-container {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 20px; /* Space between result sections */
-  padding: 20px;
-  background-color: rgba(255, 250, 248, 0.9); /* Slightly different bg for results */
-  border-radius: 15px;
-  border: 1px solid rgba(229, 109, 97, 0.25);
-  /* Animation parent for reveal items */
+  gap: 0;
+  padding: 0;
+  background: none;
+  border: 0;
 }
 
 .result-header {
-  text-align: center;
-  margin-bottom: 5px; /* Reduced margin */
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 14px;
+  text-align: left;
+  margin-bottom: 6px;
 }
 
 .result-title {
-  font-size: 1.8em; /* Adjusted size */
-  color: #B8433E; /* Theme red */
-  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive, var(--font-family-serif));
-  margin-bottom: 10px;
-  letter-spacing: 1px;
+  margin: 0;
+  font-size: 1.5em;
+  color: var(--c-ink);
+  font-family: var(--font-display);
+  letter-spacing: 0.12em;
 }
 
 .fortune-type-badge {
   display: inline-block;
-  padding: 7px 18px;
-  border-radius: 20px; 
-  font-size: 0.95em;
+  padding: 3px 10px;
+  border-radius: 1px;
+  border: 1px solid currentColor;
+  font-size: 0.78em;
   font-weight: 600;
-  color: white;
-  text-shadow: 1px 1px 1px rgba(0,0,0,0.15);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  letter-spacing: 0.14em;
 }
 
 /* Common style for section containers in result area */
 .result-section {
-  background-color: #FFFDFB; /* Off-white, like washi paper */
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid rgba(229, 109, 97, 0.3);
-  box-shadow: 0 3px 10px rgba(217, 84, 77, 0.08);
-  position: relative; /* For potential absolute positioned elements inside */
+  position: relative;
+  margin-top: 22px;
+  padding: 22px 0 0;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--c-line);
 }
 
 /* Common style for section titles (h4, h5) in result area */
 .name-result-container h4,
 .name-result-container h5 {
-  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive, var(--font-family-serif));
-  color: #C74840; /* Darker theme pink/red */
-  margin-bottom: 18px;
-  padding-bottom: 8px;
-  border-bottom: 1.5px solid rgba(229, 109, 97, 0.25); 
-  text-align: center; /* Center section titles */
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  border: 0;
+  font-family: var(--font-display);
+  color: var(--c-ink);
+  text-align: left;
 }
 
 .name-result-container h4 {
-  font-size: 1.4em; 
+  font-size: 1.15em;
+  letter-spacing: 0.06em;
+}
+
+.name-result-container h4 > :last-child,
+.name-result-container h5 > :last-child {
+  display: none;
 }
 .name-result-container h5 {
-  font-size: 1.2em;
-  color: #D9544D; /* Slightly lighter for h5 */
+  font-size: 1.05em;
+  color: var(--c-ink-soft);
   margin-top: 15px; /* Add some top margin for h5 within sections */
 }
 
 .h-decorator, .h-decorator-small {
-  color: #E56D61; /* Theme accent color */
+  color: var(--c-shu-soft);
   font-size: 0.9em; /* Adjust as needed */
 }
 .h-decorator-small {
@@ -635,9 +629,9 @@ function getUnluckyActivities() {
 
 .character-item {
   padding: 8px 12px;
-  border: 1.5px solid rgba(229, 109, 97, 0.4);
-  border-radius: 8px;
-  background-color: #fff;
+  border: 1px solid var(--c-line-strong);
+  border-radius: 2px;
+  background-color: #FFFCF6;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative; 
@@ -647,17 +641,15 @@ function getUnluckyActivities() {
 }
 
 .character-item:hover, .character-item.active {
-  background-color: #FFF5F5; /* Lightest theme pink */
-  border-color: #D9544D;
-  transform: translateY(-2px);
-  box-shadow: 0 3px 8px rgba(217, 84, 77, 0.15);
+  background-color: var(--c-shu-wash);
+  border-color: var(--c-shu);
 }
 
 .character {
   font-size: 1.7em;
   font-weight: bold;
-  color: #B8433E; /* Theme red */
-  font-family: var(--font-family-serif); /* Readable serif for characters */
+  color: var(--c-shu);
+  font-family: var(--font-display);
 }
 
 .character-details {
@@ -665,17 +657,17 @@ function getUnluckyActivities() {
   bottom: 100%; 
   left: 50%;
   transform: translateX(-50%) translateY(-8px); 
-  background-color: #FFF9F0; /* Washi paper like */
+  background-color: var(--c-paper);
   padding: 10px 15px;
-  border-radius: 8px;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+  border-radius: 2px;
+  box-shadow: 0 6px 18px rgba(48, 26, 20, 0.16);
   z-index: 10;
   width: max-content; 
   max-width: 220px;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
-  border: 1px solid rgba(217, 84, 77, 0.3);
+  border: 1px solid var(--c-line-strong);
 }
 
 .character-item.active .character-details {
@@ -689,7 +681,7 @@ function getUnluckyActivities() {
   height: 0;
   border-left: 7px solid transparent;
   border-right: 7px solid transparent;
-  border-top: 7px solid #FFF9F0; /* Match tooltip bg */
+  border-top: 7px solid var(--c-paper);
   position: absolute;
   bottom: -7px; 
   left: 50%;
@@ -699,14 +691,14 @@ function getUnluckyActivities() {
 
 .detail-content .detail-title {
   font-weight: 600;
-  color: #B8433E; 
+  color: var(--c-ink);
   margin-bottom: 5px;
   font-size: 1em;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-display);
 }
 .detail-content .detail-description {
   font-size: 0.85em;
-  color: #795548; /* Brownish text */
+  color: var(--c-ink-soft);
   line-height: 1.5;
 }
 
@@ -718,10 +710,10 @@ function getUnluckyActivities() {
 }
 
 .name-fortune-poem p {
-  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive, var(--font-family-serif));
-  font-size: 1.3em;
-  line-height: 1.9;
-  color: #8C3835; /* Deep red-brown for poem */
+  font-family: var(--font-display);
+  font-size: 1.28em;
+  line-height: 2;
+  color: var(--c-ink);
   text-align: center;
   white-space: pre-wrap; 
   padding: 10px;
@@ -735,7 +727,7 @@ function getUnluckyActivities() {
 .personalized-description {
   font-size: 1em;
   line-height: 1.8;
-  color: #6D4C41; /* Darker brown */
+  color: var(--c-ink-soft);
   text-align: justify;
   padding: 0 5px; /* Slight horizontal padding */
 }
@@ -749,24 +741,25 @@ function getUnluckyActivities() {
 }
 
 .detail-item {
-  background-color: rgba(255, 250, 250, 0.8); /* Slightly transparent white */
-  padding: 12px 15px;
-  border-radius: 10px;
-  border: 1px solid rgba(229, 109, 97, 0.25);
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   gap: 6px;
+  padding: 12px 0 0;
+  border: 0;
+  border-top: 1px solid var(--c-line);
+  background: none;
 }
 
 .detail-label {
   font-weight: 600;
-  color: #D9544D; /* Theme red */
-  font-size: 0.9em;
-  font-family: var(--font-family-sans-serif);
+  color: var(--c-shu);
+  font-size: 0.82em;
+  letter-spacing: 0.08em;
+  font-family: var(--font-ui);
 }
 
 .detail-value {
-  color: #B8433E; /* Darker theme red */
+  color: var(--c-ink-soft);
   font-size: 1em;
 }
 
@@ -791,22 +784,22 @@ function getUnluckyActivities() {
 }
 .luck-bar {
   flex-grow: 1; /* Allow bar to take available space */
-  height: 14px;
-  background-color: rgba(248, 202, 204, 0.5); /* Lighter pink background for bar */
-  border-radius: 7px;
+  height: 10px;
+  background-color: rgba(188, 59, 42, 0.08);
+  border-radius: 1px;
   overflow: hidden;
-  border: 1px solid rgba(229, 109, 97, 0.3);
+  border: 1px solid var(--c-line);
 }
 .luck-value {
   height: 100%;
-  background: linear-gradient(to right, #F8CACC, #E56D61); /* Pink to Red gradient */
-  border-radius: 7px;
+  background: var(--c-shu);
   transition: width 0.9s cubic-bezier(0.25, 0.1, 0.25, 1); /* Smoother, slightly slower transition */
 }
 .luck-number {
   font-size: 0.9em;
-  color: #B8433E;
+  color: var(--c-ink);
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Five Elements Analysis */
@@ -819,10 +812,10 @@ function getUnluckyActivities() {
   justify-content: space-around;
   align-items: flex-end;
   height: 160px; 
-  background-color: rgba(255, 248, 245, 0.7);
+  background-color: rgba(255, 254, 250, 0.55);
   padding: 20px 15px;
-  border-radius: 10px;
-  border: 1px solid rgba(229, 109, 97, 0.2);
+  border-radius: 2px;
+  border: 1px solid var(--c-line);
   margin-bottom: 15px;
 }
 
@@ -834,24 +827,24 @@ function getUnluckyActivities() {
   text-align: center;
 }
 .element-name {
-  font-size: 0.9em;
-  color: #8C3835; /* Deep red-brown */
+  font-size: 0.85em;
+  color: var(--c-ink-soft);
   margin-bottom: 6px;
   font-weight: 500;
 }
 .element-value-container {
   width: 35px; 
   height: 100px; 
-  background-color: rgba(229, 109, 97, 0.08); 
-  border-radius: 5px 5px 0 0;
+  background-color: rgba(188, 59, 42, 0.06);
+  border-radius: 1px 1px 0 0;
   display: flex;
   align-items: flex-end; 
-  border: 1px solid rgba(229, 109, 97, 0.15);
+  border: 1px solid var(--c-line);
   border-bottom: none;
 }
 .element-value {
   width: 100%;
-  border-radius: 4px 4px 0 0; /* Slightly smaller radius */
+  border-radius: 1px 1px 0 0;
   transition: height 0.9s cubic-bezier(0.25, 0.1, 0.25, 1);
   /* Dynamic background-color */
 }
@@ -864,15 +857,16 @@ function getUnluckyActivities() {
 /* Earth: #D8AB7E (Soft Brown) */
 
 .element-percentage {
-  font-size: 0.85em;
-  color: #B8433E;
+  font-size: 0.82em;
+  color: var(--c-ink-soft);
   margin-top: 6px;
+  font-variant-numeric: tabular-nums;
   font-weight: 500;
 }
 .elements-description {
   font-size: 0.95em;
-  color: #6D4C41;
-  line-height: 1.7;
+  color: var(--c-ink-soft);
+  line-height: 1.8;
   text-align: justify;
   margin-top: 10px;
 }
@@ -888,16 +882,16 @@ function getUnluckyActivities() {
 .fortune-do, .fortune-dont {
   flex: 1;
   padding: 18px;
-  border-radius: 10px;
-  background-color: rgba(255, 250, 250, 0.9);
-  border: 1px solid;
+  border-radius: 2px;
+  background-color: rgba(255, 254, 250, 0.6);
+  border: 1px solid var(--c-line);
 }
 
 .fortune-do {
-  border-color: rgba(170, 212, 174, 0.7); /* Soft green border for "宜" */
+  border-left: 2px solid var(--c-gold-soft);
 }
 .fortune-dont {
-  border-color: rgba(248, 202, 204, 0.7); /* Soft red border for "忌" */
+  border-left: 2px solid var(--c-shu-soft);
 }
 
 .fortune-tips h5 {
@@ -905,8 +899,8 @@ function getUnluckyActivities() {
   margin-bottom: 12px;
   /* text-align: center; */ /* Already applied */
 }
-.fortune-do h5 { color: #66BB6A; /* Softer Green */ }
-.fortune-dont h5 { color: #EF5350; /* Softer Red */ }
+.fortune-do h5 { color: var(--c-gold); }
+.fortune-dont h5 { color: var(--c-shu); }
 
 .fortune-tips ul {
   list-style: none;
@@ -914,9 +908,9 @@ function getUnluckyActivities() {
 }
 .fortune-tips li {
   font-size: 0.9em;
-  color: #795548; /* Brownish text */
+  color: var(--c-ink-soft);
   padding: 6px 0;
-  border-bottom: 1px dotted rgba(229, 109, 97, 0.15);
+  border-bottom: 1px dotted var(--c-line);
   display: flex;
   align-items: center;
 }
@@ -924,15 +918,23 @@ function getUnluckyActivities() {
   border-bottom: none;
 }
 
-.fortune-tips li::before { 
-  content: '\2766'; /* Floral heart for "宜" */
+.fortune-tips li::before {
+  content: '';
+  width: 5px;
+  height: 5px;
   margin-right: 10px;
-  color: #A4D4AE; /* Soft Green */
-  font-size: 0.9em;
+  border-radius: 50%;
+  background: var(--c-gold);
+  flex-shrink: 0;
 }
 .fortune-dont li::before {
-  content: '\2731'; /* Asterisk/Star for "忌" */
-  color: #F8CACC; /* Soft Pink */
+  content: '';
+  width: 5px;
+  height: 5px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: var(--c-shu-soft);
+  flex-shrink: 0;
 }
 
 
@@ -946,40 +948,37 @@ function getUnluckyActivities() {
 
 .styled-button { /* Unified button class */
   padding: 10px 25px;
-  font-size: 1.05em;
-  color: white;
-  background: linear-gradient(to bottom, #E56D61, #D9544D); 
+  font-size: 1em;
+  color: #FFF8F0;
+  background: var(--c-shu);
   border: none;
-  border-radius: 25px; 
+  border-radius: 3px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: var(--font-family-sans-serif);
-  font-weight: 500;
-  letter-spacing: 1px;
-  box-shadow: 0 3px 8px rgba(184, 67, 62, 0.3);
-  border-bottom: 2px solid #B8433E; 
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.18) inset, 0 3px 8px rgba(143, 39, 28, 0.16);
   display: inline-flex;
   align-items: center;
   gap: 8px; 
 }
 
 .styled-button:hover:not(:disabled) {
-  background: linear-gradient(to bottom, #D9544D, #C74840);
-  box-shadow: 0 5px 12px rgba(184, 67, 62, 0.4);
-  transform: translateY(-2px);
+  background: var(--c-shu-deep);
+  transform: translateY(-1px);
 }
 
 .styled-button:active:not(:disabled) {
-  transform: translateY(0px);
-  box-shadow: 0 2px 5px rgba(184, 67, 62, 0.3);
+  transform: translateY(0);
 }
 
-.styled-button:disabled { /* For future use if save becomes disable-able */
-  background: #E0E0E0; 
-  color: #A0A0A0;
+.styled-button:disabled {
+  background: var(--c-paper-3);
+  color: var(--c-ink-faint);
   cursor: not-allowed;
   box-shadow: none;
-  border-bottom: 2px solid #BDBDBD;
+  border: 1px solid var(--c-line);
 }
 
 .reset-button {
@@ -987,12 +986,14 @@ function getUnluckyActivities() {
 }
 
 .save-button {
-  /* Specific overrides if needed, for now uses styled-button */
-   background: linear-gradient(to bottom, #66BB6A, #4CAF50); /* Green for save */
-   border-bottom-color: #388E3C;
+  background: transparent;
+  color: var(--c-shu);
+  border: 1px solid var(--c-line-strong);
+  box-shadow: none;
 }
 .save-button:hover:not(:disabled) {
-  background: linear-gradient(to bottom, #4CAF50, #388E3C);
+  background: var(--c-shu-wash);
+  border-color: var(--c-shu);
 }
 
 

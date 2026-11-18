@@ -1,4 +1,5 @@
 <script setup>
+import AppIcon from './icons/AppIcon.vue';
 import { ref, reactive } from 'vue';
 import { useFortuneStore } from '../stores/FortuneStore';
 
@@ -120,23 +121,23 @@ const drawCoupleResult = () => {
 <template>
   <div class="couple-fortune-container themed-container">
     <div class="couple-intro decorative-section" v-if="!showPartnerInput">
-      <h3 class="main-title"><span class="deco-icon left">💞</span> 双人姻缘合卦 <span class="deco-icon right">💞</span></h3>
-      <p class="intro-text">执子之手，与子偕老。在此诚邀两位小主，<br>一同卜算心心相印的缘分指数，<br>探寻那份专属於你们的浪漫篇章。</p>
+      <h3 class="main-title"><span class="deco-icon left"><AppIcon name="rings" :size="18" /></span> 两个人的线 <span class="deco-icon right"><AppIcon name="rings" :size="18" /></span></h3>
+      <p class="intro-text">两个人站到一起，线是缠紧、打结，还是各走各的？<br>本神明量一量就知道了。<br>——先把名字报上来。</p>
       <button class="start-couple-btn themed-button primary-button" @click="togglePartnerInput">
-        <span class="btn-icon">💌</span> 启此良缘合卦
+        <AppIcon name="mail" :size="15" class="btn-icon" /> 那就量一量
       </button>
     </div>
     
     <div class="partner-input themed-section-box" v-if="showPartnerInput && !coupleResult.title">
-      <h3 class="section-title"><span class="deco-icon left">❦</span> 请入双方结缘信息 <span class="deco-icon right">❦</span></h3>
+      <h3 class="section-title"><span class="deco-icon left"><AppIcon name="thread" :size="16" /></span> 两个人的名字，都写下来 <span class="deco-icon right"><AppIcon name="thread" :size="16" /></span></h3>
       
       <div class="couple-form-grid">
         <!-- User Info -->
         <div class="form-section user-section">
-          <h4 class="form-section-title">缘主·其一</h4>
+          <h4 class="form-section-title">其一</h4>
           <div class="input-group themed-input-group">
-            <label for="userName">芳名：</label>
-            <input id="userName" v-model="userName" placeholder="轻启玉指，输入芳名" class="themed-input" />
+            <label for="userName">姓名：</label>
+            <input id="userName" v-model="userName" placeholder="你的名字" class="themed-input" />
           </div>
           
           <div class="input-group themed-input-group">
@@ -162,10 +163,10 @@ const drawCoupleResult = () => {
 
         <!-- Partner Info -->
         <div class="form-section partner-section">
-          <h4 class="form-section-title">缘主·其二</h4>
+          <h4 class="form-section-title">其二</h4>
           <div class="input-group themed-input-group">
-            <label for="partnerName">TA之名：</label>
-            <input id="partnerName" v-model="partnerName" placeholder="轻启玉指，输入TA名" class="themed-input" />
+            <label for="partnerName">TA 的名字：</label>
+            <input id="partnerName" v-model="partnerName" placeholder="TA 的名字" class="themed-input" />
           </div>
           
           <div class="input-group themed-input-group">
@@ -189,16 +190,16 @@ const drawCoupleResult = () => {
       </div>
       
       <div class="couple-buttons button-row">
-        <button class="cancel-btn themed-button secondary-button" @click="togglePartnerInput">返回</button>
+        <button class="cancel-btn themed-button secondary-button" @click="togglePartnerInput">算了</button>
         <button class="draw-btn themed-button primary-button" @click="drawCoupleResult">
-          <span class="btn-icon">💖</span> 合此良缘天定
+          <AppIcon name="heart" :size="15" class="btn-icon" /> 牵线
         </button>
       </div>
     </div>
     
     <div class="couple-result" v-if="coupleResult.title">
       <div class="compatibility-meter">
-        <div class="meter-title">缘分指数</div>
+        <div class="meter-title">缘线粗细</div>
         <div class="meter-value">{{ coupleResult.compatibility }}%</div>
         <div class="meter-bar">
           <div class="meter-fill" :style="{width: coupleResult.compatibility + '%'}"></div>
@@ -208,42 +209,43 @@ const drawCoupleResult = () => {
       <div class="result-content">
         <h3>{{ coupleResult.title }}</h3>
         <p class="result-description">{{ coupleResult.description }}</p>
-        <p class="result-advice">【缘分建议】{{ coupleResult.advice }}</p>
+        <p class="result-advice">【本神明说】{{ coupleResult.advice }}</p>
       </div>
       
-      <button class="try-again-btn themed-button secondary-button" @click="togglePartnerInput">重新测算</button>
+      <button class="try-again-btn themed-button secondary-button" @click="togglePartnerInput">换两个人再量</button>
     </div>
   </div>
 </template>
 
 <style scoped>
 .couple-fortune-container.themed-container {
-  background-color: var(--theme-color-background-light, rgba(255, 245, 248, 0.95)); 
-  border-radius: 25px;
-  padding: 30px 35px;
-  margin: 25px auto;
-  box-shadow: 0 8px 25px var(--theme-color-shadow-light, rgba(217, 84, 77, 0.15)), 
-              0 0 0 2px var(--theme-color-border-subtle, rgba(229, 109, 97, 0.2));
-  max-width: 700px; 
+  background-color: var(--c-paper-2);
+  background-image:
+    radial-gradient(100% 90% at 50% 0%, rgba(255, 255, 255, 0.6), transparent 70%);
+  border-radius: 6px;
+  padding: 30px 34px 26px;
+  margin: 24px auto;
+  box-shadow: var(--shadow-paper-sm);
+  max-width: 700px;
   text-align: center;
-  font-family: var(--font-family-sans-serif);
-  border: 1px solid transparent; /* Ensure box-shadow border shows correctly */
+  font-family: var(--font-body);
+  border: 1px solid var(--c-line);
+  border-top: 3px solid var(--c-shu);
 }
 
 .decorative-section {
-  padding: 20px;
-  border-radius: 18px;
-  background-color: rgba(255, 250, 250, 0.8); /* Light washi paper feel */
-  margin-bottom: 30px;
+  padding: 4px 8px;
+  margin-bottom: 22px;
 }
 
 .couple-intro .main-title,
 .partner-input .section-title {
-  color: var(--theme-color-dark, #B8433E);
-  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive);
-  font-size: 2.2em;
-  margin-bottom: 15px;
-  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);
+  color: var(--c-ink);
+  font-family: var(--font-display);
+  font-size: 1.65em;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  margin-bottom: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -255,35 +257,34 @@ const drawCoupleResult = () => {
 }
 
 .deco-icon {
-  color: var(--theme-color-red, #E56D61);
-  font-size: 0.7em;
-  margin: 0 10px;
-  opacity: 0.9;
+  color: var(--c-shu);
+  font-size: 0.65em;
+  margin: 0 12px;
+  opacity: 0.75;
 }
 
 .couple-intro .intro-text {
-  color: var(--theme-color-text-subtle, #8C3835);
-  font-size: 1.05em;
-  line-height: 1.8;
-  margin-bottom: 25px;
-  font-family: var(--font-family-sans-serif);
+  color: var(--c-ink-soft);
+  font-size: 1em;
+  line-height: 2;
+  margin-bottom: 24px;
+  font-family: var(--font-body);
 }
 
 .themed-button {
-  padding: 12px 25px;
-  font-size: 1.1em;
+  padding: 11px 26px;
+  font-size: 1em;
   font-weight: 600;
   border: none;
-  border-radius: 30px; /* Pill shape */
+  border-radius: 3px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive);
-  letter-spacing: 1px;
+  font-family: var(--font-body);
+  letter-spacing: 0.08em;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
 }
 
 .themed-button .btn-icon {
@@ -295,36 +296,33 @@ const drawCoupleResult = () => {
 }
 
 .themed-button.primary-button {
-  background: linear-gradient(145deg, var(--theme-color-red, #E56D61), var(--theme-color-dark, #B8433E));
-  color: white;
-  box-shadow: 0 4px 12px rgba(184, 67, 62, 0.25), 0 0 0 1.5px rgba(255,255,255,0.3) inset;
+  background-color: var(--c-shu);
+  color: #FFF8F0;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.18) inset, 0 3px 8px rgba(143, 39, 28, 0.18);
 }
 .themed-button.primary-button:hover {
-  background: linear-gradient(145deg, var(--theme-color-dark, #B8433E), var(--theme-color-red, #E56D61));
-  box-shadow: 0 6px 16px rgba(184, 67, 62, 0.35), 0 0 0 1.5px rgba(255,255,255,0.4) inset;
-  transform: translateY(-2px);
+  background-color: var(--c-shu-deep);
+  transform: translateY(-1px);
 }
 
 .themed-button.secondary-button {
-  background-color: #fff;
-  color: var(--theme-color-red, #E56D61);
-  border: 2px solid var(--theme-color-red, #E56D61);
-  box-shadow: 0 2px 8px rgba(217, 84, 77, 0.1);
+  background-color: transparent;
+  color: var(--c-shu);
+  border: 1px solid var(--c-line-strong);
+  box-shadow: none;
 }
 .themed-button.secondary-button:hover {
-  background-color: var(--theme-color-extralight-pink, #FFF5F5);
-  border-color: var(--theme-color-dark, #B8433E);
-  color: var(--theme-color-dark, #B8433E);
-  transform: translateY(-1px);
+  background-color: var(--c-shu-wash);
+  border-color: var(--c-shu);
+  color: var(--c-shu-deep);
 }
 
 /* Partner Input Section */
 .partner-input.themed-section-box {
-  padding: 25px 30px;
-  background-color: rgba(255, 250, 248, 0.9); /* Slightly different light washi */
-  border-radius: 18px; 
-  box-shadow: 0 6px 20px rgba(217, 84, 77, 0.1), 0 0 0 1.5px rgba(229, 109, 97, 0.2);
-  border: 1px solid transparent; 
+  padding: 22px 24px;
+  background-color: rgba(255, 252, 246, 0.72);
+  border-radius: 4px;
+  border: 1px solid var(--c-line);
 }
 
 .couple-form-grid {
@@ -336,18 +334,19 @@ const drawCoupleResult = () => {
 
 .form-section {
   flex: 1;
-  padding: 15px;
-  border-radius: 12px;
-  background-color: rgba(255, 252, 250, 0.8);
-  border: 1px solid var(--theme-color-border-very-subtle, rgba(229, 109, 97, 0.15));
+  padding: 14px 16px;
+  border-radius: 3px;
+  background-color: rgba(255, 254, 250, 0.6);
+  border: 1px solid var(--c-line);
 }
 
 .form-section-title {
-  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive);
-  color: var(--theme-color-red, #D9544D);
-  font-size: 1.3em;
+  font-family: var(--font-display);
+  color: var(--c-shu);
+  font-size: 1.05em;
+  letter-spacing: 0.18em;
   margin-bottom: 18px;
-  border-bottom: 1px dashed var(--theme-color-border-subtle, rgba(229, 109, 97, 0.3));
+  border-bottom: 1px dashed var(--c-line-strong);
   padding-bottom: 8px;
 }
 
@@ -361,30 +360,32 @@ const drawCoupleResult = () => {
 
 .input-group.themed-input-group label {
   font-size: 0.95em;
-  color: var(--theme-color-dark, #B8433E);
+  color: var(--c-ink-soft);
   margin-bottom: 6px;
   font-weight: 600;
-  font-family: var(--font-family-sans-serif);
+  font-family: var(--font-ui);
+  font-size: 0.88em;
+  letter-spacing: 0.05em;
 }
 
 .themed-input,
 .themed-select {
   width: 100%;
   padding: 10px 12px;
-  border-radius: 8px;
-  border: 1.5px solid var(--theme-color-border-subtle, rgba(229, 109, 97, 0.3));
-  background-color: #fff;
+  border-radius: 2px;
+  border: 1px solid var(--c-line-strong);
+  background-color: #FFFCF6;
   font-size: 0.95em;
-  color: var(--theme-color-text, #5C2827);
-  font-family: var(--font-family-sans-serif);
+  color: var(--c-ink);
+  font-family: var(--font-body);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   box-sizing: border-box;
 }
 
 .themed-input:focus,
 .themed-select:focus {
-  border-color: var(--theme-color-red, #E56D61);
-  box-shadow: 0 0 0 3px rgba(229, 109, 97, 0.2);
+  border-color: var(--c-shu);
+  box-shadow: 0 0 0 3px var(--c-shu-wash);
   outline: none;
 }
 
@@ -404,8 +405,8 @@ const drawCoupleResult = () => {
 }
 
 .input-separator-vertical {
-  width: 1.5px;
-  background-color: var(--theme-color-border-subtle, rgba(229, 109, 97, 0.3));
+  width: 1px;
+  background-color: var(--c-line);
   align-self: stretch; /* Make it full height of the flex container */
   margin: 10px 0; /* Optional: add some vertical margin if sections have padding */
 }
@@ -436,6 +437,72 @@ const drawCoupleResult = () => {
   }
 }
 
-/* Result display styles will be added here in the next step */
+/* Result display */
+.couple-result {
+  padding-top: 4px;
+}
+
+.compatibility-meter {
+  margin: 6px 0 22px;
+  text-align: center;
+}
+
+.meter-title {
+  font-size: 0.76em;
+  letter-spacing: 0.22em;
+  color: var(--c-ink-faint);
+  margin-bottom: 4px;
+}
+
+.meter-value {
+  font-family: var(--font-display);
+  font-size: 2.4em;
+  line-height: 1.1;
+  color: var(--c-shu);
+  font-variant-numeric: tabular-nums;
+}
+
+.meter-bar {
+  max-width: 420px;
+  height: 8px;
+  margin: 12px auto 0;
+  background-color: rgba(188, 59, 42, 0.08);
+  border: 1px solid var(--c-line);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%;
+  background: var(--c-shu);
+  transition: width 0.9s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.result-content h3 {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 1.35em;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--c-ink);
+}
+
+.result-description {
+  margin: 0 0 16px;
+  color: var(--c-ink-soft);
+  font-size: 0.94em;
+  line-height: 1.9;
+}
+
+.result-advice {
+  margin: 0 0 8px;
+  padding: 14px 16px;
+  border-left: 2px solid var(--c-shu-soft);
+  background-color: rgba(255, 254, 250, 0.6);
+  color: var(--c-ink-soft);
+  font-size: 0.9em;
+  line-height: 1.85;
+  text-align: left;
+}
 
 </style> 

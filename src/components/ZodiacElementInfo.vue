@@ -1,9 +1,9 @@
 <template>
   <div class="zodiac-explanation themed-section-box reveal-item">
-    <h4 class="section-title"><span class="title-deco left">🌿</span> 星座元素相性 <span class="title-deco right">🌿</span></h4>
+    <h4 class="section-title"><span class="title-deco left">—</span> 星座元素相性 <span class="title-deco right">—</span></h4>
     <div class="elements-grid">
       <div class="element-item themed-subsection" v-for="(desc, elementKey) in elementDescriptions" :key="elementKey">
-        <div class="element-icon" :class="getElementClass(elementKey)">{{ getElementEmoji(elementKey) }}</div>
+        <div class="element-icon" :class="getElementClass(elementKey)"><AppIcon :name="getElementIcon(elementKey)" :size="20" /></div>
         <div class="element-name">{{ getElementName(elementKey) }}</div>
         <div class="element-desc">{{ desc }}</div>
       </div>
@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'; // ref might not be strictly needed if elementDescriptions is static, but good practice
+import AppIcon from './icons/AppIcon.vue';
 
 // 元素描述
 const elementDescriptions = {
@@ -28,20 +28,20 @@ const elementDescriptions = {
   water: '柔情似水，蕴含情感与直觉的深度，富有同情，体贴入微。'
 };
 
-// 获取元素对应的emoji
-function getElementEmoji(element) {
-  const emojiMap = {
-    fire: '🔥',
-    earth: '🌱',
-    air: '🌬️',
-    water: '💧',
+// 获取元素对应的图标名
+function getElementIcon(element) {
+  const iconMap = {
+    fire: 'flame',
+    earth: 'leaf',
+    air: 'wind',
+    water: 'water',
     // Adding Chinese keys as well, in case they are used directly
-    火: '🔥',
-    土: '🌱',
-    风: '🌬️',
-    水: '💧'
+    火: 'flame',
+    土: 'leaf',
+    风: 'wind',
+    水: 'water'
   };
-  return emojiMap[element.toLowerCase()] || '✨'; // ensure lowercase for matching 'fire', 'earth' etc.
+  return iconMap[element] || iconMap[element.toLowerCase()] || 'sparkles';
 }
 
 // 获取元素的中文名称
@@ -67,15 +67,14 @@ function getElementClass(elementKey) {
 </script>
 
 <style scoped>
-.themed-section-box { /* Applied to main wrapper */
-  margin-top: 25px;
-  padding: 25px 30px;
-  background-color: rgba(255, 248, 245, 0.9); /* Light peach/pink background */
-  border-radius: 20px; 
-  box-shadow: 0 8px 28px rgba(217, 84, 77, 0.1), 0 0 0 1.5px rgba(229, 109, 97, 0.25);
+.themed-section-box {
+  margin-top: 22px;
+  padding: 22px 24px;
+  background-color: rgba(255, 252, 246, 0.6);
+  border-radius: 3px;
+  border: 1px solid var(--c-line);
   width: 100%;
-  max-width: 780px; 
-  border: 1px solid transparent; 
+  max-width: 780px;
   animation: fadeInLoad 0.7s ease-out;
   text-align: center; /* Center align content within this box */
 }
@@ -87,12 +86,12 @@ function getElementClass(elementKey) {
 
 .section-title {
   text-align: center;
-  color: #B8433E; /* Main theme red */
-  font-size: 1.7em;
-  margin-bottom: 25px;
-  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive);
-  font-weight: 500;
-  letter-spacing: 1px;
+  color: var(--c-ink);
+  font-size: 1.18em;
+  margin-bottom: 20px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.16em;
   display: inline-flex; /* To keep decorators on the same line with text */
   align-items: center;
   gap: 10px;
@@ -100,31 +99,28 @@ function getElementClass(elementKey) {
 
 .title-deco {
   font-size: 0.85em;
-  color: #E58F87; /* Softer accent */
+  color: var(--c-shu-soft);
   opacity: 0.9;
 }
 
 .elements-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 20px;
-  margin-bottom: 25px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
 }
 
 .themed-subsection { /* Applied to each element-item */
-  background-color: #FFFDFB; 
-  padding: 20px 15px;
-  border-radius: 15px;
-  border: 1px solid rgba(229, 109, 97, 0.3);
-  box-shadow: 0 4px 12px rgba(217, 84, 77, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: rgba(255, 254, 250, 0.55);
+  padding: 18px 14px;
+  border-radius: 3px;
+  border: 1px solid var(--c-line);
+  transition: border-color 0.2s ease;
   text-align: center;
 }
 
 .element-item:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 6px 18px rgba(217, 84, 77, 0.12);
-  border-color: #E56D61;
+  border-color: var(--c-line-strong);
 }
 
 .element-icon {
@@ -135,30 +131,31 @@ function getElementClass(elementKey) {
 }
 
 /* Themed Element Icon Colors */
-.element-icon.element-fire { color: #E57373; } /* Soft Red - Fire */
-.element-icon.element-earth { color: #A4D4AE; } /* Soft Green - Earth */
-.element-icon.element-air { color: #A0D2DB; } /* Soft Blue - Air */
-.element-icon.element-water { color: #7986CB; } /* Soft Indigo/Blue - Water */
+.element-icon.element-fire { color: #BC3B2A; }
+.element-icon.element-earth { color: #A97C34; }
+.element-icon.element-air { color: #6E7F6A; }
+.element-icon.element-water { color: #4E6B7A; }
 
 .element-name {
-  font-size: 1.25em;
+  font-size: 1em;
   font-weight: 600;
-  color: #8C3835; /* Deep red-brown */
+  color: var(--c-ink);
   margin-bottom: 8px;
-  font-family: var(--font-family-serif);
+  letter-spacing: 0.08em;
+  font-family: var(--font-display);
 }
 
 .element-desc {
-  font-size: 0.9em;
-  color: #6D4C41; /* Darker brown */
-  line-height: 1.6;
+  font-size: 0.88em;
+  color: var(--c-ink-soft);
+  line-height: 1.75;
   min-height: 60px; /* Give some consistent height */
 }
 
 .zodiac-explanation p {
-  font-size: 0.95em;
-  color: #5D4037; /* Dark brown text */
-  line-height: 1.75;
+  font-size: 0.92em;
+  color: var(--c-ink-soft);
+  line-height: 1.85;
   margin-bottom: 15px;
   text-align: justify;
   padding: 0 15px;
@@ -180,8 +177,7 @@ function getElementClass(elementKey) {
     font-size: 1.5em;
   }
   .elements-grid {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 15px;
+    gap: 10px;
   }
   .themed-subsection {
     padding: 15px 10px;
@@ -204,7 +200,7 @@ function getElementClass(elementKey) {
 
 @media (max-width: 480px) {
   .elements-grid {
-    grid-template-columns: repeat(2, 1fr); /* Two columns for smaller screens */
+    grid-template-columns: 1fr;
   }
 }
 </style> 

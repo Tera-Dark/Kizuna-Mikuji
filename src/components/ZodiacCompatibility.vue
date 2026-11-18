@@ -1,14 +1,14 @@
 <template>
   <div class="zodiac-compatibility-container">
     <div class="zodiac-title">
-      <h3 class="main-title"><span class="title-deco-left">❀</span> 星座缘分解析 <span class="title-deco-right">❀</span></h3>
-      <p class="subtitle">探寻两位小主间的星座情缘</p>
+      <h3 class="main-title">星星排的队</h3>
+      <p class="subtitle">星星排的队，和红线走的道，常常是一回事</p>
     </div>
 
     <!-- 星座选择区域 -->
     <div class="zodiac-selection">
       <ZodiacSelector
-        title="天作之合·其一"
+        title="这边，报上星座"
         identifier="first"
         :zodiacData="zodiacData"
         v-model:selectedSign="selectedSign1"
@@ -32,7 +32,7 @@
       </div>
 
       <ZodiacSelector
-        title="喜结良缘·其二"
+        title="那边，也报上"
         identifier="second"
         :zodiacData="zodiacData"
         v-model:selectedSign="selectedSign2"
@@ -47,25 +47,9 @@
         :disabled="!selectedSign1 || !selectedSign2 || !zodiacData"
         @click="analyzeCompatibility"
       >
-        <span class="button-icon">✨</span>
-        <span>缘分妙不可言·解</span>
+        <AppIcon name="star" :size="15" class="button-icon" />
+        <span>看看这两颗星</span>
       </button>
-    </div>
-
-    <!-- 结果状态指示器 -->
-    <div class="result-indicator" v-if="resultGenerated && compatibilityResult">
-      <div class="loading-animation">
-        <div class="heart-loader"></div>
-      </div>
-      <p class="result-message">施主，你们的星座缘分正在揭晓...</p>
-      <div class="arrow-indicator">
-        <span class="scroll-prompt">向下轻启，阅览天定良缘</span>
-        <span class="scroll-arrow">⇓</span>
-      </div>
-      <div class="result-hint" v-if="showResultHint">
-        <div class="arrow-down"></div>
-        <span>👋 结果已生成，请查看下方！</span>
-      </div>
     </div>
 
     <!-- 使用新的子组件显示结果 -->
@@ -77,6 +61,7 @@
 </template>
 
 <script setup>
+import AppIcon from './icons/AppIcon.vue';
 import { ref, computed, watch, onMounted } from 'vue';
 import { useFortuneStore } from '../stores/FortuneStore';
 import { playSound } from '../utils/audioUtils';
@@ -161,10 +146,11 @@ function getZodiacPersonality(sign) {
 
 // 获取即时兼容性评分
 const getQuickCompatibilityScore = computed(() => {
-  if (!selectedSign1.value || !selectedSign2.value || !zodiacData.value) return 0;
-  
-  const sign1Data = zodiacData.value[selectedSign1.value];
-  const sign2Data = zodiacData.value[selectedSign2.value];
+  const signs = zodiacData?.value || zodiacData;
+  if (!selectedSign1.value || !selectedSign2.value || !signs) return 0;
+
+  const sign1Data = signs[selectedSign1.value];
+  const sign2Data = signs[selectedSign2.value];
 
   if (!sign1Data || !sign2Data) return 0;
 
@@ -192,49 +178,29 @@ const getQuickCompatibilityScore = computed(() => {
 function analyzeCompatibility() {
   if (selectedSign1.value && selectedSign2.value) {
     resultGenerated.value = false; // 重置结果状态
-    
-    console.log('开始分析星座配对...');
-    console.log('selectedSign1:', selectedSign1.value);
-    console.log('selectedSign2:', selectedSign2.value);
-    
-    // 使用audioUtils播放音效
-    playSound('sounds/wind-chime.mp3', 0.5).catch(error => {
-      console.warn('音效播放失败:', error);
-    });
 
-    // 分析星座配对
+    playSound('sounds/wind-chime.mp3', 0.5).catch(() => {});
+
     const result = analyzeZodiacCompatibility(selectedSign1.value, selectedSign2.value);
-    
-    console.log('分析结果:', result);
-    console.log('store状态:', fortuneStore.selectedFortune);
-    
-    // 如果分析成功，显示提示并滚动到结果区域
+
     if (result) {
-      console.log('分析成功，准备显示结果...');
-      
-      // 显示提示
-      showResultHint.value = true;
+      const score = getQuickCompatibilityScore.value;
+      compatibilityResult.value = {
+        ...result,
+        score,
+        scoreColor: score >= 80 ? '#8F271C' : score >= 60 ? '#BC3B2A' : '#A97C34'
+      };
       resultGenerated.value = true;
-      
-      setTimeout(() => {
-        showResultHint.value = false;
-      }, 5000);
-      
+
       // 滚动到结果区域
       setTimeout(() => {
-        console.log('尝试滚动到结果区域...');
-        const resultElement = document.querySelector('.fortune-result');
-        console.log('找到结果元素?', !!resultElement);
-        
+        const resultElement = document.querySelector('.compatibility-result-display-wrapper');
         if (resultElement) {
-          console.log('结果元素位置:', resultElement.getBoundingClientRect());
           resultElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
           
           // 添加高亮效果
           resultElement.classList.add('highlight');
           setTimeout(() => resultElement.classList.remove('highlight'), 3000);
-        } else {
-          console.error('找不到结果元素！');
         }
       }, 1000);
     } else {
@@ -351,25 +317,29 @@ onMounted(() => {
 <style scoped>
 .zodiac-compatibility-container {
   width: 100%;
-  padding: 25px;
-  background-color: rgba(255, 240, 245, 0.6); /* 淡粉色半透明背景，与App.vue协调 */
-  border-radius: 20px;
+  padding: 26px 28px;
+  background-color: var(--c-paper-2);
+  background-image: radial-gradient(100% 90% at 50% 0%, rgba(255, 255, 255, 0.6), transparent 70%);
+  border: 1px solid var(--c-line);
+  border-top: 3px solid var(--c-shu);
+  border-radius: 6px;
+  box-shadow: var(--shadow-paper-sm);
   /* box-shadow: 0 5px 20px var(--theme-color-light-pink-shadow, rgba(255, 182, 193, 0.3)); */
   /* border: 1px solid var(--theme-color-light-pink, #FFB6C1); */
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 25px;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-body);
 }
 
 .zodiac-title h3.main-title {
-  font-size: 2.6em; 
-  color: #B8433E; /* 主题深红色 */
-  font-weight: 700;
+  font-size: 1.9em;
+  color: var(--c-ink);
+  font-weight: 600;
+  letter-spacing: 0.12em;
   margin-bottom: 8px;
-  text-shadow: 1px 1px 3px rgba(255, 230, 230, 0.8);
-  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive);
+  font-family: var(--font-display);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -383,11 +353,11 @@ onMounted(() => {
 }
 
 .zodiac-title .subtitle {
-  font-size: 1.05em;
-  color: #C74840; /* 主题次红色 */
+  font-size: 0.95em;
+  color: var(--c-ink-faint);
+  letter-spacing: 0.05em;
   margin-bottom: 25px;
-  font-family: var(--font-family-sans-serif);
-  font-style: italic;
+  font-family: var(--font-body);
 }
 
 .zodiac-selection {
@@ -457,18 +427,18 @@ onMounted(() => {
 }
 
 .analyze-button.themed-button {
-  padding: 14px 28px;
-  font-size: 1.15em;
+  padding: 12px 28px;
+  font-size: 1.02em;
   font-weight: 600;
-  color: #fff;
-  background: linear-gradient(145deg, #D9544D, #B8433E); /* 缘结红 to 深红 */
+  color: #FFF8F0;
+  background: var(--c-shu);
   border: none;
-  border-radius: 30px; /* More rounded, like a scroll or capsule */
+  border-radius: 3px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(184, 67, 62, 0.25), 0 0 0 1.5px rgba(255,255,255,0.3) inset;
-  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive);
-  letter-spacing: 0.5px;
+  transition: all 0.25s ease;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.18) inset, 0 3px 8px rgba(143, 39, 28, 0.18);
+  font-family: var(--font-body);
+  letter-spacing: 0.08em;
   display: inline-flex; /* Align icon and text */
   align-items: center;
   justify-content: center;
@@ -476,9 +446,8 @@ onMounted(() => {
 }
 
 .analyze-button.themed-button:not(:disabled):hover {
-  background: linear-gradient(145deg, #B8433E, #D9544D);
-  box-shadow: 0 6px 16px rgba(184, 67, 62, 0.35), 0 0 0 1.5px rgba(255,255,255,0.4) inset;
-  transform: translateY(-2px);
+  background: var(--c-shu-deep);
+  transform: translateY(-1px);
 }
 
 .analyze-button.themed-button .button-icon {

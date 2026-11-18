@@ -10,22 +10,23 @@
         </div>
         <div class="profile-content">
           <h3 class="profile-title">
-            <span class="title-icon left-icon">❀</span>
-            缘主信息
-            <span class="title-icon right-icon">❀</span>
+            <span class="title-icon left-icon">—</span>
+            {{ voice.profile.title }}
+            <span class="title-icon right-icon">—</span>
           </h3>
+          <p class="profile-intro">{{ voice.profile.intro }}</p>
           
           <div class="profile-form">
             <div class="form-group">
               <label for="userName" class="form-label">
-                <span class="label-icon">📜</span>法名
+                <AppIcon name="brush" :size="14" class="label-icon" />{{ voice.profile.labels.name }}
               </label>
-              <input type="text" id="userName" v-model="userName" placeholder="请输入您的姓名" class="themed-input">
+              <input type="text" id="userName" v-model="userName" placeholder="在本神明面前，报上名来" class="themed-input">
             </div>
             
             <div class="form-group">
               <label for="birthdate" class="form-label">
-                <span class="label-icon">📅</span>降世之日
+                <AppIcon name="calendar" :size="14" class="label-icon" />{{ voice.profile.labels.birthday }}
               </label>
               <div class="date-select-container themed-date-select-container">
                 <div class="select-wrapper">
@@ -67,29 +68,29 @@
             
             <div class="form-group zodiac-group info-display-group">
               <label class="form-label">
-                <span class="label-icon">✨</span>星命
+                <AppIcon name="sparkles" :size="14" class="label-icon" />{{ voice.profile.labels.zodiac }}
               </label>
               <div class="info-display-box zodiac-display">
                 <span class="zodiac-text">{{ zodiacSign }}</span>
-                <div class="zodiac-icon-display" v-if="zodiacSign !== '未知'" :data-icon="getZodiacIcon(zodiacSign)"></div>
+                <div class="zodiac-icon-display" v-if="zodiacSign !== '未知'" :data-icon="getZodiacElement(zodiacSign)"></div>
               </div>
             </div>
             
             <div class="form-group luck-group info-display-group">
               <label class="form-label">
-                 <span class="label-icon">💖</span>今日缘数
+                 <AppIcon name="heart" :size="14" class="label-icon" />{{ voice.profile.labels.lucky }}
               </label>
               <div class="info-display-box lucky-display">
                 <div class="lucky-number">{{ luckyNumber }}</div>
                 <button class="themed-button refresh-button" @click="generateLuckyNumber">
-                  <span class="btn-icon">🔄</span>更新
+                  <AppIcon name="refresh" :size="13" class="btn-icon" />更新
                 </button>
               </div>
             </div>
             
             <div class="form-group info-display-group">
               <label class="form-label">
-                <span class="label-icon">🧧</span>本月签运
+                <AppIcon name="omamori" :size="14" class="label-icon" />{{ voice.profile.labels.monthly }}
               </label>
               <div class="info-display-box monthly-fortune">
                 {{ monthlyFortune }}
@@ -99,16 +100,16 @@
           
           <div class="profile-actions">
             <button class="themed-button save-button" @click="saveProfile">
-              <span class="btn-icon">💾</span>保存
+              <AppIcon name="check" :size="14" class="btn-icon" />{{ voice.profile.save }}
             </button>
             <button class="themed-button clear-button" @click="clearProfile">
-              <span class="btn-icon">🧹</span>清除
+              <AppIcon name="broom" :size="14" class="btn-icon" />{{ voice.profile.reset }}
             </button>
           </div>
           
           <div v-if="showSaveConfirmation" class="save-confirmation themed-confirmation">
-            <div class="confirmation-icon">🌸</div>
-            <div class="confirmation-inner">缘信已录，佳期可待</div>
+            <div class="confirmation-icon"><AppIcon name="heart" :size="26" /></div>
+            <div class="confirmation-inner">{{ confirmationText }}</div>
           </div>
         </div>
         <div class="scroll-ends left-end"></div>
@@ -123,6 +124,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
+import { voice } from '../constants/enmusubi';
+import AppIcon from './icons/AppIcon.vue';
 
 // 状态
 const isOpen = ref(false);
@@ -130,6 +133,7 @@ const userName = ref('');
 const birthdate = ref('');
 const luckyNumber = ref(0);
 const showSaveConfirmation = ref(false);
+const confirmationText = ref(voice.profile.saved);
 
 // 日期选择相关状态
 const birthYear = ref('');
@@ -242,6 +246,7 @@ const saveProfile = () => {
   localStorage.setItem('userProfile', JSON.stringify(profileData));
   
   // 显示保存确认
+  confirmationText.value = voice.profile.saved;
   showSaveConfirmation.value = true;
   setTimeout(() => {
     showSaveConfirmation.value = false;
@@ -254,6 +259,12 @@ const clearProfile = () => {
   birthdate.value = '';
   generateLuckyNumber();
   localStorage.removeItem('userProfile');
+
+  confirmationText.value = voice.profile.cleared;
+  showSaveConfirmation.value = true;
+  setTimeout(() => {
+    showSaveConfirmation.value = false;
+  }, 2000);
 };
 
 // 加载个人资料
@@ -285,36 +296,28 @@ defineExpose({
 });
 
 // 根据星座获取对应的Unicode符号
-const getZodiacIcon = (zodiacSign: string) => {
-  const zodiacIcons = {
-    '白羊座': '♈',
-    '金牛座': '♉',
-    '双子座': '♊',
-    '巨蟹座': '♋',
-    '狮子座': '♌',
-    '处女座': '♍',
-    '天秤座': '♎',
-    '天蝎座': '♏',
-    '射手座': '♐',
-    '摩羯座': '♑',
-    '水瓶座': '♒',
-    '双鱼座': '♓'
+const getZodiacElement = (zodiacSign: string) => {
+  const zodiacElements = {
+    '白羊座': '火', '狮子座': '火', '射手座': '火',
+    '金牛座': '土', '处女座': '土', '摩羯座': '土',
+    '双子座': '风', '天秤座': '风', '水瓶座': '风',
+    '巨蟹座': '水', '天蝎座': '水', '双鱼座': '水'
   };
-  
-  return zodiacIcons[zodiacSign] || '❖';
+
+  return zodiacElements[zodiacSign] || '星';
 };
 </script>
 
 <style scoped>
 /* 缘结神主题优化 - UserProfile.vue */
 :root {
-  --primary-color: #D9544D; /* 缘结红 */
-  --secondary-color: #FFB6C1; /* 淡粉红 */
-  --accent-color: #FFD700; /* 金色 */
+  --primary-color: var(--c-shu); /* 朱 */
+  --secondary-color: var(--c-sakura); /* 淡粉红 */
+  --accent-color: var(--c-gold); /* 金色 */
   --text-color: #5C3317; /* 深棕色，似木纹 */
   --text-light: #D38B6D; /* 浅棕色，用于辅助文字 */
-  --bg-color: #FFF5EE; /* 米白，似宣纸 */
-  --border-color: rgba(217, 84, 77, 0.3); /* 缘结红边框 */
+  --bg-color: var(--c-paper); /* 米白，似宣纸 */
+  --border-color: var(--c-line-strong);
   --highlight-bg: #FFE4E1; /* 选中或高亮背景 */
 }
 
@@ -325,14 +328,15 @@ const getZodiacIcon = (zodiacSign: string) => {
   transform: translateX(-50%);
   width: clamp(320px, 90vw, 500px); /* 响应式宽度 */
   max-height: 85vh;
-  background: linear-gradient(160deg, #fff0f5 0%, #ffe4e1 100%); /* 淡雅渐变背景 */
-  border-radius: 30px 30px 0 0; /* 顶部圆角 */
-  box-shadow: 0 -5px 25px rgba(217, 84, 77, 0.2);
+  background-color: var(--c-paper);
+  background-image: radial-gradient(100% 80% at 50% 0%, rgba(255, 255, 255, 0.8), transparent 70%);
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 -10px 40px rgba(48, 26, 20, 0.22);
   transition: bottom 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* 回弹动画 */
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  border: 2px solid var(--primary-color);
+  border: 1px solid var(--c-line-strong);
   border-bottom: none;
 }
 
@@ -341,20 +345,20 @@ const getZodiacIcon = (zodiacSign: string) => {
 }
 
 .scroll-handle {
-  background-color: #E0A09A; /* 卷轴手柄颜色 */
-  height: 25px;
-  width: calc(100% - 40px); /* 留出边距 */
+  background-color: #C9A67F;
+  height: 18px;
+  width: calc(100% - 40px);
   margin: 0 auto;
   position: relative;
-  border-radius: 10px 10px 0 0; /* 顶部手柄圆角 */
+  border-radius: 3px 3px 0 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.35), inset 0 -1px 2px rgba(80, 50, 30, 0.18);
 }
 .scroll-handle.bottom-handle {
-  border-radius: 0 0 10px 10px; /* 底部手柄圆角 */
-  height: 20px;
+  border-radius: 0 0 3px 3px;
+  height: 14px;
 }
 .handle-deco {
   width: 60%;
@@ -376,8 +380,8 @@ const getZodiacIcon = (zodiacSign: string) => {
   padding: 20px 25px; /* 内容区域内边距 */
   background-color: var(--bg-color); /* 卷轴主体背景 */
   position: relative;
-  border-left: 15px solid #E0A09A; /* 卷轴左边厚度 */
-  border-right: 15px solid #E0A09A; /* 卷轴右边厚度 */
+  border-left: 12px solid #C9A67F;
+  border-right: 12px solid #C9A67F;
   box-sizing: border-box;
 }
 
@@ -386,36 +390,35 @@ const getZodiacIcon = (zodiacSign: string) => {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 15px; /* 卷轴轴心宽度 */
-  background-color: #D38B6D; /* 卷轴轴心颜色 */
-  box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+  width: 12px;
+  background-color: #B08E6E;
+  box-shadow: inset 0 0 4px rgba(70, 40, 20, 0.25);
 }
-.scroll-ends.left-end { left: -15px; border-right: 1px solid #b07050; }
-.scroll-ends.right-end { right: -15px; border-left: 1px solid #b07050; }
+.scroll-ends.left-end { left: -12px; border-right: 1px solid #9C7A5B; }
+.scroll-ends.right-end { right: -12px; border-left: 1px solid #9C7A5B; }
 
 .profile-seal {
   position: absolute;
-  top: -30px; /* 调整位置，使其一半在卷轴内，一半在外 */
-  right: 20px; /* 调整右边距 */
-  width: 55px; /* 调整大小 */
-  height: 55px;
-  background-color: var(--primary-color);
-  border-radius: 50%;
+  top: -18px;
+  right: 18px;
+  width: 42px;
+  height: 42px;
+  background-color: var(--c-shu);
+  border-radius: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* padding: 5px; */ /* 移除内边距，让文字更好地居中 */
-  box-shadow: 0 3px 8px rgba(0,0,0,0.25); /* 调整阴影使其更柔和 */
-  border: 3px solid white; /* 加粗白色边框 */
+  box-shadow: 0 2px 8px rgba(143, 39, 28, 0.28);
+  border: 1px solid var(--c-shu-deep);
   z-index: 10;
-  overflow: hidden; /* 确保文字不出界 */
+  overflow: hidden;
 }
 
 .seal-text {
-  color: white;
-  font-family: 'KaiTi', 'SimSun', serif; /* 使用楷体或宋体 */
-  font-size: 1.8em; /* 调整文字大小 */
-  font-weight: bold;
+  color: #FFF6F0;
+  font-family: var(--font-display);
+  font-size: 1.3em;
+  font-weight: 600;
   line-height: 1; /* 确保文字垂直居中 */
   text-align: center;
 }
@@ -433,16 +436,25 @@ const getZodiacIcon = (zodiacSign: string) => {
 }
 
 .profile-title {
-  font-family: 'KaiTi', 'SimSun', serif; /* 更雅致的字体 */
-  color: var(--primary-color);
+  font-family: var(--font-display);
+  color: var(--c-ink);
   text-align: center;
-  font-size: 2em; /* 增大标题字号 */
-  margin-bottom: 25px;
+  font-size: 1.45em;
+  margin-bottom: 10px;
   padding-bottom: 10px;
-  border-bottom: 2px solid var(--accent-color); /* 金色下划线 */
+  border-bottom: 1px solid var(--c-line-strong);
   position: relative;
-  font-weight: bold;
-  letter-spacing: 2px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+}
+
+.profile-intro {
+  margin: 0 0 22px;
+  text-align: center;
+  font-size: 0.85em;
+  line-height: 1.7;
+  color: var(--c-ink-faint);
+  letter-spacing: 0.04em;
 }
 .title-icon {
   color: var(--secondary-color);
@@ -467,7 +479,7 @@ const getZodiacIcon = (zodiacSign: string) => {
   font-size: 1.1em;
   color: var(--text-color);
   font-weight: 600;
-  font-family: 'FangSong', 'SimSun', serif;
+  font-family: var(--font-body);
   display: flex;
   align-items: center;
 }
@@ -479,14 +491,14 @@ const getZodiacIcon = (zodiacSign: string) => {
 
 .themed-input, .themed-select {
   width: 100%;
-  padding: 12px 15px;
-  border: 1.5px solid var(--border-color);
-  border-radius: 12px; /* 更圆润的边角 */
-  background-color: white;
-  color: var(--text-color);
-  font-size: 1em;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  padding: 11px 14px;
+  border: 1px solid var(--c-line-strong);
+  border-radius: 2px;
+  background-color: #FFFCF6;
+  color: var(--c-ink);
+  font-size: 0.95em;
+  font-family: var(--font-body);
+  transition: border-color 0.2s, box-shadow 0.2s;
   appearance: none; /* 移除默认样式，特别是select */
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -494,13 +506,12 @@ const getZodiacIcon = (zodiacSign: string) => {
 }
 
 .themed-input::placeholder {
-  color: #aaa;
-  font-style: italic;
+  color: var(--c-ink-faint);
 }
 
 .themed-input:focus, .themed-select:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 8px rgba(217, 84, 77, 0.3);
+  border-color: var(--c-shu);
+  box-shadow: 0 0 0 3px var(--c-shu-wash);
   outline: none;
 }
 
@@ -513,14 +524,16 @@ const getZodiacIcon = (zodiacSign: string) => {
   position: relative; /* 为自定义箭头定位 */
 }
 .select-wrapper::after { /* 自定义下拉箭头 */
-  content: '▼';
-  font-size: 0.8em;
-  color: var(--primary-color);
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid var(--c-ink-faint);
+  border-bottom: 1px solid var(--c-ink-faint);
   position: absolute;
-  right: 15px;
+  right: 16px;
   top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none; /* 防止遮挡select点击 */
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
 }
 .themed-select {
   padding-right: 35px; /* 为自定义箭头留出空间 */
@@ -531,9 +544,9 @@ const getZodiacIcon = (zodiacSign: string) => {
   margin-top: 5px;
 }
 .info-display-box {
-  background-color: #fffaf0; /* 淡雅的象牙白 */
-  border: 1px dashed var(--secondary-color); /* 粉色虚线边框 */
-  border-radius: 10px;
+  background-color: rgba(255, 254, 250, 0.6);
+  border: 1px dashed var(--c-line-strong);
+  border-radius: 2px;
   padding: 12px 15px;
   color: var(--text-color);
   font-size: 1em;
@@ -548,19 +561,27 @@ const getZodiacIcon = (zodiacSign: string) => {
   color: var(--primary-color);
 }
 .zodiac-icon-display {
-  font-size: 1.5em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--c-line-strong);
+  border-radius: 50%;
   color: var(--primary-color);
+  font-family: var(--font-display);
+  font-size: 0.78em;
 }
 .zodiac-icon-display::before {
   content: attr(data-icon);
 }
 
 .lucky-display .lucky-number {
-  font-size: 1.8em;
-  font-weight: bold;
-  color: var(--primary-color);
-  font-family: 'Georgia', serif;
-  text-shadow: 1px 1px 0px var(--highlight-bg);
+  font-size: 1.6em;
+  font-weight: 600;
+  color: var(--c-shu);
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
 }
 
 .monthly-fortune {
@@ -568,19 +589,19 @@ const getZodiacIcon = (zodiacSign: string) => {
   color: var(--text-light);
 }
 .monthly-fortune:empty::before {
-  content: "缘分未卜...";
-  color: #bbb;
+  content: "缘分未卜……";
+  color: var(--c-ink-faint);
 }
 
 
 /* 按钮通用样式 */
 .themed-button {
   padding: 10px 20px;
-  border-radius: 12px;
+  border-radius: 3px;
   border: none;
-  font-size: 1.1em;
-  font-weight: bold;
-  font-family: 'KaiTi', 'SimSun', serif;
+  font-size: 1em;
+  font-weight: 600;
+  font-family: var(--font-body);
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
   display: inline-flex;
@@ -603,14 +624,15 @@ const getZodiacIcon = (zodiacSign: string) => {
 }
 
 .refresh-button {
-  background-color: var(--accent-color);
-  color: var(--text-color);
-  padding: 8px 15px;
-  font-size: 0.9em;
+  background-color: transparent;
+  color: var(--c-shu);
+  border: 1px solid var(--c-line-strong);
+  padding: 7px 14px;
+  font-size: 0.85em;
   min-width: auto;
 }
 .refresh-button:hover {
-  background-color: #FFC107; /* 金色加深 */
+  background-color: var(--c-shu-wash);
 }
 
 .profile-actions {
@@ -622,21 +644,21 @@ const getZodiacIcon = (zodiacSign: string) => {
 }
 
 .save-button {
-  background-color: var(--primary-color);
-  color: white;
-  box-shadow: 0 2px 5px rgba(217, 84, 77, 0.3);
+  background-color: var(--c-shu);
+  color: #FFF8F0;
 }
 .save-button:hover {
-  background-color: #c7433c; /* 主色加深 */
+  background-color: var(--c-shu-deep);
 }
 
 .clear-button {
-  background-color: #f8f8f8;
-  color: var(--text-light);
-  border: 1px solid #ddd;
+  background-color: transparent;
+  color: var(--c-ink-faint);
+  border: 1px solid var(--c-line-strong);
 }
 .clear-button:hover {
-  background-color: #eee;
+  background-color: var(--c-shu-wash);
+  color: var(--c-shu);
 }
 
 /* 保存成功提示 */
@@ -645,18 +667,18 @@ const getZodiacIcon = (zodiacSign: string) => {
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: rgba(255, 182, 193, 0.95); /* 淡粉红，更柔和 */
-  color: var(--primary-color); /* 深红色文字 */
-  padding: 15px 25px;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(217, 84, 77, 0.2);
+  background-color: var(--c-paper);
+  color: var(--c-ink);
+  padding: 13px 22px;
+  border-radius: 3px;
+  border: 1px solid var(--c-line-strong);
+  box-shadow: var(--shadow-paper-sm);
   display: flex;
   align-items: center;
   gap: 10px;
   z-index: 1001; /* 比profile-container高一级 */
-  font-family: 'KaiTi', 'SimSun', serif;
-  font-size: 1.1em;
-  border: 1px solid rgba(217, 84, 77, 0.3);
+  font-family: var(--font-body);
+  font-size: 1em;
   opacity: 0;
   animation: fadeInOutConfirmation 2.5s ease-in-out forwards;
 }
@@ -678,21 +700,16 @@ const getZodiacIcon = (zodiacSign: string) => {
   width: 8px;
 }
 .profile-scroll::-webkit-scrollbar-track {
-  background: #fff0f5; /* 淡粉色轨道 */
-  border-radius: 10px;
+  background: transparent;
 }
 .profile-scroll::-webkit-scrollbar-thumb {
-  background-color: var(--secondary-color); /* 粉色滑块 */
-  border-radius: 10px;
-  border: 2px solid #fff0f5; /* 与轨道同色边框，产生内嵌感 */
+  background-color: var(--c-shu-soft);
+  border-radius: 2px;
 }
 .profile-scroll::-webkit-scrollbar-thumb:hover {
-  background-color: #ff9eb2; /* 悬停时颜色加深 */
+  background-color: var(--c-shu);
 }
 
-/* 为了更好的Unicode符号显示 */
-.label-icon, .btn-icon, .title-icon, .confirmation-icon, .zodiac-icon-display::before {
-  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', sans-serif;
-}
+
 
 </style> 

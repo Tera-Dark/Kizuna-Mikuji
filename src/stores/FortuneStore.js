@@ -4,26 +4,26 @@ import { playSound } from '../utils/audioUtils'
 
 // 签文分类定义
 const categoryData = [
-  { id: 'love', name: '爱情缘分', icon: '❤️', color: '#e74c3c' },
-  { id: 'past_life', name: '前世姻缘', icon: '🔮', color: '#8e44ad' },
-  { id: 'couple', name: '双人合卦', icon: '💞', color: '#ff5e94' },
-  { id: 'zodiac', name: '星座配对', icon: '⭐', color: '#1abc9c' },
-  { id: 'destiny_ball', name: '缘分球', icon: '🔮', color: '#9b59b6' },
-  { id: 'name', name: '姓名解析', icon: '📝', color: '#3f51b5' },
-  { id: 'career', name: '事业运势', icon: '💼', color: '#3498db' },
-  { id: 'study', name: '学业考试', icon: '📚', color: '#2ecc71' },
-  { id: 'general', name: '日常运势', icon: '🍀', color: '#f39c12' },
-  { id: 'daily', name: '每日一签', icon: '🌞', color: '#2ecc71' },
-  { id: 'relationship', name: '人际关系', icon: '👥', color: '#3498db' },
-  { id: 'health', name: '健康平安', icon: '🏥', color: '#f39c12' }
+  { id: 'love', name: '爱情缘分', icon: 'heart', color: '#e74c3c' },
+  { id: 'past_life', name: '前世姻缘', icon: 'moon', color: '#8e44ad' },
+  { id: 'couple', name: '姻缘配对', icon: 'rings', color: '#ff5e94' },
+  { id: 'zodiac', name: '星座配对', icon: 'star', color: '#1abc9c' },
+  { id: 'destiny_ball', name: '结缘御守', icon: 'omamori', color: '#9b59b6' },
+  { id: 'name', name: '姓名解析', icon: 'brush', color: '#3f51b5' },
+  { id: 'career', name: '事业运势', icon: 'briefcase', color: '#3498db' },
+  { id: 'study', name: '学业考试', icon: 'book', color: '#2ecc71' },
+  { id: 'general', name: '日常运势', icon: 'leaf', color: '#f39c12' },
+  { id: 'daily', name: '每日一签', icon: 'sun', color: '#2ecc71' },
+  { id: 'relationship', name: '人际关系', icon: 'user', color: '#3498db' },
+  { id: 'health', name: '健康平安', icon: 'leaf', color: '#f39c12' }
 ];
 
 // 签文等级定义
 const fortuneLevels = {
-  1: { name: '初级签文', description: '入门缘分测试', requiredDraws: 0 },
-  2: { name: '中级签文', description: '更深层次的缘分指引', requiredDraws: 10 },
-  3: { name: '高级签文', description: '揭示隐藏的缘分密码', requiredDraws: 30 },
-  4: { name: '神级签文', description: '最精准的缘分天机', requiredDraws: 50 }
+  1: { name: '初签', description: '刚学着看线', requiredDraws: 0 },
+  2: { name: '中签', description: '线头理得清了', requiredDraws: 10 },
+  3: { name: '高签', description: '少见的好线', requiredDraws: 30 },
+  4: { name: '神签', description: '这回本神明要正经说话', requiredDraws: 50 }
 };
 
 // 签文类型颜色映射
@@ -231,6 +231,24 @@ const getPastLifeFortuneData = () => [
     poem: "前世一诺重千金，<br>今生相见续未了情。",
     interpretation: "或许是前世的一个承诺，让你们在今生再次相遇。这份缘分带有一些宿命感，需要双方共同努力去圆满。",
     suggestion: "多进行心灵沟通，了解彼此内心深处的想法。一起完成一件曾经约定或向往的事情，可以加深羁绊。"
+  },
+  {
+    type: "旧债",
+    poem: "前世欠一句，<br>今生还一程。",
+    interpretation: "你遇上一个人，总觉得该对他好一点。不是错觉，是旧账。",
+    suggestion: "还就还了，别要收据。还完这条线自然就松了。"
+  },
+  {
+    type: "旧路",
+    poem: "走过的路，<br>脚还记得。",
+    interpretation: "有件事你做得特别顺，像学过。上辈子大概真干过。",
+    suggestion: "顺着这个手感走。别怀疑自己为什么这么熟。"
+  },
+  {
+    type: "未了",
+    poem: "话没说完，<br>人就散了。",
+    interpretation: "你心里有件没结尾的事。它不在这一世开始，也未必在这一世结束。",
+    suggestion: "写下来。写完烧掉也行，本神明收得到。"
   }
 ];
 
@@ -932,8 +950,16 @@ const getZodiacCompatibility = (sign1, sign2) => {
   }
   
   // 添加星座特定的解读
+  const levelNotes = {
+    5: '元素相生，彼此照亮，是难得的顺缘',
+    4: '元素相近，脾性相投，处起来省力',
+    3: '元素不冲不克，合得来，但需要磨合',
+    2: '元素相克，节奏差得远，得有人先让步',
+    1: '元素相冲，硬碰硬只会两败俱伤'
+  };
+  const levelNote = compatibility.description || levelNotes[compatibilityLevel] || '';
   let interpretation = `${zodiacData[sign1].name}与${zodiacData[sign2].name}的组合，`;
-  interpretation += `是${element1}元素与${element2}元素的相遇。${compatibility.description}。`;
+  interpretation += `是${element1}元素与${element2}元素的相遇。${levelNote}。`;
   
   // 添加星座特定的建议
   let suggestion = "在相处中，应当";
@@ -996,6 +1022,24 @@ const getRelationshipFortuneData = () => [
     poem: "谈笑风生皆知己，<br>往来皆是座上宾。",
     interpretation: "你近期的社交运不错，容易结识新的朋友，也会与旧友相处愉快。你的个人魅力将得到展现，受到大家的欢迎。",
     suggestion: "积极参加社交活动，拓展你的人脉圈。保持真诚友善的态度，你将收获更多珍贵的友谊。幸运物：分享的小零食。"
+  },
+  {
+    type: "误会",
+    poem: "话没说透，<br>心先凉了半截。",
+    interpretation: "有个人在等一句话，你也在等。两边都憋着，线就绷着。",
+    suggestion: "先开口的那个不丢人。说不清就直说：这事我还没想明白。"
+  },
+  {
+    type: "旧人",
+    poem: "旧茶回甘，<br>旧人回温。",
+    interpretation: "一个很久没联系的人会冒出来。不是坏事，别急着装没看见。",
+    suggestion: "回一句就好。不用热络，也别翻旧账。"
+  },
+  {
+    type: "界限",
+    poem: "一线之隔，<br>各站一边。",
+    interpretation: "有人越界了，你也一直没说。今天适合把线挪回原处。",
+    suggestion: "把「不方便」三个字说出口。不必解释太多。"
   }
 ];
 
@@ -1017,6 +1061,24 @@ const getHealthFortuneData = () => [
     poem: "千金难买身无恙，<br>平安喜乐福自来。",
     interpretation: "健康和平安是最大的福气。近期运势平稳，无大病大灾之虞。珍惜这份安宁，享受生活中的点滴美好。",
     suggestion: "感恩所拥有的一切，保持乐观心态。多陪伴家人，注意出行安全，平安就是最好的祝福。幸运活动：与家人散步。"
+  },
+  {
+    type: "小症",
+    poem: "身子先开口，<br>比嘴诚实。",
+    interpretation: "身体在提醒你一件事。不是大病，是你一直没理它。",
+    suggestion: "今天早点睡。别拿咖啡顶着。"
+  },
+  {
+    type: "虚火",
+    poem: "火在里头烧，<br>人还在硬撑。",
+    interpretation: "你最近绷得太紧。这火气不是冲别人，是冲自己。",
+    suggestion: "出门走二十分钟。别戴耳机。"
+  },
+  {
+    type: "养",
+    poem: "水要慢喝，<br>人要慢养。",
+    interpretation: "没什么急事。今天适合把节奏放下来，补一补。",
+    suggestion: "喝够水，吃口热的。晚上别想大事。"
   }
 ];
 
@@ -1038,6 +1100,24 @@ const getDailyFortuneData = () => [
     poem: "偶有灵光乍现时，<br>把握机遇莫迟疑。",
     interpretation: "今天你可能会有一些新的想法或灵感迸发，或者遇到一些小小的机遇。要相信自己的直觉，果断行动。",
     suggestion: "随身携带笔记本，记录下突如其来的灵感。如果有机遇出现，不妨大胆尝试一下。幸运方位：东方。"
+  },
+  {
+    type: "平平",
+    poem: "日头照常起，<br>碗里有热饭。",
+    interpretation: "今天没什么大事。没坏事，就是好事。别嫌它平淡，平淡的日子不常有。",
+    suggestion: "该吃吃，该睡睡。有件拖了很久的小事，今天顺手做掉，本神明给你记一笔。"
+  },
+  {
+    type: "小凶",
+    poem: "鞋里进了沙，<br>走慢一点就是。",
+    interpretation: "今天会有点小绊子。话赶话，事赶事，不致命，烦人。",
+    suggestion: "少说一句，多走两步。别在今天签字、答应什么大事。"
+  },
+  {
+    type: "吉",
+    poem: "门开一道缝，<br>风自己会进来。",
+    interpretation: "今天有个小口子会开。可能是一句话，可能是一个人。你接着就行。",
+    suggestion: "手机别静音。有人找你，回得快点。"
   }
 ];
 
@@ -1114,12 +1194,15 @@ export const useFortuneStore = defineStore('fortune', () => {
         fortuneData = getLoveFortuneData();
     }
     
-    // 为签文增加等级属性，并根据用户等级筛选
-    return fortuneData.filter((fortune, index) => {
-      // 根据索引分配等级（这只是个示例，实际可能需要更复杂的逻辑）
-      const fortuneLevel = (index % 4) + 1;
-      fortune.level = fortuneLevel;
-      return fortuneLevel <= level;
+    // 按吉凶给签文定级并加权：低等级也能抽到全部签，只是好签权重更低
+    // （旧实现用 index % 4 过滤，导致初签只能抽到四分之一的签文，反复撞同一支）
+    return fortuneData.flatMap((fortune) => {
+      const type = fortune.type || '';
+      const isBig = /大吉|上上/.test(type);
+      const isMid = /中吉|贵人|转机|柳暗花明/.test(type);
+      fortune.level = isBig ? 3 : isMid ? 2 : 1;
+      const weight = isBig ? Math.max(1, level - 2) : isMid ? Math.min(3, level) : 4;
+      return Array(weight).fill(fortune);
     });
   };
   
@@ -1255,8 +1338,8 @@ export const useFortuneStore = defineStore('fortune', () => {
       selectedFortune.value = {
         type: "解析失败",
         poem: "未能获取解析数据，<br>请稍后再试或联系管理员。",
-        interpretation: "抱歉，我们暂时无法为您解析姓名。可能是数据配置问题或网络波动，请检查您的网络连接或稍后重试。",
-        suggestion: "尝试刷新页面，或选择其他占卜类型。",
+        interpretation: "这名字本神明看不清……可能是页面数据没接上。刷新一下，或者换个名字再试。",
+        suggestion: "刷新页面，或者先换一个占卜类型。",
         level: 1,
         category: 'name',
         nameDisplay: name, // 用户输入的姓名
@@ -1402,7 +1485,7 @@ export const useFortuneStore = defineStore('fortune', () => {
     categoryData,
     fortuneLevels,
     fortuneTypeColor,
-    userLevelInfo: computed(() => fortuneLevels[userLevel.value] || { name: '初级签文', description: '入门缘分测试' }),
+    userLevelInfo: computed(() => fortuneLevels[userLevel.value] || { name: '初签', description: '刚学着看线' }),
     drawFortune,
     resetFortune,
     clearHistory,

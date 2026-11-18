@@ -1,56 +1,56 @@
 <template>
-  <div class="category-selector">
-    <div class="category-title">
-      <span class="title-decoration left"></span>
-      请选择签文类型
-      <span class="title-decoration right"></span>
-    </div>
-    
+  <section class="category-selector" data-tour="categories">
+    <header class="category-head">
+      <h2 class="category-title">{{ voice.category.title }}</h2>
+      <p class="category-hint">{{ voice.category.hint }}</p>
+    </header>
+
     <div class="categories-grid">
-      <!-- 每日一签特殊处理，放在第一位且样式特殊 -->
-      <div 
-        class="daily-fortune-item"
-        :class="{ 'active': selectedCategory === '每日一签' }"
+      <!-- 每日一签：横向的一张，压在其它御札上面 -->
+      <button
+        type="button"
+        class="category-item daily-item"
+        :class="{ active: selectedCategory === '每日一签' }"
+        :aria-pressed="selectedCategory === '每日一签'"
         @click="selectCategory('每日一签')"
       >
-        <div class="daily-fortune-inner">
-          <div class="daily-fortune-icon">🧧</div>
-          <div class="daily-fortune-content">
-            <div class="daily-fortune-name">每日一签</div>
-            <div class="daily-fortune-desc">今日运势与贵人指引</div>
-          </div>
-          <div class="recommended-badge">今日推荐</div>
-        </div>
-      </div>
-      
-      <!-- 其他签文类型 -->
-      <div 
-        v-for="category in filteredCategories" 
+        <span class="daily-icon"><AppIcon name="sun" :size="22" /></span>
+        <span class="daily-content">
+          <span class="cat-name">每日一签</span>
+          <span class="cat-desc">{{ voice.category.items.daily }}</span>
+        </span>
+        <span class="daily-seal" aria-hidden="true">本日</span>
+      </button>
+
+      <button
+        v-for="category in filteredCategories"
         :key="category.value"
+        type="button"
         class="category-item"
-        :class="{ 'active': selectedCategory === category.value }"
+        :class="{ active: selectedCategory === category.value }"
+        :aria-pressed="selectedCategory === category.value"
         @click="selectCategory(category.value)"
       >
-        <div class="category-inner">
-          <div class="category-icon">{{ category.themedIcon || category.icon }}</div>
-          <div class="category-content">
-            <div class="category-name">{{ category.value }}</div>
-            <div class="category-desc">{{ category.description }}</div>
-          </div>
-        </div>
-      </div>
+        <span class="cat-top">
+          <AppIcon :name="category.icon" :size="19" :weight="1.5" />
+        </span>
+        <span class="cat-name">{{ category.value }}</span>
+        <span class="cat-desc">{{ category.description }}</span>
+      </button>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { useFortuneStore } from '../stores/FortuneStore';
+import { voice } from '../constants/enmusubi';
+import AppIcon from './icons/AppIcon.vue';
 
 const props = defineProps({
   selectedCategory: {
     type: String,
-    default: '每日一签' // 修改默认值为每日一签
+    default: '每日一签'
   }
 });
 
@@ -58,76 +58,24 @@ const emit = defineEmits(['category-change']);
 
 const fortuneStore = useFortuneStore();
 
-// 分类列表，包含图标和描述信息
+// 分类列表：图标名对应 AppIcon 的注册表
 const categories = [
-  { 
-    id: 'daily',
-    value: '每日一签', 
-    icon: '🎯', themedIcon: '🧧',
-    description: '今日运势与贵人指引'
-  },
-  { 
-    id: 'love',
-    value: '爱情缘分', 
-    icon: '❤️', themedIcon: '💕',
-    description: '洞悉你的爱情状态与未来发展'
-  },
-  { 
-    id: 'past_life',
-    value: '前世姻缘', 
-    icon: '🔮', themedIcon: '⏳',
-    description: '探寻你与TA的前世情缘'
-  },
-  { 
-    id: 'career',
-    value: '事业运势', 
-    icon: '💼', themedIcon: '📈',
-    description: '预测你的职场发展与财富机遇'
-  },
-  { 
-    id: 'relationship',
-    value: '人际关系', 
-    icon: '👥', themedIcon: '🤝',
-    description: '分析你的社交圈与人际状况'
-  },
-  { 
-    id: 'health',
-    value: '健康平安', 
-    icon: '🍀', themedIcon: '🌿',
-    description: '关注你的身心健康与平安指数'
-  },
-  { 
-    id: 'name',
-    value: '姓名解析', 
-    icon: '📝', themedIcon: '📜',
-    description: '解读你的名字中隐藏的天机'
-  },
-  { 
-    id: 'zodiac',
-    value: '星座配对', 
-    icon: '⭐', themedIcon: '✨',
-    description: '看看你们的星座是否相配'
-  },
-  { 
-    id: 'couple',
-    value: '姻缘配对', 
-    icon: '💕', themedIcon: '💞',
-    description: '测试你与TA的契合度与缘分指数'
-  },
-  {
-    id: 'destiny_ball',
-    value: '结缘御守',
-    icon: '🔮', themedIcon: '🧧',
-    description: '轻点御守，探寻玄妙指引'
-  }
+  { id: 'daily', value: '每日一签', icon: 'sun', description: voice.category.items.daily },
+  { id: 'love', value: '爱情缘分', icon: 'heart', description: voice.category.items.love },
+  { id: 'past_life', value: '前世姻缘', icon: 'hourglass', description: voice.category.items.past_life },
+  { id: 'career', value: '事业运势', icon: 'briefcase', description: voice.category.items.career },
+  { id: 'relationship', value: '人际关系', icon: 'branches', description: voice.category.items.relationship },
+  { id: 'health', value: '健康平安', icon: 'leaf', description: voice.category.items.health },
+  { id: 'name', value: '姓名解析', icon: 'brush', description: voice.category.items.name },
+  { id: 'zodiac', value: '星座配对', icon: 'star', description: voice.category.items.zodiac },
+  { id: 'couple', value: '姻缘配对', icon: 'rings', description: voice.category.items.couple },
+  { id: 'destiny_ball', value: '结缘御守', icon: 'omamori', description: voice.category.items.destiny_ball }
 ];
 
-// 过滤掉"每日一签"，因为它会单独显示
-const filteredCategories = computed(() => {
-  return categories.filter(category => category.value !== '每日一签');
-});
+const filteredCategories = computed(() =>
+  categories.filter(category => category.value !== '每日一签')
+);
 
-// 选择分类
 const selectCategory = (category) => {
   const selectedCat = categories.find(cat => cat.value === category);
   if (selectedCat) {
@@ -135,215 +83,193 @@ const selectCategory = (category) => {
     emit('category-change', category);
   }
 };
-
-// 纹理背景的fallback数据URI
-const wavePattern = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='80' viewBox='0 0 100 80'%3E%3Cpath d='M0,10 C30,30 70,0 100,20 L100,80 L0,80 Z' fill='%23f5f0e6'/%3E%3Cpath d='M0,30 C30,50 70,20 100,40 L100,80 L0,80 Z' fill='%23f0e8d8' opacity='0.7'/%3E%3Cpath d='M0,50 C30,70 70,40 100,60 L100,80 L0,80 Z' fill='%23ebe1cc' opacity='0.5'/%3E%3C/svg%3E";
-
-const paperTexture = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='noise' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.5 0' /%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.15'/%3E%3C/svg%3E";
 </script>
 
 <style scoped>
 .category-selector {
   width: 100%;
-  max-width: 700px;
-  margin: 0 auto 25px;
-  padding: 20px;
-  border-radius: 20px;
-  background-color: rgba(255, 245, 245, 0.9);
-  box-shadow: 0 8px 25px rgba(217, 84, 77, 0.15), 0 0 0 1.5px rgba(229, 109, 97, 0.35);
-  position: relative;
-  overflow: hidden;
-  border: 1px solid transparent;
+  padding: 2px 0 4px;
 }
 
-.category-selector::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 15%; right: 15%;
-  height: 2.5px;
-  background: linear-gradient(90deg, transparent, #E56D61, #D9544D, #E56D61, transparent);
-  border-radius: 2px;
+.category-head {
+  text-align: center;
+  margin-bottom: 18px;
 }
 
 .category-title {
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 25px;
-  color: #B8433E;
-  font-family: var(--font-family-serif-decorative, 'Ma Shan Zheng', cursive, var(--font-family-serif));
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  letter-spacing: 1.5px;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.34rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-indent: 0.14em;
+  color: var(--c-ink);
 }
 
-.title-decoration {
-  width: 50px;
-  height: 1.5px;
-  background: linear-gradient(90deg, transparent, rgba(217, 84, 77, 0.6), transparent);
-  margin: 0 12px;
-  position: relative;
+.category-title::after {
+  content: '';
+  display: block;
+  width: 42px;
+  height: 1px;
+  margin: 9px auto 0;
+  background: linear-gradient(90deg, transparent, var(--c-shu), transparent);
 }
 
-.title-decoration::before, 
-.title-decoration::after {
-  content: "\2766";
-  position: absolute;
-  width: auto;
-  height: auto;
-  background-color: transparent;
-  color: #D9544D;
-  font-size: 12px;
-  border-radius: 0;
-  top: 50%;
-  transform: translateY(-50%);
+.category-hint {
+  margin: 8px 0 0;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--c-ink-faint);
 }
-
-.title-decoration.left::before { left: -5px; }
-.title-decoration.left::after { display: none; }
-.title-decoration.right::after { right: -5px; }
-.title-decoration.right::before { display: none; }
 
 .categories-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
 }
 
-.daily-fortune-item, 
+/* 御札 */
 .category-item {
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
   position: relative;
-  overflow: hidden;
-  background-color: rgba(255, 250, 250, 0.8);
-  border: 1.5px solid rgba(229, 109, 97, 0.35);
-  box-shadow: 0 3px 8px rgba(217, 84, 77, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 13px 12px 12px;
+  font: inherit;
+  text-align: left;
+  color: var(--c-ink);
+  cursor: pointer;
+  background: linear-gradient(180deg, #FFFCF6, #FAF2E5);
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius-slip);
+  box-shadow: var(--shadow-slip);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
-.daily-fortune-item:hover, 
 .category-item:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 6px 15px rgba(217, 84, 77, 0.18);
-  border-color: rgba(217, 84, 77, 0.6);
+  transform: translateY(-2px);
+  border-color: var(--c-line-strong);
+  box-shadow: 0 6px 16px rgba(92, 44, 32, 0.12);
 }
 
-.daily-fortune-item.active, 
+.category-item:focus-visible {
+  outline: 2px solid var(--c-shu);
+  outline-offset: 2px;
+}
+
 .category-item.active {
-  border-color: #D9544D;
-  background-color: rgba(255, 240, 240, 0.95);
-  box-shadow: 0 4px 12px rgba(217, 84, 77, 0.25), inset 0 0 10px rgba(229, 109, 97, 0.1);
+  border-color: var(--c-shu);
+  background: linear-gradient(180deg, #FFF7F2, #FCEBE4);
+  box-shadow: 0 0 0 1px var(--c-shu) inset, 0 6px 16px rgba(143, 39, 28, 0.13);
 }
 
-/* 每日一签特殊样式 */
-.daily-fortune-item {
-  grid-column: 1 / -1;
-  margin-bottom: 8px;
-}
-
-.daily-fortune-inner, 
-.category-inner {
+.cat-top {
   display: flex;
   align-items: center;
-  padding: 15px;
-  position: relative;
-  z-index: 1;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 5px;
+  border-radius: 50%;
+  color: var(--c-shu);
+  background: rgba(188, 59, 42, 0.06);
+  border: 1px solid rgba(188, 59, 42, 0.16);
 }
 
-.daily-fortune-item .daily-fortune-inner::after, 
-.category-item .category-inner::after {
-  display: none;
+.category-item.active .cat-top {
+  background: var(--c-shu);
+  color: #FFF6F0;
+  border-color: var(--c-shu-deep);
 }
 
-.daily-fortune-icon, 
-.category-icon {
-  font-size: 1.8rem;
-  margin-right: 12px;
-  color: #D9544D;
-  width: 30px;
-  text-align: center;
+.cat-name {
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--c-ink);
 }
 
-.daily-fortune-content, 
-.category-content {
-  flex-grow: 1;
+.cat-desc {
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  line-height: 1.55;
+  color: var(--c-ink-soft);
+  opacity: 0.86;
 }
 
-.daily-fortune-name, 
-.category-name {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: #B8433E;
-  margin-bottom: 3px;
-  font-family: var(--font-family-serif);
+/* 每日一签 */
+.daily-item {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background:
+    linear-gradient(90deg, rgba(188, 59, 42, 0.07), transparent 42%),
+    linear-gradient(180deg, #FFFCF6, #FAF2E5);
 }
 
-.daily-fortune-desc, 
-.category-desc {
-  font-size: 0.8rem;
-  color: #C74840;
-  opacity: 0.9;
-  line-height: 1.3;
+.daily-item::before {
+  top: 0;
+  bottom: 0;
+  right: auto;
+  width: 3px;
+  height: auto;
+  background: var(--c-shu);
+  border-radius: var(--radius-slip) 0 0 var(--radius-slip);
 }
 
-.recommended-badge {
+.daily-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  color: var(--c-shu);
+  border: 1px solid rgba(188, 59, 42, 0.25);
+}
+
+.daily-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.daily-seal {
   position: absolute;
-  top: 0px;
-  right: 0px;
-  background-color: #E56D61;
-  color: white;
-  padding: 4px 10px;
-  font-size: 0.7rem;
-  font-weight: bold;
-  border-radius: 0 11px 0 8px;
-  box-shadow: -1px 1px 3px rgba(0,0,0,0.1);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  top: 8px;
+  right: 9px;
+  padding: 2px 5px;
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--c-shu);
+  border: 1px solid rgba(188, 59, 42, 0.45);
+  border-radius: 2px;
+  transform: rotate(6deg);
 }
 
-/* 响应式调整 */
 @media (max-width: 600px) {
   .categories-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
   }
-  .category-selector {
-    padding: 15px;
-  }
-  .category-title {
-    font-size: 1.3rem;
-    margin-bottom: 20px;
-  }
-  .daily-fortune-icon, .category-icon {
-    font-size: 1.6rem;
-    margin-right: 10px;
-  }
-  .daily-fortune-name, .category-name {
-    font-size: 0.95rem;
-  }
-  .daily-fortune-desc, .category-desc {
-    font-size: 0.75rem;
-  }
-  .recommended-badge {
-    padding: 3px 8px;
-    font-size: 0.65rem;
-  }
+  .category-title { font-size: 1.16rem; }
+  .category-item { padding: 11px 10px 10px; }
+  .cat-name { font-size: 0.86rem; }
+  .cat-desc { font-size: 0.66rem; }
+  .daily-item { padding: 12px 13px; }
 }
 
-@media (max-width: 400px) {
-  .categories-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-  .daily-fortune-inner, .category-inner {
-    padding: 12px;
-  }
-  .title-decoration {
-    display: none;
-  }
+@media (max-width: 380px) {
+  .categories-grid { grid-template-columns: 1fr; }
+  .cat-top { display: none; }
+  .cat-desc { font-size: 0.68rem; }
 }
-</style> 
+</style>
